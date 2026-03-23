@@ -406,7 +406,7 @@ body {
 .hero__stat-bar__divider {
   display: inline-block;
   width: 1px;
-  height: 2rem;
+  height: 1em;
   background: var(--border);
   margin: 0 2.5rem;
 }
