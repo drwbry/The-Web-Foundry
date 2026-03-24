@@ -127,7 +127,7 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
 
     /* ── HERO ── */
     .hero {
-      background: linear-gradient(135deg, #FDF6EC 0%, #F0E0C4 100%);
+      background: linear-gradient(135deg, var(--cream) 0%, #F0E0C4 100%); /* #F0E0C4: warm hero gradient stop, slightly deeper than --cream */
       padding: 5rem 2rem 3.5rem;
       border-bottom: 1px solid var(--border);
       position: relative; overflow: hidden;
@@ -333,7 +333,7 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
     /* ── ABOUT ── */
     .about-section {
       padding: 8rem 2rem;
-      background: linear-gradient(135deg, #F5EDD8 0%, #EDE0C8 100%);
+      background: linear-gradient(135deg, #F5EDD8 0%, #EDE0C8 100%); /* intentional gradient stops — close to --cream-dark but not token values */
     }
     .about-inner {
       max-width: 1200px; margin: 0 auto;
@@ -404,6 +404,7 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
       .specials__grid { grid-template-columns: 1fr; }
 
       /* Menu tabs */
+      .nav__links { display: none; }
       .tab-bar { flex-wrap: nowrap; }
 
       /* Menu items */
@@ -766,7 +767,7 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
   <section class="hours-section" id="hours">
     <div class="hours-inner">
       <div class="reveal">
-        <span class="section-tag" style="color:#C9926B">Find Us</span>
+        <span class="section-tag" style="color:var(--terra)">Find Us</span>
         <h2 class="hours-title">Come say hello</h2>
         <p class="hours-sub">123 Elm Street, Maplewood<br/>Parking available behind the building.<br/>Dogs welcome on the patio! 🐾</p>
         <br/><br/>
@@ -790,7 +791,7 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
     // Nav scroll
     const nav = document.querySelector('.bakery-nav');
     window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 50);
+      nav?.classList.toggle('scrolled', window.scrollY > 50);
     });
 
     // Specials date
@@ -811,7 +812,9 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
 
           isScrollingProgrammatically = true;
           setActiveTab(tab);
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const tabBar = document.querySelector('.tab-bar');
+          const offset = 72 + (tabBar ? tabBar.offsetHeight : 0);
+          window.scrollTo({ top: target.offsetTop - offset, behavior: 'smooth' });
 
           // Clear flag after scroll settles
           clearTimeout(window._tabScrollTimer);
