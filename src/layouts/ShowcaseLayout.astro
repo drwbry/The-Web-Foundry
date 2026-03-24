@@ -1,0 +1,13 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import BackButton from '../components/BackButton.astro';
+import DBCredit from '../components/DBCredit.astro';
+
+const { title, description, backColor, backBg } = Astro.props;
+---
+<BaseLayout title={title} description={description}>
+  <slot name="head" slot="head" />
+  <BackButton color={backColor} background={backBg} />
+  <slot />
+  <DBCredit />
+</BaseLayout>
