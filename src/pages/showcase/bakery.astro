@@ -1,5 +1,13 @@
 ---
 import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
+import { sanityClient } from '../../lib/sanityClient';
+
+const menu = await sanityClient.fetch<{ pdfUrl?: string } | null>(`
+  *[_type == "bakeryMenu"][0] { "pdfUrl": menuPdf.asset->url }
+`);
+
+const pdfUrl = menu?.pdfUrl ?? null;
+const categories: { name: string; items: { name: string; description?: string; price?: string; isSpecial?: boolean }[] }[] = [];
 ---
 <ShowcaseLayout
   title="Sweet Crumb Bakery — Rebuilt by DB Design"
@@ -503,235 +511,50 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
       <!-- Menu header -->
       <div class="menu-header reveal">
         <h2 class="menu-title">Our Menu</h2>
-        <a href="#" class="pdf-link" aria-label="Download PDF menu">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 15V3m0 12l-4-4m4 4l4-4"/>
-            <path d="M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17"/>
-          </svg>
-          Download PDF Menu
-        </a>
+        {pdfUrl && (
+          <a href={pdfUrl} class="pdf-link" aria-label="Download PDF menu" target="_blank" rel="noopener" download>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 15V3m0 12l-4-4m4 4l4-4"/>
+              <path d="M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17"/>
+            </svg>
+            Download PDF Menu
+          </a>
+        )}
       </div>
 
       <!-- Tab bar -->
       <div class="tab-bar" role="tablist" aria-label="Menu categories">
-        <button class="tab tab--active" data-target="pastries" role="tab" aria-selected="true">Pastries</button>
-        <button class="tab" data-target="breads" role="tab" aria-selected="false">Breads</button>
-        <button class="tab" data-target="sandwiches" role="tab" aria-selected="false">Sandwiches</button>
-        <button class="tab" data-target="beverages" role="tab" aria-selected="false">Beverages</button>
+        {categories.map((cat, i) => (
+          <button
+            class={`tab${i === 0 ? ' tab--active' : ''}`}
+            data-target={cat.name.toLowerCase()}
+            role="tab"
+            aria-selected={i === 0 ? 'true' : 'false'}
+          >
+            {cat.name}
+          </button>
+        ))}
       </div>
 
-      <!-- Pastries -->
-      <div class="menu-category" id="pastries">
-        <h3 class="category-heading">Pastries</h3>
-        <div class="item-grid">
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row">
-                <span class="item-name">Almond Croissant</span>
-                <span class="item-badge">Special</span>
+      {categories.map((cat) => (
+        <div class="menu-category" id={cat.name.toLowerCase()}>
+          <h3 class="category-heading">{cat.name}</h3>
+          <div class="item-grid">
+            {cat.items.map((item) => (
+              <div class="menu-item">
+                <div class="item-left">
+                  <div class="item-name-row">
+                    <span class="item-name">{item.name}</span>
+                    {item.isSpecial && <span class="item-badge">Special</span>}
+                  </div>
+                  {item.description && <div class="item-desc">{item.description}</div>}
+                </div>
+                {item.price && <span class="item-price">{item.price}</span>}
               </div>
-              <div class="item-desc">House almond cream, toasted flakes, powdered sugar</div>
-            </div>
-            <span class="item-price">$4.25</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Plain Croissant</span></div>
-              <div class="item-desc">Laminated dough, cultured butter, baked fresh daily</div>
-            </div>
-            <span class="item-price">$3.50</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Seasonal Muffin</span></div>
-              <div class="item-desc">Ask us what's in today — changes weekly</div>
-            </div>
-            <span class="item-price">$3.25</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Carrot Cake Cupcake</span></div>
-              <div class="item-desc">Brown butter cream cheese frosting, candied walnut</div>
-            </div>
-            <span class="item-price">$3.75</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Kouign-Amann</span></div>
-              <div class="item-desc">Caramelized sugar, flaky layers — limited daily</div>
-            </div>
-            <span class="item-price">$4.75</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Cinnamon Morning Bun</span></div>
-              <div class="item-desc">Orange zest glaze, turbinado sugar crust</div>
-            </div>
-            <span class="item-price">$4.00</span>
+            ))}
           </div>
         </div>
-      </div>
-
-      <!-- Breads -->
-      <div class="menu-category" id="breads">
-        <h3 class="category-heading">Breads</h3>
-        <div class="item-grid">
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Country Sourdough</span></div>
-              <div class="item-desc">100-hour fermented starter, stone-baked crust</div>
-            </div>
-            <span class="item-price">$8.50</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row">
-                <span class="item-name">Walnut Rye Loaf</span>
-                <span class="item-badge">Special</span>
-              </div>
-              <div class="item-desc">Baked Tue/Thu/Sat only — limited quantity</div>
-            </div>
-            <span class="item-price">$11.00</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Seeded Baguette</span></div>
-              <div class="item-desc">Poppy, sesame, and sunflower — crisp crust</div>
-            </div>
-            <span class="item-price">$4.00</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Olive Focaccia</span></div>
-              <div class="item-desc">Castelvetrano olives, rosemary, flaked salt</div>
-            </div>
-            <span class="item-price">$6.50</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Honey Oat Sandwich Loaf</span></div>
-              <div class="item-desc">Soft crumb, lightly sweetened, great for toast</div>
-            </div>
-            <span class="item-price">$7.00</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sandwiches -->
-      <div class="menu-category" id="sandwiches">
-        <h3 class="category-heading">Sandwiches</h3>
-        <div class="item-grid">
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">The Classic BLT</span></div>
-              <div class="item-desc">Applewood bacon, heirloom tomato, butter lettuce, aioli on sourdough</div>
-            </div>
-            <span class="item-price">$13.00</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Smoked Turkey &amp; Brie</span></div>
-              <div class="item-desc">Apple slices, whole grain mustard, arugula on honey oat</div>
-            </div>
-            <span class="item-price">$14.50</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Roasted Veggie &amp; Hummus</span></div>
-              <div class="item-desc">Zucchini, red pepper, spinach, house hummus on focaccia</div>
-            </div>
-            <span class="item-price">$12.00</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Ham &amp; Gruyère</span></div>
-              <div class="item-desc">Black forest ham, Dijon, cornichons on baguette</div>
-            </div>
-            <span class="item-price">$13.50</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Beverages -->
-      <div class="menu-category" id="beverages">
-        <h3 class="category-heading">Beverages</h3>
-        <div class="item-grid">
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Drip Coffee</span></div>
-              <div class="item-desc">Single-origin, rotates weekly — ask your barista</div>
-            </div>
-            <span class="item-price">$3.25</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Cortado</span></div>
-              <div class="item-desc">Equal parts espresso and steamed whole milk</div>
-            </div>
-            <span class="item-price">$4.50</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Oat Milk Latte</span></div>
-              <div class="item-desc">Double shot, house oat milk, your choice of syrup</div>
-            </div>
-            <span class="item-price">$6.00</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row">
-                <span class="item-name">Matcha Latte</span>
-                <span class="item-badge">Special</span>
-              </div>
-              <div class="item-desc">Ceremonial grade, oat milk, lightly sweetened</div>
-            </div>
-            <span class="item-price">$5.75</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Chai</span></div>
-              <div class="item-desc">House-spiced concentrate, steamed milk</div>
-            </div>
-            <span class="item-price">$5.25</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Cold Brew</span></div>
-              <div class="item-desc">18-hour steep, served over ice — straight or with oat milk</div>
-            </div>
-            <span class="item-price">$5.00</span>
-          </div>
-          <div class="menu-item">
-            <!-- <div class="item-img-slot"></div> -->
-            <div class="item-left">
-              <div class="item-name-row"><span class="item-name">Orange Juice</span></div>
-              <div class="item-desc">Freshly squeezed, seasonal citrus</div>
-            </div>
-            <span class="item-price">$4.50</span>
-          </div>
-        </div>
-      </div>
+      ))}
 
     </div>
   </section>

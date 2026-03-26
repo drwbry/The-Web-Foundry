@@ -1,5 +1,14 @@
 ---
 import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
+import { sanityClient } from '../../lib/sanityClient';
+import { urlFor } from '../../lib/imageUrl';
+
+interface GalleryItem { image: object; alt?: string; }
+
+const salonData = await sanityClient.fetch<{ gallery: GalleryItem[] } | null>(
+  `*[_type == "salonPage"][0] { gallery[] { image, alt } }`
+);
+const galleryImages = salonData?.gallery ?? [];
 ---
 <ShowcaseLayout
   title="Lumière Salon &amp; Spa — Rebuilt by DB Design"
@@ -102,6 +111,7 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
     .gallery-item:nth-child(4){grid-column:3}
     .gallery-item:nth-child(5){grid-column:4}
     .gallery-bg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem}
+    .gallery-photo{width:100%;height:100%;object-fit:cover;display:block}
     .gallery-bg--1{background:linear-gradient(135deg,#3D2615,#5A3A25)}
     .gallery-bg--2{background:linear-gradient(135deg,#2A1F1A,#3D2D24)}
     .gallery-bg--3{background:linear-gradient(135deg,#C9A96E22,#B89050);font-size:1.8rem}
@@ -222,11 +232,24 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
         <h2 class="section-title">The <em>work</em></h2>
       </div>
       <div class="gallery-grid">
-        <div class="gallery-item reveal"><div class="gallery-bg gallery-bg--1">💇‍♀️</div></div>
-        <div class="gallery-item reveal reveal-delay-1"><div class="gallery-bg gallery-bg--2">🌸</div></div>
-        <div class="gallery-item reveal reveal-delay-2"><div class="gallery-bg gallery-bg--3">✨</div></div>
-        <div class="gallery-item reveal reveal-delay-3"><div class="gallery-bg gallery-bg--4">🧖‍♀️</div></div>
-        <div class="gallery-item reveal reveal-delay-4"><div class="gallery-bg gallery-bg--5">💅</div></div>
+        {galleryImages.length > 0 ? galleryImages.map((item, i) => (
+          <div class={`gallery-item reveal${i > 0 ? ` reveal-delay-${i}` : ''}`}>
+            <img
+              src={urlFor(item.image).width(600).height(600).fit('crop').auto('format').url()}
+              alt={item.alt ?? ''}
+              class="gallery-photo"
+              loading="lazy"
+            />
+          </div>
+        )) : (
+          <>
+            <div class="gallery-item reveal"><div class="gallery-bg gallery-bg--1">💇‍♀️</div></div>
+            <div class="gallery-item reveal reveal-delay-1"><div class="gallery-bg gallery-bg--2">🌸</div></div>
+            <div class="gallery-item reveal reveal-delay-2"><div class="gallery-bg gallery-bg--3">✨</div></div>
+            <div class="gallery-item reveal reveal-delay-3"><div class="gallery-bg gallery-bg--4">🧖‍♀️</div></div>
+            <div class="gallery-item reveal reveal-delay-4"><div class="gallery-bg gallery-bg--5">💅</div></div>
+          </>
+        )}
       </div>
     </div>
   </section>

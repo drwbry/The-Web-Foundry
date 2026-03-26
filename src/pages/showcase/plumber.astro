@@ -1,5 +1,26 @@
 ---
 import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
+import { sanityClient } from '../../lib/sanityClient';
+
+interface DayHours { day: string; closed: boolean; open?: string; close?: string; }
+
+const plumberData = await sanityClient.fetch<{ hours?: DayHours[] } | null>(
+  `*[_type == "plumberPage"][0] { hours[] { day, closed, open, close } }`
+);
+
+const DEFAULT_HOURS: DayHours[] = [
+  { day: 'Monday',    closed: false, open: '7:00 AM', close: '5:00 PM' },
+  { day: 'Tuesday',   closed: false, open: '7:00 AM', close: '5:00 PM' },
+  { day: 'Wednesday', closed: false, open: '7:00 AM', close: '5:00 PM' },
+  { day: 'Thursday',  closed: false, open: '7:00 AM', close: '5:00 PM' },
+  { day: 'Friday',    closed: false, open: '7:00 AM', close: '5:00 PM' },
+  { day: 'Saturday',  closed: false, open: '8:00 AM', close: '2:00 PM' },
+  { day: 'Sunday',    closed: true },
+];
+
+const hours = (plumberData?.hours && plumberData.hours.length > 0)
+  ? plumberData.hours
+  : DEFAULT_HOURS;
 ---
 <ShowcaseLayout
   title="Peak Flow Plumbing — Rebuilt by DB Design"
@@ -66,6 +87,7 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
     .btn-services:hover, .btn-services:focus-visible{border-color:var(--orange);color:var(--orange);outline:none}
 
     .hero__trust{display:flex;flex-direction:column;gap:1.2rem}
+    .hero__photo{width:100%;border-radius:8px;object-fit:cover;display:block;margin-bottom:1.2rem;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
     .trust-badge{display:flex;align-items:center;gap:1.2rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:3px solid var(--orange);border-radius:4px;padding:1.2rem 1.5rem;transition:background .2s}
     .trust-badge:hover{background:rgba(255,255,255,0.06)}
     .trust-badge__icon{font-size:1.8rem;flex-shrink:0}
@@ -107,6 +129,18 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
     .btn-emergency:hover, .btn-emergency:focus-visible{transform:scale(1.03);box-shadow:0 12px 30px rgba(0,0,0,0.2);outline:none;animation:none}
     @keyframes emergency-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0.4)}50%{box-shadow:0 0 0 16px rgba(255,255,255,0)}}
 
+    /* HOURS */
+    .hours-section{padding:6rem 2rem;background:var(--navy)}
+    .hours-inner{max-width:540px;margin:0 auto;text-align:center}
+    .hours-inner .section-tag{color:var(--orange)}
+    .hours-inner .section-title{color:white;margin-bottom:2.5rem}
+    .hours-list{list-style:none;width:100%}
+    .hours-list li{display:flex;justify-content:space-between;align-items:center;padding:.75rem 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:.95rem;color:rgba(255,255,255,0.8)}
+    .hours-list li:last-child{border-bottom:none}
+    .hours-list .day{font-weight:600;color:white}
+    .hours-list .time{color:var(--orange)}
+    .hours-list .closed-label{color:rgba(255,255,255,0.35);font-style:italic}
+
     .db-credit{text-align:center;padding:2rem;background:var(--navy);font-size:.78rem;color:rgba(255,255,255,0.3)}
     .db-credit a{color:var(--orange);font-weight:700}
 
@@ -147,6 +181,7 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
           </div>
         </div>
         <div class="hero__trust">
+
           <div class="trust-badge"><div class="trust-badge__icon">⚡</div><div><div class="trust-badge__title">Same-Day Service</div><div class="trust-badge__sub">Most jobs completed same day</div></div></div>
           <div class="trust-badge"><div class="trust-badge__icon">🪪</div><div><div class="trust-badge__title">Licensed &amp; Insured</div><div class="trust-badge__sub">State-certified master plumbers</div></div></div>
           <div class="trust-badge"><div class="trust-badge__icon">💯</div><div><div class="trust-badge__title">Upfront Pricing</div><div class="trust-badge__sub">No surprise fees, ever</div></div></div>
@@ -179,6 +214,25 @@ import ShowcaseLayout from '../../layouts/ShowcaseLayout.astro';
         <div class="service-card reveal reveal-delay-2"><div class="service-card__icon">🚽</div><div class="service-card__name">Toilet &amp; Fixture Install</div><p class="service-card__desc">New fixture installations done right, including bidets, smart toilets, and accessible fixtures.</p></div>
         <div class="service-card reveal reveal-delay-3"><div class="service-card__icon">🏢</div><div class="service-card__name">Commercial Plumbing</div><p class="service-card__desc">Full commercial services including grease trap maintenance and backflow prevention.</p></div>
       </div>
+    </div>
+  </section>
+
+  <!-- HOURS -->
+  <section class="hours-section" id="hours">
+    <div class="hours-inner reveal">
+      <span class="section-tag">When We Work</span>
+      <h2 class="section-title">HOURS</h2>
+      <ul class="hours-list">
+        {hours.map((h) => (
+          <li>
+            <span class="day">{h.day}</span>
+            {h.closed
+              ? <span class="closed-label">Closed</span>
+              : <span class="time">{h.open} – {h.close}</span>
+            }
+          </li>
+        ))}
+      </ul>
     </div>
   </section>
 
