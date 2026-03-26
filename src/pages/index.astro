@@ -3,8 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/hub.css';
 ---
 <BaseLayout
-  title="DB Design — AI Vibe Coding for Local Businesses"
-  description="DB Design rebuilds outdated local business websites using AI vibe coding — for free. See what modern web design can do for your community."
+  title="The Web Foundry — AI Vibe Coding for Local Businesses"
+  description="The Web Foundry rebuilds outdated local business websites using AI vibe coding — for free. See what modern web design can do for your community."
 >
   <Fragment slot="head">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
@@ -14,8 +14,8 @@ import '../styles/hub.css';
   <nav class="nav" id="nav">
     <div class="container nav__inner">
       <a href="#" class="nav__logo">
-        <span class="nav__logo-db">DB</span>
-        <span class="nav__logo-design">Design</span>
+        <span class="nav__logo-db">The Web</span>
+        <span class="nav__logo-design">Foundry</span>
       </a>
       <ul class="nav__links">
         <li><a href="#mission" class="nav__link">Mission</a></li>
@@ -27,6 +27,41 @@ import '../styles/hub.css';
       </button>
     </div>
   </nav>
+
+  <!-- ── Logo Options Review Panel (remove once logo chosen) ── -->
+  <section class="logo-options">
+    <div class="container">
+      <p class="logo-options__heading">Logo Options — Tell me which to keep</p>
+      <div class="logo-options__grid">
+
+        <div class="logo-option">
+          <div class="logo-a">
+            <span class="logo-a__primary">The Web</span>
+            <span class="logo-a__secondary">Foundry</span>
+          </div>
+          <span class="logo-option__tag">Option A</span>
+        </div>
+
+        <div class="logo-option">
+          <div class="logo-b">
+            <span class="logo-b__name">The Web Foundry</span>
+            <span class="logo-b__locale">Cincinnati</span>
+          </div>
+          <span class="logo-option__tag">Option B</span>
+        </div>
+
+        <div class="logo-option">
+          <div class="logo-c">
+            <span class="logo-c__abbr">WF</span>
+            <div class="logo-c__divider" aria-hidden="true"></div>
+            <span class="logo-c__wordmark">Web<br/>Foundry</span>
+          </div>
+          <span class="logo-option__tag">Option C</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
 
   <!-- ── Hero ── -->
   <section class="hero" id="hero">
@@ -239,11 +274,11 @@ import '../styles/hub.css';
   <footer class="footer">
     <div class="container footer__inner">
       <div class="footer__logo">
-        <span class="nav__logo-db">DB</span>
-        <span class="nav__logo-design">Design</span>
+        <span class="nav__logo-db">The Web</span>
+        <span class="nav__logo-design">Foundry</span>
       </div>
       <p class="footer__tagline">AI Vibe Coding for the people.</p>
-      <p class="footer__copy">© 2026 DB Design. Built with ❤️ and AI.</p>
+      <p class="footer__copy">© 2026 The Web Foundry — Cincinnati. Built with ❤️ and AI.</p>
     </div>
   </footer>
 
