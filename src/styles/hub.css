@@ -392,88 +392,56 @@ body {
   50% { height: 28px; opacity: 0.5; }
 }
 
-/* Stat Bar */
-.hero__stat-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  border-top: 1px solid var(--border);
-  background: rgba(10, 10, 10, 0.6);
-  padding: 0.8rem 0;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--cream-muted);
-}
-
-.hero__stat-bar__divider {
-  display: inline-block;
-  width: 1px;
-  height: 1em;
-  background: var(--border);
-  margin: 0 2.5rem;
-}
 
 /* ============================================================
    MISSION
    ============================================================ */
 .mission {
-  padding: 6rem 0;
+  padding: 8rem 0;
   position: relative;
+}
+
+.mission__content {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.mission__beat {
+  padding: 1.5rem 0;
+}
+
+.mission__beat p {
+  font-size: 1.15rem;
+  color: var(--cream-dim);
+  line-height: 1.8;
+}
+
+.mission__beat em {
+  font-family: var(--ff-display);
+  font-style: italic;
+  color: var(--gold);
+  font-size: 1.2em;
+}
+
+.mission .section-header {
+  margin-bottom: 2.5rem;
 }
 
 .mission__rule {
   width: 2rem;
   height: 2px;
   background: var(--gold);
-  margin: 2rem 0;
-}
-
-.mission__steps {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-}
-
-.step-card {
-  background: var(--black-card);
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--gold);
-  border-radius: 8px;
-  padding: 1.5rem;
-}
-
-.step-card__number {
-  font-family: var(--ff-body);
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--gold);
-  opacity: 0.5;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.5rem;
-}
-
-.step-card__title {
-  font-weight: 600;
-  color: var(--cream);
-  margin-bottom: 0.5rem;
-}
-
-.step-card__desc {
-  font-size: 0.85rem;
-  color: var(--cream-muted);
-  line-height: 1.65;
+  margin: 0.5rem auto;
+  opacity: 0.4;
 }
 
 @media (max-width: 768px) {
-  .mission__steps {
-    grid-template-columns: 1fr;
+  .mission {
+    padding: 5rem 0;
+  }
+
+  .mission__beat p {
+    font-size: 1.05rem;
   }
 }
 
@@ -708,6 +676,101 @@ body {
     grid-template-columns: 1fr;
     max-width: 480px;
     margin: 0 auto;
+  }
+}
+
+/* ============================================================
+   HOW IT WORKS
+   ============================================================ */
+.how-it-works {
+  padding: 8rem 0;
+  position: relative;
+}
+
+.how-it-works .section-header {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.timeline {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+  padding-left: 3rem;
+}
+
+.timeline__line {
+  position: absolute;
+  left: 0.5rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--gold) 10%,
+    var(--gold) 90%,
+    transparent 100%
+  );
+  opacity: 0.3;
+}
+
+.timeline__step {
+  position: relative;
+  padding-bottom: 3.5rem;
+}
+
+.timeline__step:last-child {
+  padding-bottom: 0;
+}
+
+.timeline__marker {
+  position: absolute;
+  left: -2.55rem;
+  top: 0.35rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 4px var(--black), 0 0 0 6px var(--gold-dim);
+}
+
+.timeline__title {
+  font-family: var(--ff-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 0.5rem;
+}
+
+.timeline__desc {
+  font-size: 1.05rem;
+  color: var(--cream-dim);
+  line-height: 1.7;
+  max-width: 480px;
+}
+
+@media (max-width: 768px) {
+  .how-it-works {
+    padding: 5rem 0;
+  }
+
+  .timeline {
+    padding-left: 2.5rem;
+  }
+
+  .timeline__marker {
+    left: -2.05rem;
+    width: 10px;
+    height: 10px;
+  }
+
+  .timeline__title {
+    font-size: 1.3rem;
+  }
+
+  .timeline__desc {
+    font-size: 0.95rem;
   }
 }
 
