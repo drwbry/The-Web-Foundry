@@ -1,6 +1,62 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/hub.css';
+import { sanityClient } from '../lib/sanityClient';
+import { urlFor } from '../lib/imageUrl';
+
+interface TeamMember {
+  name: string;
+  title: string;
+  photo?: object;
+  bio?: string;
+}
+
+interface AboutPageData {
+  heroHeadline?: string;
+  heroSubtext?: string;
+  whyTitle?: string;
+  whyBody?: string[];
+  howTitle?: string;
+  howBody?: string;
+  teamTitle?: string;
+  teamMembers?: TeamMember[];
+  ctaHeadline?: string;
+}
+
+const aboutData = await sanityClient.fetch<AboutPageData | null>(
+  `*[_type == "aboutPage"][0] {
+    heroHeadline,
+    heroSubtext,
+    whyTitle,
+    whyBody,
+    howTitle,
+    howBody,
+    teamTitle,
+    teamMembers[] {
+      name,
+      title,
+      photo,
+      bio
+    },
+    ctaHeadline
+  }`
+);
+
+const heroHeadline = aboutData?.heroHeadline;
+const heroSubtext = aboutData?.heroSubtext ?? "The Web Foundry is a volunteer initiative based in Cincinnati. We use AI-powered development to completely rebuild outdated local business websites — for free. No strings attached, no ongoing fees. Just a better web for the businesses that make our neighborhoods special.";
+const whyTitle = aboutData?.whyTitle ?? "Why we do this";
+const whyBody = aboutData?.whyBody ?? [
+  "Small businesses are the backbone of every community. They sponsor little league teams, know your name when you walk in, and make neighborhoods feel like home. But too often, their online presence doesn't reflect who they are — it's a website from 2009 that barely works on a phone.",
+  "Meanwhile, technology has moved fast. AI tools now let us build in hours what used to take weeks. We think that speed should benefit the people who need it most — not just the ones who can afford a $15,000 redesign.",
+];
+const howTitle = aboutData?.howTitle ?? "How it works";
+const howBody = aboutData?.howBody;
+const teamTitle = aboutData?.teamTitle ?? "The Team";
+const teamMembers = aboutData?.teamMembers ?? [
+  { name: "Dreux Bontempo", title: "Co-Founder", photo: undefined, bio: "Cincinnati-based technologist passionate about putting modern tools to work for the community." },
+  { name: "Partner Name", title: "Co-Founder", photo: undefined, bio: "Bio coming soon." },
+];
+const ctaHeadline = aboutData?.ctaHeadline ?? "Know a business that deserves better?";
 ---
 <BaseLayout
   title="About — The Web Foundry"
@@ -33,8 +89,10 @@ import '../styles/hub.css';
       <div class="container">
         <div class="about-hero__inner reveal">
           <span class="section-tag">About Us</span>
-          <h1 class="about-hero__title">We build websites<br/>for the people<br/><em>who build communities.</em></h1>
-          <p class="about-hero__sub">The Web Foundry is a volunteer initiative based in Cincinnati. We use AI-powered development to completely rebuild outdated local business websites — for free. No strings attached, no ongoing fees. Just a better web for the businesses that make our neighborhoods special.</p>
+          <h1 class="about-hero__title">
+            {heroHeadline ?? <>We build websites<br/>for the people<br/><em>who build communities.</em></>}
+          </h1>
+          <p class="about-hero__sub">{heroSubtext}</p>
         </div>
       </div>
     </section>
@@ -43,9 +101,10 @@ import '../styles/hub.css';
       <div class="container">
         <div class="about-why__inner">
           <div class="reveal">
-            <h2 class="about-why__title">Why we do this</h2>
-            <p class="about-why__text">Small businesses are the backbone of every community. They sponsor little league teams, know your name when you walk in, and make neighborhoods feel like home. But too often, their online presence doesn't reflect who they are — it's a website from 2009 that barely works on a phone.</p>
-            <p class="about-why__text">Meanwhile, technology has moved fast. AI tools now let us build in hours what used to take weeks. We think that speed should benefit the people who need it most — not just the ones who can afford a $15,000 redesign.</p>
+            <h2 class="about-why__title">{whyTitle}</h2>
+            {whyBody.map((para) => (
+              <p class="about-why__text">{para}</p>
+            ))}
           </div>
         </div>
       </div>
@@ -54,8 +113,10 @@ import '../styles/hub.css';
     <section class="about-how">
       <div class="container">
         <div class="about-how__inner reveal">
-          <h2 class="about-how__title">How it works</h2>
-          <p class="about-how__text">We call it <strong>AI vibe coding</strong> — using modern AI development tools to rapidly prototype, iterate, and ship polished websites. We volunteer our time, pair with business owners to capture their vision, and deliver a site that actually represents what they do. Every site is custom. Every site is free.</p>
+          <h2 class="about-how__title">{howTitle}</h2>
+          <p class="about-how__text">
+    {howBody ?? <>We call it <strong>AI vibe coding</strong> — using modern AI development tools to rapidly prototype, iterate, and ship polished websites. We volunteer our time, pair with business owners to capture their vision, and deliver a site that actually represents what they do. Every site is custom. Every site is free.</>}
+  </p>
         </div>
       </div>
     </section>
@@ -63,20 +124,19 @@ import '../styles/hub.css';
     <section class="about-team">
       <div class="container">
         <div class="about-team__inner">
-          <h2 class="about-team__title reveal">The Team</h2>
+          <h2 class="about-team__title reveal">{teamTitle}</h2>
           <div class="about-team__grid">
-            <div class="team-card reveal reveal-delay-1">
-              <div class="team-card__photo-placeholder" aria-label="Founder photo placeholder"></div>
-              <h3 class="team-card__name">Dreux Bontempo</h3>
-              <p class="team-card__role">Co-Founder</p>
-              <p class="team-card__bio">Cincinnati-based technologist passionate about putting modern tools to work for the community.</p>
-            </div>
-            <div class="team-card reveal reveal-delay-2">
-              <div class="team-card__photo-placeholder" aria-label="Co-founder photo placeholder"></div>
-              <h3 class="team-card__name">Partner Name</h3>
-              <p class="team-card__role">Co-Founder</p>
-              <p class="team-card__bio">Bio coming soon.</p>
-            </div>
+            {teamMembers.map((member, i) => (
+              <div class={`team-card reveal reveal-delay-${i + 1}`}>
+                {member.photo
+                  ? <img class="team-card__photo" src={urlFor(member.photo as object).width(240).height(240).fit('crop').url()} alt={member.name} />
+                  : <div class="team-card__photo-placeholder" aria-label={`${member.name} photo placeholder`}></div>
+                }
+                <h3 class="team-card__name">{member.name}</h3>
+                <p class="team-card__role">{member.title}</p>
+                <p class="team-card__bio">{member.bio}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -85,7 +145,7 @@ import '../styles/hub.css';
     <section class="about-cta">
       <div class="container">
         <div class="about-cta__inner reveal">
-          <h2 class="about-cta__title">Know a business that deserves better?</h2>
+          <h2 class="about-cta__title">{ctaHeadline}</h2>
           <a href="/#contact" class="btn btn--primary">Get in Touch</a>
         </div>
       </div>
@@ -190,6 +250,15 @@ import '../styles/hub.css';
       background: linear-gradient(135deg, var(--black-soft), rgba(212, 168, 83, 0.15));
       border: 2px solid var(--border);
       margin: 0 auto 1.2rem;
+    }
+    .team-card__photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      margin: 0 auto 1.2rem;
+      display: block;
+      object-fit: cover;
     }
     .team-card__name {
       font-family: var(--ff-display);
