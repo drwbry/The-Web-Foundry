@@ -108,6 +108,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape' && modal?.classList.contains('is-open')) closeModal();
   });
 
+  // Phone auto-format
+  const phoneInput = document.getElementById('f-phone');
+  phoneInput?.addEventListener('input', (e) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+    let formatted = '';
+    if (digits.length >= 1) formatted = '(' + digits.slice(0, 3);
+    if (digits.length >= 4) formatted += ') ' + digits.slice(3, 6);
+    if (digits.length >= 7) formatted += '-' + digits.slice(6, 10);
+    e.target.value = formatted;
+  });
+
   // Conditional URL field
   const urlField = document.getElementById('url-field');
   const urlInput = document.getElementById('f-url');

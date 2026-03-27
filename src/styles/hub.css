@@ -1096,6 +1096,7 @@ textarea { resize: vertical; min-height: 100px; }
 }
 .modal-success__title { font-family: var(--ff-display); font-size: 1.8rem; color: var(--cream); }
 .modal-success__sub { font-size: 0.95rem; color: var(--cream-dim); line-height: 1.7; max-width: 380px; }
+.modal-success[hidden] { display: none; }
 
 /* nav__cta as button — reset button defaults, keep existing .nav__cta visual styles */
 button.nav__cta {

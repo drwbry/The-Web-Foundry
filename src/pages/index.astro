@@ -346,7 +346,7 @@ import '../styles/hub.css';
 
           <div class="form-group" id="url-field" hidden>
             <label for="f-url">Website URL</label>
-            <input type="url" id="f-url" name="website_url" placeholder="https://yourbusiness.com">
+            <input type="text" id="f-url" name="website_url" placeholder="yourbusiness.com" pattern="[^\s]+\.[a-zA-Z]{2,}" title="Please include a domain extension (e.g. yourbusiness.com)">
           </div>
 
           <div class="form-group">
