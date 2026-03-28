@@ -95,6 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
       modal.setAttribute('hidden', '');
       if (modalBody) modalBody.hidden = false;
       if (modalSuccess) modalSuccess.hidden = true;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Send Message <span class="btn-arrow">→</span>';
+      }
     }, { once: true });
   }
 
