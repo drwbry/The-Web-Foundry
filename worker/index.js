@@ -52,11 +52,6 @@ export default {
       return json({ success: false, message: 'Verification failed' }, 403, origin);
     }
 
-    // ── Legacy secret support (remove after all clients are updated) ──
-    if (body.secret && body.secret !== env.WORKER_SECRET) {
-      return json({ success: false, message: 'Unauthorized' }, 401, origin);
-    }
-
     // ── Build internal notification email ──────────────────────
     const subject = body.subject || 'New Form Submission — The Web Foundry';
     const lines = Object.entries(body)
