@@ -116,6 +116,19 @@ All forms POST to a **shared Cloudflare Worker** (`worker/index.js`) deployed at
 
 **Deploy Worker:** `cd worker && npx wrangler deploy`
 
+## Keeping the Onboarding Skill Current
+
+The client onboarding process is captured in `~/.claude/skills/web-foundry-onboarding/SKILL.md`. **Any time you make a change that affects how a new client site is spun up, update the skill immediately.** This includes:
+
+- Changes to the Worker (new env vars, KV structure, form fields, deploy commands)
+- Sanity schema or dataset conventions
+- Coolify deployment steps or env var names
+- Turnstile configuration
+- DNS or domain setup changes
+- New lessons learned from real onboardings
+
+Also update `docs/cowork-intake-brief.md` and `docs/intake-form.md` if the changes affect what Cowork needs to know or what we ask clients.
+
 ## Adding a New Showcase Page
 
 1. Copy the structure of an existing showcase page in `src/pages/showcase/`

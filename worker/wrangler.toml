@@ -5,3 +5,7 @@ account_id = "4b67510725d20a66bec0794b2dad9122"
 
 [vars]
 ALLOWED_ORIGINS = "https://cincinnatiwebfoundry.com,http://localhost:4321"
+
+[[kv_namespaces]]
+binding = "WEB_FOUNDRY_SITES"
+id = "d79b82d55c094670be496e4306b7fa8a"

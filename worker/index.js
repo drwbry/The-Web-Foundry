@@ -52,14 +52,29 @@ export default {
       return json({ success: false, message: 'Verification failed' }, 403, origin);
     }
 
+    // ── KV lookup: resolve site config from site_id ───────────
+    let toEmail = env.TO_EMAIL;
+    let siteBusinessName = 'The Web Foundry';
+    const siteId = body.site_id || '';
+    if (siteId && env.WEB_FOUNDRY_SITES) {
+      const raw = await env.WEB_FOUNDRY_SITES.get(siteId);
+      if (raw) {
+        try {
+          const config = JSON.parse(raw);
+          if (config.toEmail) toEmail = config.toEmail;
+          if (config.businessName) siteBusinessName = config.businessName;
+        } catch {}
+      }
+    }
+
     // ── Build internal notification email ──────────────────────
-    const subject = body.subject || 'New Form Submission — The Web Foundry';
+    const subject = body.subject || `New Form Submission — ${siteBusinessName}`;
     const lines = Object.entries(body)
-      .filter(([k]) => !['secret', 'botcheck', 'cf-turnstile-response', 'subject'].includes(k))
+      .filter(([k]) => !['secret', 'botcheck', 'cf-turnstile-response', 'subject', 'site_id'].includes(k))
       .map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;font-weight:600;vertical-align:top">${k}</td><td style="padding:4px 0">${v}</td></tr>`);
     const internalHtml = `<table style="font-family:sans-serif;font-size:14px;color:#333">${lines.join('')}</table>`;
 
-    // ── Send internal notification to Foundry inbox ────────────
+    // ── Send internal notification to site owner ───────────────
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -68,7 +83,7 @@ export default {
       },
       body: JSON.stringify({
         from: 'Web Foundry Forms <forms@cincinnatiwebfoundry.com>',
-        to: [env.TO_EMAIL],
+        to: [toEmail],
         subject,
         html: internalHtml,
         reply_to: body.email || undefined,
@@ -85,6 +100,7 @@ export default {
     if (body.email) {
       const firstName = (body.name || '').split(' ')[0] || 'there';
       const businessName = body.business_name || '';
+      const displayName = siteBusinessName;
       const phoneRow = body.phone
         ? `<tr><td style="padding:10px 16px;border-bottom:1px solid #EEEEEE;font-size:13px;color:#888888;width:36%;">Phone</td><td style="padding:10px 16px;border-bottom:1px solid #EEEEEE;font-size:13px;color:#111111;">${body.phone}</td></tr>`
         : '';
@@ -100,7 +116,7 @@ export default {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>We received your message — The Web Foundry</title>
+  <title>We received your message — ${displayName}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#F2F2F2;font-family:Arial,Helvetica,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F2F2F2;">
@@ -114,8 +130,7 @@ export default {
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td>
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:20px;color:#D4A853;font-weight:700;letter-spacing:0.02em;">The Web Foundry</p>
-                    <p style="margin:5px 0 0;font-size:11px;color:rgba(240,235,224,0.45);letter-spacing:0.14em;text-transform:uppercase;">Cincinnati</p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:20px;color:#D4A853;font-weight:700;letter-spacing:0.02em;">${displayName}</p>
                   </td>
                   <td align="right" valign="middle">
                     <p style="margin:0;font-size:11px;color:rgba(240,235,224,0.35);letter-spacing:0.1em;text-transform:uppercase;">Confirmation</p>
@@ -174,8 +189,7 @@ export default {
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td valign="top">
-                    <p style="margin:0 0 3px;font-size:12px;color:#888888;font-weight:700;">The Web Foundry &mdash; Cincinnati</p>
-                    <p style="margin:0;font-size:11px;color:#BBBBBB;">cincinnatiwebfoundry.com</p>
+                    <p style="margin:0 0 3px;font-size:12px;color:#888888;font-weight:700;">${displayName}</p>
                   </td>
                   <td align="right" valign="top">
                     <p style="margin:0;font-size:11px;color:#CCCCCC;line-height:1.6;">You received this because<br/>you submitted a contact form.</p>
@@ -201,7 +215,7 @@ export default {
         body: JSON.stringify({
           from: 'The Web Foundry <forms@cincinnatiwebfoundry.com>',
           to: [body.email],
-          subject: 'We received your message — The Web Foundry',
+          subject: `We received your message — ${displayName}`,
           html: confirmationHtml,
         }),
       }));
