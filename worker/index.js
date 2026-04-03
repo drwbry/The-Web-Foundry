@@ -55,6 +55,10 @@ export default {
     // ── KV lookup: resolve site config from site_id ───────────
     let toEmail = env.TO_EMAIL;
     let siteBusinessName = 'The Web Foundry';
+    let brandColor = '#D4A853';   // Web Foundry gold
+    let headerBg = '#0A0A0A';    // Web Foundry black
+    let siteUrl = 'https://cincinnatiwebfoundry.com';
+    let isClientSite = false;
     const siteId = body.site_id || '';
     if (siteId && env.WEB_FOUNDRY_SITES) {
       const raw = await env.WEB_FOUNDRY_SITES.get(siteId);
@@ -63,6 +67,10 @@ export default {
           const config = JSON.parse(raw);
           if (config.toEmail) toEmail = config.toEmail;
           if (config.businessName) siteBusinessName = config.businessName;
+          if (config.brandColor) brandColor = config.brandColor;
+          if (config.headerBg) headerBg = config.headerBg;
+          if (config.siteUrl) siteUrl = config.siteUrl;
+          isClientSite = true;
         } catch {}
       }
     }
@@ -99,17 +107,33 @@ export default {
     // ── Send confirmation email to submitter ───────────────────
     if (body.email) {
       const firstName = (body.name || '').split(' ')[0] || 'there';
-      const businessName = body.business_name || '';
       const displayName = siteBusinessName;
-      const phoneRow = body.phone
-        ? `<tr><td style="padding:10px 16px;border-bottom:1px solid #EEEEEE;font-size:13px;color:#888888;width:36%;">Phone</td><td style="padding:10px 16px;border-bottom:1px solid #EEEEEE;font-size:13px;color:#111111;">${body.phone}</td></tr>`
-        : '';
-      const websiteRow = body.website_url
-        ? `<tr><td style="padding:10px 16px;font-size:13px;color:#888888;">Website</td><td style="padding:10px 16px;font-size:13px;color:#111111;">${body.website_url}</td></tr>`
-        : '';
-      const businessRow = businessName
-        ? `<tr><td style="padding:10px 16px;border-bottom:1px solid #EEEEEE;font-size:13px;color:#888888;">Business</td><td style="padding:10px 16px;border-bottom:1px solid #EEEEEE;font-size:13px;color:#111111;">${businessName}</td></tr>`
-        : '';
+
+      // ── Dynamic submission summary rows ─────────────────────
+      const hiddenFields = ['secret', 'botcheck', 'cf-turnstile-response', 'subject', 'site_id', 'email'];
+      const fieldLabels = {
+        name: 'Name', business_name: 'Business', phone: 'Phone',
+        website_url: 'Website', message: 'Message',
+      };
+      const summaryRows = Object.entries(body)
+        .filter(([k, v]) => !hiddenFields.includes(k) && v)
+        .map(([k, v], i, arr) => {
+          const label = fieldLabels[k] || k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          const border = i < arr.length - 1 ? 'border-bottom:1px solid #EEEEEE;' : '';
+          return `<tr><td style="padding:10px 16px;${border}font-size:13px;color:#888888;width:36%;">${label}</td><td style="padding:10px 16px;${border}font-size:13px;color:#111111;">${v}</td></tr>`;
+        })
+        .join('');
+
+      // ── CTA block (only for Web Foundry, not client sites) ──
+      const ctaBlock = isClientSite ? '' : `
+              <!-- CTA -->
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="background-color:${brandColor};border-radius:4px;">
+                    <a href="${siteUrl}" style="display:inline-block;padding:14px 30px;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:700;color:${headerBg};text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">View Our Work &rarr;</a>
+                  </td>
+                </tr>
+              </table>`;
 
       const confirmationHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -126,11 +150,11 @@ export default {
 
           <!-- Header -->
           <tr>
-            <td style="background-color:#0A0A0A;padding:36px 44px;border-radius:8px 8px 0 0;">
+            <td style="background-color:${headerBg};padding:36px 44px;border-radius:8px 8px 0 0;">
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td>
-                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:20px;color:#D4A853;font-weight:700;letter-spacing:0.02em;">${displayName}</p>
+                    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:20px;color:${brandColor};font-weight:700;letter-spacing:0.02em;">${displayName}</p>
                   </td>
                   <td align="right" valign="middle">
                     <p style="margin:0;font-size:11px;color:rgba(240,235,224,0.35);letter-spacing:0.1em;text-transform:uppercase;">Confirmation</p>
@@ -140,9 +164,9 @@ export default {
             </td>
           </tr>
 
-          <!-- Gold rule -->
+          <!-- Accent rule -->
           <tr>
-            <td style="background-color:#D4A853;height:3px;font-size:0;line-height:0;mso-line-height-rule:exactly;">&nbsp;</td>
+            <td style="background-color:${brandColor};height:3px;font-size:0;line-height:0;mso-line-height-rule:exactly;">&nbsp;</td>
           </tr>
 
           <!-- Body -->
@@ -150,18 +174,11 @@ export default {
             <td style="background-color:#FFFFFF;padding:48px 44px 40px;">
 
               <p style="margin:0 0 10px;font-size:12px;color:#AAAAAA;letter-spacing:0.12em;text-transform:uppercase;">Hi ${firstName},</p>
-              <h1 style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:30px;color:#0A0A0A;font-weight:700;line-height:1.2;letter-spacing:-0.01em;">We've got your<br/>message.</h1>
-              <p style="margin:0 0 16px;font-size:15px;color:#555555;line-height:1.75;">${businessName ? `Thanks for reaching out about <strong style="color:#111111;">${businessName}</strong>. We` : 'We'}'ll review your inquiry and be in touch within <strong style="color:#111111;">24 hours</strong>.</p>
-              <p style="margin:0 0 36px;font-size:15px;color:#555555;line-height:1.75;">In the meantime, take a look at what we've built for other Cincinnati small businesses.</p>
-
-              <!-- CTA -->
-              <table cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td style="background-color:#D4A853;border-radius:4px;">
-                    <a href="https://cincinnatiwebfoundry.com" style="display:inline-block;padding:14px 30px;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:700;color:#0A0A0A;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">View Our Work &rarr;</a>
-                  </td>
-                </tr>
-              </table>
+              <h1 style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:30px;color:${headerBg};font-weight:700;line-height:1.2;letter-spacing:-0.01em;">We've got your<br/>message.</h1>
+              <p style="margin:0 0 ${isClientSite ? '36px' : '16px'};font-size:15px;color:#555555;line-height:1.75;">We'll review your inquiry and be in touch within <strong style="color:#111111;">24 hours</strong>.</p>
+${isClientSite ? '' : `              <p style="margin:0 0 36px;font-size:15px;color:#555555;line-height:1.75;">In the meantime, take a look at what we've built for other Cincinnati small businesses.</p>
+`}
+${ctaBlock}
 
               <!-- Divider -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:40px 0 32px;">
@@ -171,13 +188,7 @@ export default {
               <!-- Submission summary -->
               <p style="margin:0 0 14px;font-size:11px;color:#AAAAAA;letter-spacing:0.12em;text-transform:uppercase;">Your Submission</p>
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #EEEEEE;border-radius:6px;overflow:hidden;">
-                <tr>
-                  <td style="padding:10px 16px;border-bottom:1px solid #EEEEEE;font-size:13px;color:#888888;width:36%;">Name</td>
-                  <td style="padding:10px 16px;border-bottom:1px solid #EEEEEE;font-size:13px;color:#111111;">${body.name || ''}</td>
-                </tr>
-                ${businessRow}
-                ${phoneRow}
-                ${websiteRow}
+                ${summaryRows}
               </table>
 
             </td>
