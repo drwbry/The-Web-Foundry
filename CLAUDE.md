@@ -103,6 +103,16 @@ Each showcase page defines its full palette as CSS custom properties in its `<st
 
 All forms POST to a **shared Cloudflare Worker** (`worker/index.js`) deployed at `web-foundry-form-relay.cincinnati-web-foundry.workers.dev`. The Worker handles email delivery via Resend (internal notification + branded confirmation to submitter).
 
+### Required form reliability rules (for every new client)
+
+- Include hidden routing fields on every form:
+  - `site_id` (client slug)
+  - `to_email` (explicit client destination inbox)
+- Submit as JSON (`Content-Type: application/json`) to the Worker, not multipart `FormData`.
+- Frontend must only show success UI when `response.ok === true`.
+- On failure, keep the form visible, show inline error, and refresh Turnstile token.
+- Verify Worker CORS includes every live origin (`https://domain`, `https://www.domain` when used).
+
 **Security layers:**
 - **Cloudflare Turnstile** — bot verification widget on every form, token verified server-side in Worker
 - **CORS lockdown** — Worker only accepts requests from domains listed in `ALLOWED_ORIGINS` env var
@@ -113,8 +123,21 @@ All forms POST to a **shared Cloudflare Worker** (`worker/index.js`) deployed at
 - `ALLOWED_ORIGINS` — comma-separated allowed domains (e.g. `https://cincinnatiwebfoundry.com,http://localhost:4321`)
 - `RESEND_API_KEY` — Resend email API key
 - `TO_EMAIL` — internal notification recipient
+- `ENFORCE_TURNSTILE` — optional strict mode (`true` to hard-fail invalid/missing Turnstile; default launch-safe mode is unset/false)
 
 **Deploy Worker:** `cd worker && npx wrangler deploy`
+
+### Post-deploy form smoke test (mandatory)
+
+1. Submit one real form on the live domain.
+2. Confirm internal notification reaches client inbox.
+3. Confirm submitter confirmation email arrives.
+4. If either fails, run:
+
+```bash
+cd worker
+npx wrangler tail --format pretty --sampling-rate 0.99
+```
 
 ## Keeping the Onboarding Skill Current
 
