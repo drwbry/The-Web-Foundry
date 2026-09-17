@@ -36,6 +36,7 @@ export default {
     // Done before Turnstile verification so per-site enforceTurnstile
     // can actually gate it below.
     let toEmail = env.TO_EMAIL;
+    let ccEmails = [];   // optional extra internal recipients, per-site
     let siteBusinessName = 'The Web Foundry';
     let brandColor = '#b45a3c';   // Web Foundry terracotta
     let headerBg = '#181c28';    // Web Foundry ink
@@ -50,6 +51,8 @@ export default {
         try {
           const config = JSON.parse(raw);
           if (config.toEmail) toEmail = config.toEmail;
+          if (Array.isArray(config.ccEmails)) ccEmails = config.ccEmails;
+          else if (typeof config.ccEmails === 'string' && config.ccEmails) ccEmails = [config.ccEmails];
           if (config.businessName) siteBusinessName = config.businessName;
           if (config.brandColor) brandColor = config.brandColor;
           if (config.headerBg) headerBg = config.headerBg;
@@ -101,6 +104,12 @@ export default {
     const internalHtml = `<table style="font-family:sans-serif;font-size:14px;color:#333">${lines.join('')}</table>`;
 
     // ── Send internal notification to site owner ───────────────
+    // ccEmails is optional; sites without it behave exactly as before.
+    const seen = new Set([String(toEmail).trim().toLowerCase()]);
+    const ccList = ccEmails
+      .filter(a => typeof a === 'string' && a.includes('@'))
+      .map(a => a.trim())
+      .filter(a => { const k = a.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -110,6 +119,7 @@ export default {
       body: JSON.stringify({
         from: 'Web Foundry Forms <noreply@cincinnatiwebfoundry.com>',
         to: [toEmail],
+        cc: ccList.length ? ccList : undefined,
         subject,
         html: internalHtml,
         reply_to: body.email || undefined,
