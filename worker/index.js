@@ -36,7 +36,7 @@ export default {
     // Done before Turnstile verification so per-site enforceTurnstile
     // can actually gate it below.
     let toEmail = env.TO_EMAIL;
-    let ccEmails = [];   // optional extra internal recipients, per-site
+    let notifyEmails = [];   // optional extra recipients, each emailed separately
     let siteBusinessName = 'The Web Foundry';
     let brandColor = '#b45a3c';   // Web Foundry terracotta
     let headerBg = '#181c28';    // Web Foundry ink
@@ -51,8 +51,8 @@ export default {
         try {
           const config = JSON.parse(raw);
           if (config.toEmail) toEmail = config.toEmail;
-          if (Array.isArray(config.ccEmails)) ccEmails = config.ccEmails;
-          else if (typeof config.ccEmails === 'string' && config.ccEmails) ccEmails = [config.ccEmails];
+          if (Array.isArray(config.notifyEmails)) notifyEmails = config.notifyEmails;
+          else if (typeof config.notifyEmails === 'string' && config.notifyEmails) notifyEmails = [config.notifyEmails];
           if (config.businessName) siteBusinessName = config.businessName;
           if (config.brandColor) brandColor = config.brandColor;
           if (config.headerBg) headerBg = config.headerBg;
@@ -104,13 +104,16 @@ export default {
     const internalHtml = `<table style="font-family:sans-serif;font-size:14px;color:#333">${lines.join('')}</table>`;
 
     // ── Send internal notification to site owner ───────────────
-    // ccEmails is optional; sites without it behave exactly as before.
-    const seen = new Set([String(toEmail).trim().toLowerCase()]);
-    const ccList = ccEmails
+    // notifyEmails is optional; sites without it send exactly one email, as before.
+    // Extra recipients each get their OWN separate email rather than a cc, so no
+    // party's reply-all can expose another party's address to the others.
+    const seenRecipients = new Set([String(toEmail).trim().toLowerCase()]);
+    const extraRecipients = notifyEmails
       .filter(a => typeof a === 'string' && a.includes('@'))
       .map(a => a.trim())
-      .filter(a => { const k = a.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
-    const res = await fetch('https://api.resend.com/emails', {
+      .filter(a => { const k = a.toLowerCase(); if (seenRecipients.has(k)) return false; seenRecipients.add(k); return true; });
+
+    const sendInternal = (recipient) => fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${env.RESEND_API_KEY}`,
@@ -118,18 +121,33 @@ export default {
       },
       body: JSON.stringify({
         from: 'Web Foundry Forms <noreply@cincinnatiwebfoundry.com>',
-        to: [toEmail],
-        cc: ccList.length ? ccList : undefined,
+        to: [recipient],
         subject,
         html: internalHtml,
         reply_to: body.email || undefined,
       }),
     });
 
+    const res = await sendInternal(toEmail);
+
     if (!res.ok) {
       const err = await res.text();
       console.error('Resend error:', err);
       return json({ success: false, message: 'Email delivery failed' }, 500, origin);
+    }
+
+    // Extra recipients are best-effort. The primary notification already landed,
+    // so a failure here is logged rather than returned as an error — a 500 would
+    // prompt the visitor to submit again and duplicate the lead.
+    if (extraRecipients.length) {
+      const extraResults = await Promise.allSettled(extraRecipients.map(sendInternal));
+      extraResults.forEach((r, i) => {
+        if (r.status !== 'fulfilled') {
+          console.error('Resend extra-recipient threw for', extraRecipients[i], r.reason);
+        } else if (!r.value.ok) {
+          console.error('Resend extra-recipient failed for', extraRecipients[i], r.value.status);
+        }
+      });
     }
 
     // ── Send confirmation email to submitter ───────────────────
