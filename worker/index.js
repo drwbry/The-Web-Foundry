@@ -124,7 +124,10 @@ export default {
         to: [recipient],
         subject,
         html: internalHtml,
-        reply_to: body.email || undefined,
+        // Deliberately no reply_to. An accidental reply to a notification goes
+        // to the noreply mailbox, never to the person who filled in the form.
+        // Their address is in the body table, so contacting them stays a
+        // deliberate act of composing a new message.
       }),
     });
 
