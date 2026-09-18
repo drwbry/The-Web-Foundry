@@ -101,6 +101,47 @@ a question to ask, not an assumption to act on.)
 
 **Deploy Worker:** `cd worker && npx wrangler deploy`
 
+### Recipient pattern and site inventory
+
+**Standing pattern for new sites:** `toEmail` is the Foundry gmail
+(`foundrysolutionsllc@gmail.com`). When the client is ready, add their address as `notifyEmails`
+rather than replacing `toEmail`, so the Foundry always retains a copy.
+
+**Know the asymmetry before applying this to an existing site.** `toEmail` is the *primary* send —
+its failure returns a 500 and the visitor retries. `notifyEmails` is *best-effort* — its failure is
+logged and swallowed. So the address in `notifyEmails` is the **fragile** one, and the Foundry gmail
+in `toEmail` is mechanically the reliable one. The word "failsafe" in client docs implies the
+reverse; it does not work that way.
+
+Consequences:
+- For a **new** site, start with `toEmail` = Foundry gmail and add the client later. Fine.
+- For an **existing** site whose `toEmail` is already the client's address, **add the Foundry gmail
+  as `notifyEmails`** instead of swapping the two. Swapping would demote a working client inbox into
+  the silently-droppable slot.
+- Either way, a client-address outage is **invisible** — no bounce surfaces, and the form keeps
+  reporting success. Spot-check client inboxes periodically.
+
+**Inventory as of 2026-09-18** (KV is the source of truth; this table goes stale):
+
+| `site_id` | `toEmail` | `notifyEmails` | Turnstile enforced |
+|---|---|---|---|
+| `itadata` | Foundry gmail | `sales@itadata.com` | **yes** (has `turnstileSecretKey`) |
+| `mabassets` | client gmail | — | **no** (no secret) |
+| `terrys-lawncare` | Foundry gmail | — | **no** (no secret) |
+| `demo-bakery`, `demo-plumber`, `demo-salon`, `web-foundry-hub` | no KV entry → `env.TO_EMAIL` | — | **no** |
+
+Open gaps from that audit:
+- **`mabassets` and `terrys-lawncare` have no bot protection.** The widget renders but no token is
+  ever verified, because neither entry has a `turnstileSecretKey` and `enforceTurnstile` is
+  false/absent. That is the *safe* state given no secret (see the Turnstile section above), but it
+  is not protection. Fixing it needs each widget's secret from the Cloudflare dashboard.
+- **`mabassets` has no Foundry copy** — its `toEmail` is the client's own gmail. Add the Foundry
+  gmail as `notifyEmails`; do not swap them, per the asymmetry above.
+- The four demo/hub `site_id`s have no KV entry, so they fall back to `env.TO_EMAIL` with default
+  Web Foundry branding. Intended, but note `TO_EMAIL` is a Worker secret and its value cannot be read
+  back from the API or dashboard — it can only be re-set. Confirm by submitting the hub's own form if
+  its destination is ever in doubt.
+
 ### Post-deploy form smoke test (mandatory)
 
 1. Submit one real form on the live domain.
