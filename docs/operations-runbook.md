@@ -103,50 +103,56 @@ a question to ask, not an assumption to act on.)
 
 ### Recipient pattern and site inventory
 
-**Standing pattern for new sites:** `toEmail` is the Foundry gmail
-(`foundrysolutionsllc@gmail.com`). When the client is ready, add their address as `notifyEmails`
-rather than replacing `toEmail`, so the Foundry always retains a copy.
+**The rule: the customer goes in `toEmail`. The Foundry gmail goes in `notifyEmails`.**
+The only exception is testing, where the Foundry may hold `toEmail` temporarily.
 
-**Know the asymmetry before applying this to an existing site.** `toEmail` is the *primary* send —
-its failure returns a 500 and the visitor retries. `notifyEmails` is *best-effort* — its failure is
-logged and swallowed. So the address in `notifyEmails` is the **fragile** one, and the Foundry gmail
-in `toEmail` is mechanically the reliable one. The word "failsafe" in client docs implies the
-reverse; it does not work that way.
+Rationale: it is the customer's responsibility to keep the address they gave working. `toEmail`
+failure returns a 500, so the visitor sees an error and the customer hears about it — that is what
+prompts them to fix it. The Foundry copy is archival; a gap there costs visibility, not business.
 
-Consequences:
-**The rule: whoever acts on the leads gets `toEmail`.** They need guaranteed delivery. The party
-keeping an archival copy can live in `notifyEmails`, because a gap there costs visibility, not
-business.
+**Every recipient is attempted before the response is decided** (changed 2026-09-18). The primary
+send used to short-circuit with a 500, which skipped the extra recipients entirely — so the copy
+that exists to be a failsafe was the one thing not sent when it was needed. That is fixed: a failed
+customer inbox no longer loses the lead, because the Foundry copy still goes out.
 
-- For a **new** site, `toEmail` = Foundry gmail, and move the client into `toEmail` when they are
-  ready — adding them as `notifyEmails` is the interim step, not the end state.
-- For an **existing** site whose `toEmail` is already the client's address, **add the Foundry gmail
-  as `notifyEmails`** rather than swapping the two. Swapping demotes a working client inbox into the
-  silently-droppable slot. (`mabassets` was handled this way on 2026-09-18.)
-- Note this makes `itadata` the exception: its `toEmail` is the Foundry gmail and the acting party
-  (`sales@itadata.com`) sits in the fragile slot, because that address was unverified when it was
-  set up. It has since been confirmed working, so it is a candidate to flip.
-- Either way, a client-address outage is **invisible** — no bounce surfaces, and the form keeps
-  reporting success. Spot-check client inboxes periodically.
+**Failure alerts.** Any failed recipient triggers an alert to `ALERT_EMAIL` (set in `wrangler.toml`,
+falling back to the `TO_EMAIL` secret) carrying the full submission, so the lead survives even when
+its intended recipient never got it. Nothing fails silently any more.
+
+Know the limits of that alert:
+- It is **not independent durability.** Same Resend account, key and sender as the send that just
+  failed. A provider outage, bad key, blown quota or killed Worker loses the alert too. It covers one
+  bad mailbox, not a platform failure. There is no durable queue — the submission is not stored.
+- **If the alert address is itself what failed, the alert cannot land.** That gap is covered only by
+  noticing the absence of mail.
+- **Resend accepting a message is not delivery.** A later bounce, full mailbox or spam rejection
+  cannot trigger a 500 or an alert. Verify real delivery in the Resend dashboard, not via the API
+  result or `wrangler tail`.
+- **Retries duplicate.** Every retry re-sends to all healthy recipients and re-alerts, and a thrown
+  fetch does not prove Resend rejected the message, so a retry can duplicate mail that did go out.
+  There is no idempotency key. Duplicates are the accepted cost of not dropping leads.
 
 **Inventory as of 2026-09-18** (KV is the source of truth; this table goes stale):
 
 | `site_id` | `toEmail` | `notifyEmails` | Turnstile enforced |
 |---|---|---|---|
-| `itadata` | Foundry gmail | `sales@itadata.com` | **yes** (has `turnstileSecretKey`) |
-| `mabassets` | client gmail | Foundry gmail | **no** (no secret) |
-| `terrys-lawncare` | Foundry gmail | — | **no** (no secret) |
-| `demo-bakery`, `demo-plumber`, `demo-salon`, `web-foundry-hub` | no KV entry → `env.TO_EMAIL` | — | **no** |
+| `itadata` | `sales@itadata.com` | Foundry gmail | **yes** |
+| `mabassets` | client gmail | Foundry gmail | **yes** |
+| `terrys-lawncare` | Foundry gmail | — | no (no secret; demo site, not in real use) |
+| `demo-bakery`, `demo-plumber`, `demo-salon`, `web-foundry-hub` | no KV entry → `env.TO_EMAIL` | — | no |
 
-Open gaps from that audit:
-- **`mabassets` and `terrys-lawncare` have no bot protection.** The widget renders but no token is
-  ever verified, because neither entry has a `turnstileSecretKey` and `enforceTurnstile` is
-  false/absent. That is the *safe* state given no secret (see the Turnstile section above), but it
-  is not protection. Fixing it needs each widget's secret from the Cloudflare dashboard.
-- The four demo/hub `site_id`s have no KV entry, so they fall back to `env.TO_EMAIL` with default
-  Web Foundry branding. Intended, but note `TO_EMAIL` is a Worker secret and its value cannot be read
-  back from the API or dashboard — it can only be re-set. Confirm by submitting the hub's own form if
-  its destination is ever in doubt.
+Open items:
+- `terrys-lawncare` verifies no Turnstile token, so it has no bot protection. Acceptable only because
+  the site is not in real use. Set it with `worker/set-turnstile-secret.sh terrys-lawncare` if that
+  changes.
+- The four demo/hub `site_id`s have no KV entry and fall back to `env.TO_EMAIL`. Intended. Note that
+  secret's value cannot be read back from the API or dashboard, only re-set.
+
+**Setting a Turnstile secret:** use `worker/set-turnstile-secret.sh <site_id>`. It prompts without
+echoing, validates the key against Cloudflare's siteverify before writing, and refuses both an
+invalid key and one of Cloudflare's always-passes test keys. Never paste a secret into a chat,
+a command line, or shell history, and never read a KV entry in full where the output is captured —
+that is how a live secret ended up in a transcript on 2026-09-18.
 
 ### Post-deploy form smoke test (mandatory)
 
