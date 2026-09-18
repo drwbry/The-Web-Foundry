@@ -138,13 +138,13 @@ Know the limits of that alert:
 |---|---|---|---|
 | `itadata` | `sales@itadata.com` | Foundry gmail | **yes** |
 | `mabassets` | client gmail | Foundry gmail | **yes** |
-| `terrys-lawncare` | Foundry gmail | — | no (no secret; demo site, not in real use) |
+| `terrys-lawncare` | Foundry gmail | — | **yes** |
 | `demo-bakery`, `demo-plumber`, `demo-salon`, `web-foundry-hub` | no KV entry → `env.TO_EMAIL` | — | no |
 
+`terrys-lawncare` keeps the Foundry gmail in `toEmail` with no client address — the testing
+exception to the rule above, since the client does not use the site.
+
 Open items:
-- `terrys-lawncare` verifies no Turnstile token, so it has no bot protection. Acceptable only because
-  the site is not in real use. Set it with `worker/set-turnstile-secret.sh terrys-lawncare` if that
-  changes.
 - The four demo/hub `site_id`s have no KV entry and fall back to `env.TO_EMAIL`. Intended. Note that
   secret's value cannot be read back from the API or dashboard, only re-set.
 
