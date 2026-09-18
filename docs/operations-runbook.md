@@ -45,6 +45,60 @@ this field, flipping `enforceTurnstile:true` for them will fail every submission
 for any client. Before flipping the flag for **any** client, confirm `turnstileSecretKey` is
 set in their KV entry first.
 
+**Extra internal recipients (`notifyEmails` in KV, added 2026-09-17):** Optional per-site field for
+sending the internal notification to more than one inbox — e.g. a client's own `sales@` group
+alongside the Foundry's failsafe address. Accepts a string or an array of strings:
+
+```json
+{ "toEmail": "failsafe@example.com", "notifyEmails": "sales@client.com" }
+```
+
+Each extra recipient gets its **own separate email**, never a `cc`. That is the whole point of the
+field: with a `cc`, one recipient hitting reply-all exposes every other recipient's address to the
+lead and to each other. With separate sends, no recipient is ever on another's copy. `reply_to` is
+still the lead on every copy, so replying reaches the prospect either way.
+
+Notes:
+- **Optional and inert when absent.** No `env` fallback — a site without the field sends exactly one
+  internal email, unchanged. There is no global setting that can leak a recipient across sites.
+- **`toEmail` is unaffected.** It remains the primary recipient, and its send is the one whose
+  failure returns a 500 to the visitor.
+- **Extra recipients are best-effort.** A failed send to a `notifyEmails` address is logged and
+  swallowed, because the primary notification already captured the lead and a 500 would prompt the
+  visitor to submit again and duplicate it. **So a broken extra recipient is silent** — it will not
+  look like a form outage. Spot-check those inboxes periodically.
+- Duplicates of `toEmail` are de-duplicated case-insensitively, so listing it twice sends once.
+
+**Editing a KV entry safely:** `wrangler kv key put` **replaces the entire value**. Entries carry
+`turnstileSecretKey`, so a put built by hand can silently drop it and break Turnstile on a live
+form. Always read → modify → put the full object → read back and confirm:
+
+```bash
+cd worker && set -a && . ./.env && set +a
+NS=<WEB_FOUNDRY_SITES namespace id>
+
+npx wrangler kv key get <site_id> --namespace-id $NS --remote \
+  | python3 -c 'import json,sys; d=json.load(sys.stdin); d["notifyEmails"]="sales@client.com"; print(json.dumps(d))' \
+  > /tmp/site-kv.json
+
+npx wrangler kv key put <site_id> --path /tmp/site-kv.json --namespace-id $NS --remote
+npx wrangler kv key get <site_id> --namespace-id $NS --remote   # confirm turnstileSecretKey survived
+```
+
+**Sending identity (for client-side allowlisting):** the Worker sends from
+`noreply@cincinnatiwebfoundry.com` via Resend. DMARC passes — the return path is
+`send.cincinnatiwebfoundry.com` (`include:amazonses.com`), relaxed-aligned to the From org domain,
+and DKIM at `resend._domainkey.cincinnatiwebfoundry.com` is strictly aligned. So mail landing in
+quarantine is a spam/bulk/first-contact heuristic, not an auth failure, and the fix is a **Tenant
+Allow/Block List sender entry** — not a transport rule and not an SPF change.
+
+**When the extra recipient is a Microsoft 365 group**, expect a second, separate gate: Exchange
+distribution lists ship with "require that all senders are authenticated" **on**, and M365 Groups
+ship with external email **off**. Either one **rejects with an NDR** rather than quarantining, and
+no allowlist fixes it. Ask the client's admin which object type the address is — a shared mailbox
+has no such restriction. (ITA's `sales@` turned out to already accept external senders, so this is
+a question to ask, not an assumption to act on.)
+
 **Deploy Worker:** `cd worker && npx wrangler deploy`
 
 ### Post-deploy form smoke test (mandatory)
@@ -52,7 +106,14 @@ set in their KV entry first.
 1. Submit one real form on the live domain.
 2. Confirm internal notification reaches client inbox.
 3. Confirm submitter confirmation email arrives.
-4. If either fails, run:
+4. If the site uses `notifyEmails`, confirm **each** extra recipient received its own copy, and
+   check the Resend dashboard shows `delivered` for those messages — not merely `sent`/`accepted`.
+   **`wrangler tail` cannot prove delivery here:** the Worker only logs when the Resend *API call*
+   fails, and Resend returns 202 on queue, so a downstream bounce produces a clean tail and a
+   successful-looking submission.
+5. After deploying a Worker change, also submit one form on a site that did **not** change, to prove
+   the untouched path still works.
+6. If either fails, run:
 
 ```bash
 cd worker
