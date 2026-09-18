@@ -138,7 +138,7 @@ Know the limits of that alert:
 |---|---|---|---|
 | `itadata` | `sales@itadata.com` | Foundry gmail | **yes** |
 | `mabassets` | client gmail | Foundry gmail | **yes** |
-| `terrys-lawncare` | Foundry gmail | — | **no** — secret is from the wrong widget, see below |
+| `terrys-lawncare` | Foundry gmail | — | **yes** — verified by live submission 2026-09-18 |
 | `demo-bakery`, `demo-plumber`, `demo-salon`, `web-foundry-hub` | no KV entry → `env.TO_EMAIL` | — | no |
 
 `terrys-lawncare` keeps the Foundry gmail in `toEmail` with no client address — the testing
@@ -167,9 +167,14 @@ Two traps that cost a long session on `terrys-lawncare` (2026-09-18):
 
 The only proof is a real submission on the live site.
 
-**Open:** `terrys-lawncare` has enforcement **off** with a wrong-widget secret still stored. Get the
-secret from the widget whose site key the live page renders, then re-run the script, which re-enables
-enforcement.
+**Resolved for `terrys-lawncare` (2026-09-18):** the stored secret was correct all along. The *pages*
+hardcoded a site key for a widget that no longer existed in the account, so no secret could ever have
+paired with it. Fixed by updating the site key in the site's source, not by changing the secret.
+Verified by a live submission: one Worker invocation, status success, zero errors.
+
+**Still unverified:** `itadata` and `mabassets` have enforcement on but have had no confirmed live
+submission since. If either page carries an orphaned site key the same way, it is rejecting real
+leads with no visible signal. Check each live page's `data-sitekey` against the account's widget list.
 
 **Setting a Turnstile secret:** use `worker/set-turnstile-secret.sh <site_id>`. It prompts without
 echoing, validates the key against Cloudflare's siteverify before writing, and refuses both an
