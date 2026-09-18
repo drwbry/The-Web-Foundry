@@ -136,8 +136,8 @@ Know the limits of that alert:
 
 | `site_id` | `toEmail` | `notifyEmails` | Turnstile enforced |
 |---|---|---|---|
-| `itadata` | `sales@itadata.com` | Foundry gmail | **yes** |
-| `mabassets` | client gmail | Foundry gmail | **yes** |
+| `itadata` | `sales@itadata.com` | Foundry gmail | **yes** — verified live 2026-09-18 |
+| `mabassets` | client gmail | Foundry gmail | **yes** — verified live 2026-09-18 |
 | `terrys-lawncare` | Foundry gmail | — | **yes** — verified by live submission 2026-09-18 |
 | `demo-bakery`, `demo-plumber`, `demo-salon`, `web-foundry-hub` | no KV entry → `env.TO_EMAIL` | — | no |
 
@@ -191,9 +191,17 @@ hardcoded a site key for a widget that no longer existed in the account, so no s
 paired with it. Fixed by updating the site key in the site's source, not by changing the secret.
 Verified by a live submission: one Worker invocation, status success, zero errors.
 
-**Still unverified:** `itadata` and `mabassets` have enforcement on but have had no confirmed live
-submission since. If either page carries an orphaned site key the same way, it is rejecting real
-leads with no visible signal. Check each live page's `data-sitekey` against the account's widget list.
+**All three client sites verified live on 2026-09-18** — enforcement on, current secrets, real
+submissions delivered, zero Worker errors.
+
+Note the two failures that day looked identical (`invalid-input-secret`) but had opposite fixes:
+- `terrys-lawncare` — the **page** was wrong. It hardcoded a site key for a deleted widget, so no
+  secret could ever pair with it. Fixed in the site's source.
+- `itadata` — the **KV entry** was wrong. The secret had been rotated in the dashboard without
+  updating KV. Fixed with the script.
+
+So do not assume which half is at fault. Compare the live page's `data-sitekey` against the account's
+widget list first; that single check distinguishes them.
 
 **Setting a Turnstile secret:** use `worker/set-turnstile-secret.sh <site_id>`. It prompts without
 echoing, validates the key against Cloudflare's siteverify before writing, and refuses both an
