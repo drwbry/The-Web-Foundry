@@ -120,3 +120,12 @@ This codebase is designed as a **base template** for spinning up client websites
 **Coolify tips:**
 - Queue builds (don't run concurrent) to avoid CPU spikes from 3–4 simultaneous `npm run build`
 - Each static site uses ~0 RAM at runtime (nginx serves files) — VPS headroom stays high
+- For pull-request previews, follow Phase 6 Step 5a in the canonical onboarding skill. Existing
+  Public GitHub applications should use the reversible manual repository-webhook route rather than
+  accepting Coolify's permanent **Change Git Source** conversion warning.
+- Check for an existing GitHub Actions production deploy before selecting manual-webhook events.
+  Use **Pull requests only** when Actions already deploys pushes to `main`; selecting Pushes in both
+  places can produce duplicate production deployments.
+- Keep preview variables separate, leave public/fork PR deployments disabled, use DNS-only
+  `*.preview.[domain]`, and verify the full create/build/HTTPS/close-cleanup lifecycle on the first
+  controlled PR.

@@ -5,6 +5,7 @@
 - Resource and repository
 - Build configuration and environment
 - Domains and auto-deploy
+- Pull-request previews
 - Security headers
 - Webhook URL
 - First deployment
@@ -62,6 +63,68 @@ Turn on automatic deployment on push to `main`.
 > `https://coolify.thewebfoundry.org/webhooks/source/github/events`. **After onboarding any new
 > client, verify auto-deploy actually fires** (push a trivial commit, check the resource's
 > deployment history for `is_webhook: true` within ~2 minutes) rather than trusting the toggle.
+
+### Step 5a: Configure pull-request previews when required [MANUAL]
+
+Do this only when the approved workflow calls for a preview per pull request. First record the
+exact application UUID, production domain, repository, branch, current Git source type, and current
+production deployment trigger. Keep a builder/automation GitHub App separate from Coolify's source
+integration; never copy credentials between them.
+
+#### Choose the event route
+
+- **Application already connected through Coolify's GitHub App:** keep that source. Confirm its
+  GitHub installation includes the exact repository, Pull requests is read/write, and the Pull
+  request event is subscribed. Do not narrow or replace a shared App while other production
+  resources use it.
+- **Application uses Public GitHub:** prefer a manual GitHub repository webhook. If **Change Git
+  Source** warns that conversion is permanent/cannot be undone, cancel. Do not convert a healthy
+  production application merely to enable previews.
+- Before selecting webhook events, inspect the repository for another production push trigger
+  such as `.github/workflows/deploy.yml`. If one already deploys `main`, subscribe the new manual
+  webhook to **Pull requests only**. Select Pushes too only when this manual webhook is deliberately
+  the sole production push trigger; otherwise one commit can start duplicate production builds.
+
+#### Configure preview isolation
+
+1. In **Configuration → Advanced**, enable **Preview Deployments** and leave **Allow Public PR
+   Deployments** disabled.
+2. In **Configuration → Preview Deployments**, set the template to
+   `{{pr_id}}.preview.[client-domain]` and save it.
+3. With explicit DNS approval, create Cloudflare DNS-only A record
+   `*.preview.[client-domain] -> 148.113.196.32`. Do not replace the apex or `www`. Verify a random
+   child resolves to the VPS before opening a PR.
+4. In **Environment Variables → Preview Deployment Environment Variables**, add only values the
+   preview build actually needs. Standard Astro/Sanity sites need `SANITY_PROJECT_ID` and
+   `SANITY_DATASET` marked **Available at Buildtime**. Public identifiers may also be available at
+   runtime; do not copy production secrets merely because a production variable exists.
+
+#### Add a manual GitHub webhook for a Public GitHub application
+
+1. In Coolify **Configuration → Webhooks**, generate/store a strong GitHub Webhook Secret and
+   save. Never put it in chat, screenshots, repository files, or documentation.
+2. Copy the GitHub URL under **Manual Git Webhooks**.
+3. In the exact GitHub repository, open **Settings → Webhooks → Add webhook** and set:
+   - Payload URL: the Coolify manual GitHub URL
+   - Content type: `application/json`
+   - Secret: the same provider-stored secret
+   - SSL verification: enabled
+   - Events: **Pull requests**; add **Pushes** only after the trigger check above proves no other
+     production push path exists
+   - Active: enabled
+4. Confirm GitHub's initial `ping` delivery receives HTTP 2xx. A manual webhook can create previews
+   but does not add Coolify's automated status/domain comment to the PR.
+
+#### First-preview evidence and rollback
+
+For the first controlled PR, record the webhook delivery, isolated build/deployment status,
+generated HTTPS hostname, production application status, and cleanup after the PR closes. A failed
+preview build must not replace production.
+
+Rollback the manual route by deleting only that repository webhook and clearing the Coolify GitHub
+Webhook Secret. Delete only the `*.preview` DNS record if the preview feature is being retired.
+Do not delete duplicate/incomplete Coolify source entries or alter a shared source App during this
+rollback without a separate resource-usage audit.
 
 ### Step 6: Add baseline security headers in Container Labels
 
