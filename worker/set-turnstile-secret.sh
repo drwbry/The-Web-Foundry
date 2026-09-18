@@ -3,10 +3,20 @@
 #
 #   ./set-turnstile-secret.sh <site_id>
 #
-# Prompts for the secret without echoing it. The secret is validated against
-# Cloudflare's siteverify endpoint BEFORE anything is written, so a typo cannot
-# leave the site with enforceTurnstile:true and a bad key -- which would fail
-# every submission with invalid-input-secret.
+# Prompts for the secret without echoing it, and sanity-checks it against
+# Cloudflare's siteverify before writing.
+#
+# IMPORTANT -- what that check can and cannot prove. Verifying with a dummy token
+# only shows the secret is a well-formed, recognised secret. It CANNOT show the
+# secret belongs to the widget on the site, because no real token is involved.
+# A secret copied from the wrong widget passes this check and then fails every
+# real submission with invalid-input-secret.
+#
+# So "invalid-input-secret" at submit time does NOT mean the key is malformed. It
+# means the secret does not pair with the SITE KEY that issued the token. Check
+# the data-sitekey on the live page and copy the secret from THAT widget:
+#   curl -s https://<site> | grep -o 'data-sitekey="[^"]*"'
+# (This cost a long debugging session on terrys-lawncare on 2026-09-18.)
 #
 # Nothing prints the secret. Safe to run with someone watching.
 
@@ -49,7 +59,10 @@ case "$VERDICT" in
     echo "Get it from: Cloudflare Dashboard -> Turnstile -> [widget] -> Edit -> Secret Key"
     exit 1 ;;
   GOOD)
-    echo "Secret is valid (siteverify rejected the dummy token, not the key)." ;;
+    echo "Secret is recognised by Cloudflare."
+    echo "NOTE: this does NOT prove it belongs to the widget on the site. If real"
+    echo "submissions then fail with invalid-input-secret, the secret is from the"
+    echo "wrong widget -- compare the live page's data-sitekey and re-copy." ;;
   TESTKEY)
     echo "WARNING: that is one of Cloudflare's always-passes TEST keys, not a real"
     echo "widget secret. It would accept ANY token and provide no bot protection."
@@ -83,5 +96,6 @@ for k in sorted(d):
     print(f"  {k:20} {'"'"'<present, masked>'"'"' if k == "turnstileSecretKey" else d[k]}")
 '
 echo
-echo "Now submit a real form on the live site to confirm it still goes through."
-echo "If it fails with invalid-input-secret, re-run with the correct key."
+echo "Now submit a real form on the live site. That is the ONLY check that proves"
+echo "the secret pairs with the widget -- siteverify above cannot tell you that."
+echo "If it fails with invalid-input-secret, the key is from the wrong widget."

@@ -138,7 +138,7 @@ Know the limits of that alert:
 |---|---|---|---|
 | `itadata` | `sales@itadata.com` | Foundry gmail | **yes** |
 | `mabassets` | client gmail | Foundry gmail | **yes** |
-| `terrys-lawncare` | Foundry gmail | — | **yes** |
+| `terrys-lawncare` | Foundry gmail | — | **no** — secret is from the wrong widget, see below |
 | `demo-bakery`, `demo-plumber`, `demo-salon`, `web-foundry-hub` | no KV entry → `env.TO_EMAIL` | — | no |
 
 `terrys-lawncare` keeps the Foundry gmail in `toEmail` with no client address — the testing
@@ -147,6 +147,29 @@ exception to the rule above, since the client does not use the site.
 Open items:
 - The four demo/hub `site_id`s have no KV entry and fall back to `env.TO_EMAIL`. Intended. Note that
   secret's value cannot be read back from the API or dashboard, only re-set.
+
+**Diagnosing `invalid-input-secret`.** It does **not** mean the key is malformed. It means the
+secret does not pair with the **site key that issued the token** — i.e. it was copied from a
+different widget. Confirm by comparing the live page's rendered key with the widget the secret came
+from:
+
+```bash
+curl -s https://<site> | grep -o 'data-sitekey="[^"]*"'
+```
+
+Two traps that cost a long session on `terrys-lawncare` (2026-09-18):
+- Validating a secret against siteverify with a **dummy token** proves only that the secret is
+  recognised. It cannot prove the pairing, because no real token is involved. A wrong-widget secret
+  passes that check and still fails every real submission.
+- Cloudflare's always-passes **test** secret only works with test **site** keys. Swapping it in to
+  "prove" the Worker reads KV does not work — against a real widget's token it also returns
+  `invalid-input-secret`, which looks identical to the original fault.
+
+The only proof is a real submission on the live site.
+
+**Open:** `terrys-lawncare` has enforcement **off** with a wrong-widget secret still stored. Get the
+secret from the widget whose site key the live page renders, then re-run the script, which re-enables
+enforcement.
 
 **Setting a Turnstile secret:** use `worker/set-turnstile-secret.sh <site_id>`. It prompts without
 echoing, validates the key against Cloudflare's siteverify before writing, and refuses both an
