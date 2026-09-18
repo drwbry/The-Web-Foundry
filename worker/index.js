@@ -124,10 +124,10 @@ export default {
         to: [recipient],
         subject,
         html: internalHtml,
-        // Deliberately no reply_to. An accidental reply to a notification goes
-        // to the noreply mailbox, never to the person who filled in the form.
-        // Their address is in the body table, so contacting them stays a
-        // deliberate act of composing a new message.
+        // Reply goes to the lead, which is the point of the notification.
+        // Reply-all is safe because each recipient gets its own send above:
+        // no other recipient is ever on the copy to be swept into the reply.
+        reply_to: body.email || undefined,
       }),
     });
 
