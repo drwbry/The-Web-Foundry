@@ -131,26 +131,76 @@ export default {
       }),
     });
 
-    const res = await sendInternal(toEmail);
+    // Every recipient is attempted BEFORE the response is decided. The primary
+    // send used to short-circuit with a 500 on failure, which meant the extra
+    // recipients were never tried — so the copy that exists precisely to be a
+    // failsafe was skipped in the one case it was needed. Attempting all of them
+    // first is what makes that copy an actual failsafe.
+    const allRecipients = [toEmail, ...extraRecipients];
+    const results = await Promise.allSettled(allRecipients.map(sendInternal));
 
-    if (!res.ok) {
-      const err = await res.text();
-      console.error('Resend error:', err);
-      return json({ success: false, message: 'Email delivery failed' }, 500, origin);
+    const failures = [];
+    for (let i = 0; i < results.length; i++) {
+      const r = results[i];
+      const who = allRecipients[i];
+      if (r.status !== 'fulfilled') {
+        console.error('Resend threw for', who, r.reason);
+        failures.push({ recipient: who, detail: String(r.reason) });
+      } else if (!r.value.ok) {
+        const detail = await r.value.text().catch(() => `HTTP ${r.value.status}`);
+        console.error('Resend failed for', who, r.value.status, detail);
+        failures.push({ recipient: who, detail });
+      }
     }
 
-    // Extra recipients are best-effort. The primary notification already landed,
-    // so a failure here is logged rather than returned as an error — a 500 would
-    // prompt the visitor to submit again and duplicate the lead.
-    if (extraRecipients.length) {
-      const extraResults = await Promise.allSettled(extraRecipients.map(sendInternal));
-      extraResults.forEach((r, i) => {
-        if (r.status !== 'fulfilled') {
-          console.error('Resend extra-recipient threw for', extraRecipients[i], r.reason);
-        } else if (!r.value.ok) {
-          console.error('Resend extra-recipient failed for', extraRecipients[i], r.value.status);
+    // Any failed recipient raises an alert to the Foundry, carrying the full lead
+    // so it survives even when its intended recipient never got it. This matters
+    // most for the PRIMARY recipient: under the standing routing rule that address
+    // is the client's own inbox, and its failure is the one that costs business.
+    // If the alert address is itself what failed, the alert cannot land — that gap
+    // is unavoidable and is covered by simply noticing the absence of mail.
+    if (failures.length) {
+      const alertTo = env.ALERT_EMAIL || env.TO_EMAIL;
+      if (alertTo) {
+        try {
+          const failedList = failures
+            .map(f => `<li><strong>${escapeHtml(f.recipient)}</strong> — ${escapeHtml(f.detail)}</li>`)
+            .join('');
+          const alertRes = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              from: 'Web Foundry Forms <noreply@cincinnatiwebfoundry.com>',
+              to: [alertTo],
+              subject: `[form relay] delivery failed for ${siteId || 'unknown site'}`,
+              html: `<p style="font-family:sans-serif;font-size:14px">`
+                  + `A form submission on <strong>${escapeHtml(siteId || 'unknown site')}</strong> `
+                  + `could not be delivered to:</p><ul style="font-family:sans-serif;font-size:14px">`
+                  + `${failedList}</ul>`
+                  + `<p style="font-family:sans-serif;font-size:14px">The submission itself is below, `
+                  + `so the lead is not lost.</p>${internalHtml}`,
+              reply_to: body.email || undefined,
+            }),
+          });
+          // Never alert about a failed alert — that is how you build a loop.
+          if (!alertRes.ok) console.error('Alert send failed:', alertRes.status);
+        } catch (e) {
+          console.error('Alert send threw:', e);
         }
-      });
+      }
+    }
+
+    // The primary recipient still governs the response. A failure there is
+    // deliberately visible: the visitor sees an error and retries, which is what
+    // prompts a client to fix their own broken inbox. Note the consequence — each
+    // retry re-sends to the healthy extra recipients too, so a broken primary
+    // produces several copies to the Foundry rather than one. That is expected.
+    const primary = results[0];
+    if (primary.status !== 'fulfilled' || !primary.value.ok) {
+      return json({ success: false, message: 'Email delivery failed' }, 500, origin);
     }
 
     // ── Send confirmation email to submitter ───────────────────
