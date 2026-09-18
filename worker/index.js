@@ -107,6 +107,16 @@ export default {
     // notifyEmails is optional; sites without it send exactly one email, as before.
     // Extra recipients each get their OWN separate email rather than a cc, so no
     // party's reply-all can expose another party's address to the others.
+    // A syntactically invalid address in reply_to makes Resend reject the whole
+    // message, which would fail EVERY recipient at once. Validate it once here and
+    // simply omit the header when it does not hold up, so one junk form field can
+    // never take down delivery of the lead it belongs to.
+    const submitterEmail = typeof body.email === 'string'
+      && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email.trim())
+      && body.email.trim().length <= 254
+        ? body.email.trim()
+        : undefined;
+
     const seenRecipients = new Set([String(toEmail).trim().toLowerCase()]);
     const extraRecipients = notifyEmails
       .filter(a => typeof a === 'string' && a.includes('@'))
@@ -127,7 +137,7 @@ export default {
         // Reply goes to the lead, which is the point of the notification.
         // Reply-all is safe because each recipient gets its own send above:
         // no other recipient is ever on the copy to be swept into the reply.
-        reply_to: body.email || undefined,
+        reply_to: submitterEmail,
       }),
     });
 
@@ -153,15 +163,21 @@ export default {
       }
     }
 
-    // Any failed recipient raises an alert to the Foundry, carrying the full lead
-    // so it survives even when its intended recipient never got it. This matters
-    // most for the PRIMARY recipient: under the standing routing rule that address
-    // is the client's own inbox, and its failure is the one that costs business.
-    // If the alert address is itself what failed, the alert cannot land — that gap
-    // is unavoidable and is covered by simply noticing the absence of mail.
+    // Any failed recipient raises an alert to the Foundry carrying the full lead.
+    // This matters most for the PRIMARY recipient: under the standing routing rule
+    // that address is the client's own inbox, and its failure costs business.
+    //
+    // Be honest about how much this buys. The alert uses the same Resend account,
+    // key and sender as the send that just failed, so it is NOT independent
+    // durability: a provider outage, a bad key, a blown quota or a killed Worker
+    // loses the alert too. Nothing here is a durable queue. It covers the common
+    // case of one bad mailbox, not a platform failure. If the alert address is
+    // itself what failed, the alert cannot land either — that gap is covered only
+    // by noticing the absence of mail.
     if (failures.length) {
       const alertTo = env.ALERT_EMAIL || env.TO_EMAIL;
-      if (alertTo) {
+      const sendAlert = async () => {
+        if (!alertTo) return;
         try {
           const failedList = failures
             .map(f => `<li><strong>${escapeHtml(f.recipient)}</strong> — ${escapeHtml(f.detail)}</li>`)
@@ -182,7 +198,9 @@ export default {
                   + `${failedList}</ul>`
                   + `<p style="font-family:sans-serif;font-size:14px">The submission itself is below, `
                   + `so the lead is not lost.</p>${internalHtml}`,
-              reply_to: body.email || undefined,
+              // Deliberately NO reply_to. The alert must not inherit a field that
+              // may be what made the original sends fail, or the safety net breaks
+              // in exactly the case it exists for.
             }),
           });
           // Never alert about a failed alert — that is how you build a loop.
@@ -190,21 +208,31 @@ export default {
         } catch (e) {
           console.error('Alert send threw:', e);
         }
-      }
+      };
+      // Fire and forget. Awaiting it would let a slow alert delay the response and
+      // the submitter confirmation for a submission whose primary send succeeded.
+      ctx.waitUntil(sendAlert());
     }
 
     // The primary recipient still governs the response. A failure there is
     // deliberately visible: the visitor sees an error and retries, which is what
-    // prompts a client to fix their own broken inbox. Note the consequence — each
-    // retry re-sends to the healthy extra recipients too, so a broken primary
-    // produces several copies to the Foundry rather than one. That is expected.
+    // prompts a client to fix their own broken inbox.
+    //
+    // Consequence: every retry re-sends to all recipients, so a broken primary
+    // produces duplicate copies to the healthy ones AND duplicate alerts. Worse, a
+    // thrown fetch does not prove Resend rejected the mail — the connection may
+    // have dropped after acceptance — so a retry can duplicate a message that did
+    // in fact go out. There is no idempotency key. Duplicates are the accepted
+    // cost of not silently dropping leads.
     const primary = results[0];
     if (primary.status !== 'fulfilled' || !primary.value.ok) {
       return json({ success: false, message: 'Email delivery failed' }, 500, origin);
     }
 
     // ── Send confirmation email to submitter ───────────────────
-    if (body.email) {
+    // Same validated address: sending a confirmation to a malformed value is a
+    // guaranteed-failing request, so skip it rather than burn the call.
+    if (submitterEmail) {
       const firstName = (body.name || '').split(' ')[0] || 'there';
       const displayName = siteBusinessName;
       const safeFirstName = escapeHtml(firstName);
@@ -326,7 +354,7 @@ ${ctaBlock}
         },
         body: JSON.stringify({
           from: 'The Web Foundry <noreply@cincinnatiwebfoundry.com>',
-          to: [body.email],
+          to: [submitterEmail],
           subject: `We received your message — ${displayName}`,
           html: confirmationHtml,
         }),
