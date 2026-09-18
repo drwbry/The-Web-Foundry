@@ -148,6 +148,25 @@ Open items:
 - The four demo/hub `site_id`s have no KV entry and fall back to `env.TO_EMAIL`. Intended. Note that
   secret's value cannot be read back from the API or dashboard, only re-set.
 
+**Rotating a Turnstile secret is a TWO-step operation. Never do the first without the second.**
+Rotating in the Cloudflare dashboard invalidates the old secret *immediately*. The site's KV entry
+still holds the old value, so every submission starts failing with `invalid-input-secret` the moment
+you click Rotate. The form looks broken for a reason that has nothing to do with the form.
+
+Do it in one motion:
+
+1. Cloudflare Dashboard → Turnstile → [widget] → Edit → **Rotate Secret Key**, and copy the new value.
+2. Immediately `worker/set-turnstile-secret.sh <site_id>` with that value.
+3. Submit one real form to confirm.
+
+There is a grace period — Cloudflare keeps the old secret valid briefly while you update — but it is
+short and must not be relied on. If you cannot complete step 2 right away, do not start step 1.
+
+(This took ITA's live contact form down on 2026-09-18: the key was rotated, KV was not updated, and
+every prospect hit a generic error for the rest of the session. Turnstile rejects *before* any email
+is attempted, so those leads produced no notification, no failsafe copy and no alert — they are
+simply gone. That is the real cost of this mistake, and why it gets its own section.)
+
 **Diagnosing `invalid-input-secret`.** It does **not** mean the key is malformed. It means the
 secret does not pair with the **site key that issued the token** — i.e. it was copied from a
 different widget. Confirm by comparing the live page's rendered key with the widget the secret came
