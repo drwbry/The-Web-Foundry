@@ -350,4 +350,22 @@ Then create a sibling `CLAUDE.md` containing:
 
 Add content below the import only for genuinely Claude-specific behavior. Tailor `AGENTS.md` to match the approved Site Plan from Phase 1. This gives Codex and Claude Code the same durable context in future sessions without requiring the template repo or onboarding skill.
 
+**Claude Code only — turn this skill on in the new repo.** A user-level `skillOverrides` setting hides `web-foundry-onboarding` outside `~/projects/the-web-foundry/`. Claude Code does not inherit settings from parent folders, so each repo turns the skill back on itself. Copy the `skillOverrides` block from the root folder's local settings, rather than retyping its values, so the two never drift apart. `.claude/` is already gitignored by the template. Codex is unaffected.
+
+```bash
+python3 - <<'EOF'
+import json, os
+src = os.path.expanduser('~/projects/the-web-foundry/.claude/settings.local.json')
+dst = '.claude/settings.local.json'
+block = json.load(open(src))['skillOverrides']
+os.makedirs('.claude', exist_ok=True)
+d = json.load(open(dst)) if os.path.exists(dst) else {}
+d.setdefault('skillOverrides', {}).update(block)
+json.dump(d, open(dst, 'w'), indent=2)
+print(dst, '->', d['skillOverrides'].get('web-foundry-onboarding'))
+EOF
+```
+
+It should print `on`.
+
 ---
