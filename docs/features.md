@@ -39,8 +39,10 @@ check here first before treating it as new work.
   everything else is hardcoded to keep the Studio simple. Not a general-purpose CMS;
   no page-builder, no arbitrary new page types without a code change.
 - **Cost:** Free tier covers all current client sites.
-- **Spec:** `AGENTS.md` (Architecture, Sanity CMS); `cowork-intake-brief.md` (Sanity
-  Content Types).
+- **Showcase reference:** bakery fetches a PDF menu URL (`menuPdf`); plumber fetches
+  business hours with a 7-day default fallback; salon fetches gallery images with an
+  emoji fallback (max 5).
+- **Spec:** `AGENTS.md` (Architecture); `cowork-intake-brief.md` (Sanity Content Types).
 
 ### Contact forms (Cloudflare Worker)
 - **What it does:** Shared Worker handles all client contact/quote/booking-inquiry
