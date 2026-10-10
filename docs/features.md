@@ -29,7 +29,7 @@ check here first before treating it as new work.
   time. No user accounts/logins.
 - **Cost:** $0 marginal — one VPS hosts 20–30 sites. No per-site hosting bill to pass
   through beyond the standard hosting/support invoice.
-- **Spec:** `AGENTS.md` (Stack); `docs/operations-runbook.md` (Multi-Tenant Architecture).
+- **Spec:** `package.json` and `AGENTS.md`; `docs/operations-runbook.md` (Multi-Tenant Architecture).
 
 ### Sanity CMS (client self-editing)
 - **What it does:** Client edits specific content types (hours, gallery, services,

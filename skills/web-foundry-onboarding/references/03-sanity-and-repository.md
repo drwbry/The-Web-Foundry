@@ -278,68 +278,36 @@ Style the footer with the **client's** palette (it lives on their site) — the 
 
 ### Step 6: Set up cross-agent project context [automated]
 
-Each client repo needs canonical `AGENTS.md` guidance so Codex and Claude Code receive the same project context. Create `AGENTS.md` in the repo root with:
+Each client repo needs canonical `AGENTS.md` guidance so Codex and Claude Code receive the same project context. Keep it to what an agent **cannot** read from the code: business context, IDs and routing that live outside the repo, design decisions and their reasons, and gotchas. Leave out the stack, build commands, file tree, page list, schema list and colour values — `package.json`, `src/pages/`, `studio/schemaTypes/` and the CSS already say those, and copies drift. Put status and to-do lists in a `STATUS.md`, not in `AGENTS.md`. Create `AGENTS.md` in the repo root with:
 
 ```markdown
-# [Business Display Name] Project Instructions
+# [Business Display Name] Website Instructions
 
 ## What This Is
 
-Client website for **[Business Display Name]** — built and maintained by The Web Foundry Cincinnati.
-
-## Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Framework | Astro (static output) |
-| CMS | Sanity.io (project `[client-project-id]`, dataset `production`) |
-| Hosting | Coolify on OVHcloud VPS |
-| Deploy | GitHub → Coolify auto-deploy on push |
-| Forms | Shared Cloudflare Worker (`web-foundry-form-relay`) |
-
-- **Build command:** `npm run build`
-- **Output directory:** `dist`
-- **Local dev:** `npm run dev` → `http://localhost:4321`
+Client website for **[Business Display Name]** — built and maintained by The Web Foundry Cincinnati. [One or two sentences from the Site Plan: what the site is for and what it deliberately is not.] Live at `https://[client-domain.com]`; push to `main` auto-deploys via Coolify.
 
 ## Site Info
 
-- **Client slug:** `[client-slug]`
-- **Domain:** `[client-domain.com]`
-- **Sanity project ID:** `[client-project-id]`
-- **Sanity dataset:** `production`
-- **Sanity Studio:** `[client-slug].sanity.studio`
-
-## Pages
-
-[List routes from the approved Site Plan, e.g.:]
-- `/` — Home (hero, hours, gallery, contact form)
-- `/menu` — Menu (PDF embed from Sanity)
-- `/about` — About the business
-- `/privacy` — Privacy policy
-
-## Sanity Content Types
-
-[List which schemas exist and what they control, e.g.:]
-- `businessHours` — 7-day hours with open/close/closed fields
-- `gallery` — Photo gallery (max 5 images with alt text)
-- `menuPdf` — Uploadable PDF menu
+- **Client slug:** `[client-slug]` (the Worker `site_id` and KV key)
+- **Sanity Studio:** `[client-slug].sanity.studio` (project `[client-project-id]`, dataset `production`)
+- **Form recipient:** `[client-email]` (KV `toEmail`)
 
 ## Contact Form
 
-- Posts to: `https://web-foundry-form-relay.cincinnati-web-foundry.workers.dev`
 - `site_id`: `[client-slug]`
-- Turnstile site key: `[client-turnstile-site-key]` (created in Phase 5d — each client gets their own widget)
-- Form submissions go to: `[client-email]`
+- Turnstile site key: `[client-turnstile-site-key]` (created in Phase 5d — each client gets their own widget; list its allowed hostnames)
+- KV `enforceTurnstile`: `false` until a real submission succeeds live, then `true`
+
+Shared form rules are in the template's `docs/operations-runbook.md` — not repeated here.
 
 ## Design
 
-- **Palette:** [list CSS custom properties and their values]
-- **Fonts:** [heading font] + [body font]
-- **Aesthetic:** [description from Site Plan]
+[Decisions and their reasons from the Site Plan and build — e.g. "type-led hero, no stock photo, because…". Rules a future change must not break. Not the hex values or font list; those live in the CSS.]
 
 ## Template Origin
 
-Forked from `drwbry/The-Web-Foundry`. Shared infrastructure (scroll reveal, counters, Sanity client, image URL builder) comes from the template. See the template repo's `AGENTS.md` for details on shared utilities.
+Forked from `drwbry/The-Web-Foundry`. See the template repo's `AGENTS.md` and `docs/shared-utilities.md` for shared infrastructure.
 ```
 
 Then create a sibling `CLAUDE.md` containing:
