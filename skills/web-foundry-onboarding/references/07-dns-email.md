@@ -84,7 +84,7 @@ Cloudflare has redesigned this UI at least once since this section was first wri
 
 1. Navigate: left sidebar → **Compute** (under "Build") → **Email Service** → **Email Routing**. Make sure the domain breadcrumb at the top shows the client's domain, not a different one on the same account.
 2. **Don't hunt for a single "Enable Email Routing" button — there may not be one.** In the current UI, visiting this section for a domain can pre-stage the required DNS records (3× MX to `route[1-3].mx.cloudflare.net`, a DKIM TXT, an SPF TXT) automatically, visible under **Settings → DNS records** as "Locked." Despite that, the **Status** badge at the top stays **Disabled** until the domain has at least one active routing rule — creating the first rule is what flips it to Enabled, not a separate toggle. Don't waste time looking for one.
-3. **Check Destination Addresses before adding anything.** Destination addresses are **account-wide**, shared across every domain on that Cloudflare account — not per-domain. If this account has been used for other Web Foundry sites, you'll likely see an unrelated address already verified there (e.g. the hub's own `cincinnatiwebfoundry@gmail.com`). **Do not reuse another site's address** — add the current client's inbox explicitly, even if it feels redundant.
+3. **Check Destination Addresses before adding anything.** Destination addresses are **account-wide**, shared across every domain on that Cloudflare account — not per-domain. If this account has been used for other Web Foundry sites, you'll likely see an unrelated address already verified there (e.g. the hub's own `foundrysolutionsllc@gmail.com`). **Do not reuse another site's address** — add the current client's inbox explicitly, even if it feels redundant.
 4. **Destination Addresses** tab → **Add address** → enter the client's inbox (e.g. `hello@gmail.com`) → Cloudflare sends a verification email to that inbox. **Someone with access to that actual inbox must click the confirmation link** before it can receive forwarded mail — this is not something you can do on the client's behalf from the Cloudflare dashboard. If the client isn't immediately available to check their email, this step will stall — note it and come back once they confirm.
 5. Once the destination is verified: **Routing rules** tab → create a rule per custom address needed:
    - **Custom address:** `hello@[domain.com]` (or `help@`, `info@`, `contact@`, etc. — whatever the client wants)
@@ -97,5 +97,7 @@ Cloudflare has redesigned this UI at least once since this section was first wri
 - Do **not** create a catch-all rule — it forwards all typos and spam
 - Multiple addresses: create a separate routing rule for each one, all can point to the same verified destination
 - Do not manually add MX records — they're pre-staged automatically per Step 2 above
+
+**Sending as the branded address (optional):** forwarding only receives. If the client wants to reply as `hello@[domain.com]` from Gmail, use the Resend SMTP "Send mail as" setup in `docs/operations-runbook.md` (DNS & Email Setup). Confirm first whose Resend account and quota that mail will use.
 
 ---

@@ -266,6 +266,38 @@ All domains use **Cloudflare for DNS management** and **Cloudflare Email Routing
 - Uses "Send to email" action (not Worker)
 - No catch-all rules — only forward specific addresses to avoid spam/typos
 
+### The Web Foundry's own addresses
+
+Set up and tested 2026-10-10.
+
+| Domain | Forwarded addresses | Destination |
+|---|---|---|
+| `thewebfoundry.org` | `dreux@`, `support@`, `hello@` | `foundrysolutionsllc@gmail.com` |
+| `cincinnatiwebfoundry.com` | `dreux@`, `support@`, `hello@` | `foundrysolutionsllc@gmail.com` |
+
+Catch-all is disabled on both. `cincinnatiwebfoundry.com` used to forward to `cincinnatiwebfoundry@gmail.com`; everything now lands in the one inbox.
+
+`foundrysolutions.org` is **not** a Foundry domain (HostGator, redirects to thefoundry.org). Don't use it.
+
+### Sending from a branded address (Gmail "Send mail as")
+
+Cloudflare Email Routing only receives. To send as `hello@domain`, Gmail relays through Resend's SMTP, so mail is DKIM-signed for the domain and passes DMARC.
+
+1. The domain must be verified in Resend. Use **Add domain**, then Resend's Cloudflare auto-configure. It adds `send` and `rsend` CNAMEs and a `resend._domainkey` TXT, all DNS only. It does not touch the root MX or SPF, so forwarding keeps working.
+2. Create a Resend API key with **Sending access** restricted to that domain.
+3. In the receiving Gmail: Settings → Accounts and Import → Send mail as → Add another email address. Uncheck "Treat as an alias".
+   - SMTP server `smtp.resend.com`, port `587` (TLS) or `465` (SSL)
+   - Username `resend`, password = the API key
+4. Gmail sends a confirmation code to the address. It arrives through the forwarding rule.
+5. Set "When replying to a message" to **Reply from the same address the message was sent to**, since several domains share one inbox.
+
+Current Send As addresses in `foundrysolutionsllc@gmail.com`: `hello@thewebfoundry.org` and `hello@cincinnatiwebfoundry.com`.
+
+Gotchas:
+- Gmail sends count toward the Resend account's quota, which the form Worker also uses.
+- A newly added domain has no sending reputation. The first test from `thewebfoundry.org` went to spam with DKIM, SPF and DMARC all passing. Real two-way mail fixed it. Check headers before assuming a config problem.
+- DMARC is `p=none` on both domains. Consider `p=quarantine` once the Cloudflare DMARC reports look clean.
+
 **Why Cloudflare:**
 - Single source of truth for DNS + email routing
 - Auto-migrates records on nameserver switch
