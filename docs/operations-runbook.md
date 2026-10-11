@@ -291,7 +291,7 @@ Cloudflare Email Routing only receives. To send as `hello@domain`, Gmail relays 
 4. Gmail sends a confirmation code to the address. It arrives through the forwarding rule.
 5. Set "When replying to a message" to **Reply from the same address the message was sent to**, since several domains share one inbox.
 
-Current Send As addresses in `foundrysolutionsllc@gmail.com`: `hello@thewebfoundry.org` and `hello@cincinnatiwebfoundry.com`.
+Current Send As addresses in `foundrysolutionsllc@gmail.com`: `hello@thewebfoundry.org` (the default for new mail) and `hello@cincinnatiwebfoundry.com`.
 
 Gotchas:
 - Gmail sends count toward the Resend account's quota, which the form Worker also uses.
