@@ -1,0 +1,284 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../../../components/demo/morning-and-night/Layout.astro';
+import { base, links, stands, flavorOfTheMonth } from '../../../components/demo/morning-and-night/data.js';
+import rollCloseup from '../../../assets/demo/morning-and-night/cinnamon-roll-closeup.jpg';
+import swirlBread from '../../../assets/demo/morning-and-night/swirl-bread.jpg';
+import muffins from '../../../assets/demo/morning-and-night/streusel-muffins.jpg';
+import rollTray from '../../../assets/demo/morning-and-night/cinnamon-roll-tray.jpg';
+import brownies from '../../../assets/demo/morning-and-night/brownies.jpg';
+import cookies from '../../../assets/demo/morning-and-night/iced-cookies.jpg';
+import leafCookies from '../../../assets/demo/morning-and-night/leaf-cookies.jpg';
+
+// Build-time guess at the next stand; the inline script below re-checks in the browser.
+const today = new Date().toISOString().slice(0, 10);
+const nextIndex = Math.max(0, stands.findIndex((s) => s.date >= today));
+
+const morning = [
+  { img: swirlBread, name: 'Cinnamon Swirl Bread', note: 'From $6 a loaf' },
+  { img: rollTray, name: 'Cinnamon Rolls', note: 'Trays of 4 or 9' },
+  { img: muffins, name: 'Muffins', note: '$3 each' },
+];
+const night = [
+  { img: brownies, name: 'Brownie Quartets', note: 'Classic or topped' },
+  { img: cookies, name: 'Cookies', note: 'By the 3 or by the dozen' },
+  { img: leafCookies, name: 'Seasonal Specials', note: 'Something new each month' },
+];
+---
+<Layout
+  title="Morning & Night Bakery Delights | Home Bakery in Cincinnati"
+  description="Cinnamon rolls, sweet breads, muffins, cookies and brownies, baked at home in Cincinnati and picked up at the front porch stand."
+  current="home"
+>
+  <!-- HERO: morning sky -->
+  <section class="hero">
+    <div class="hero__sun" aria-hidden="true"></div>
+    <div class="mn-wrap hero__grid">
+      <div class="hero__copy">
+        <p class="mn-eyebrow">Home bakery &middot; Cincinnati, OH</p>
+        <h1 class="hero__title">
+          Sweet breads for the <span class="hero__am">morning.</span>
+          Sweet treats for the <span class="hero__pm">night.</span>
+        </h1>
+        <p class="hero__lead">
+          Cinnamon rolls, swirl bread, muffins, cookies and brownies, baked from my favorite
+          recipes. Pre-order online, then pick everything up at my front porch stand.
+        </p>
+        <div class="hero__actions">
+          <a class="mn-btn mn-btn--night" href={`${base}/menu`}>See the {flavorOfTheMonth.month} menu</a>
+          <a class="mn-btn mn-btn--ghost" href={links.emailList} target="_blank" rel="noopener">Get pre-order reminders</a>
+        </div>
+      </div>
+      <figure class="hero__photo">
+        <Image src={rollCloseup} alt="Close-up of a glazed cinnamon roll, still in the pan" widths={[480, 760, 1000]} sizes="(max-width: 860px) 90vw, 460px" loading="eager" />
+        <figcaption class="hero__tag">
+          <span>{flavorOfTheMonth.month}&rsquo;s flavor</span>
+          <strong>{flavorOfTheMonth.flavor}</strong>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- NEXT STAND -->
+  <section class="stand" aria-labelledby="stand-title">
+    <div class="mn-wrap">
+      <div class="stand__card" data-stands={JSON.stringify(stands.map((s) => s.date))}>
+        {stands.map((s, i) => (
+          <div class="stand__slide" data-date={s.date} hidden={i !== nextIndex}>
+            <div class="stand__when">
+              <p class="stand__label" id={i === nextIndex ? 'stand-title' : undefined}>Next front porch stand</p>
+              <p class="stand__date">{s.label}</p>
+              <p class="stand__pre">Pre-orders open <strong>{s.preorder}</strong></p>
+            </div>
+            <div class="stand__what">
+              <p class="stand__label">{flavorOfTheMonth.flavor} specials that day</p>
+              <ul class="stand__list">
+                {s.specials.map((item) => <li>{item}</li>)}
+              </ul>
+            </div>
+            <div class="stand__cta">
+              <a class="mn-btn mn-btn--gold" href={links.emailList} target="_blank" rel="noopener">Join the email list</a>
+              <p>The pre-order link goes out to the list when the window opens.</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- MORNING / NIGHT -->
+  <section class="split" aria-label="What I bake">
+    <div class="split__half split__half--am">
+      <div class="split__head">
+        <svg class="split__icon" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="9" fill="currentColor"/><g stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M24 4v6M24 38v6M4 24h6M38 24h6M9.9 9.9l4.2 4.2M33.9 33.9l4.2 4.2M9.9 38.1l4.2-4.2M33.9 14.1l4.2-4.2"/></g></svg>
+        <h2 class="mn-h2">Morning</h2>
+        <p>Something warm to go with the first cup of coffee.</p>
+      </div>
+      <ul class="split__grid">
+        {morning.map((m) => (
+          <li class="treat">
+            <Image src={m.img} alt={m.name} widths={[360, 600]} sizes="(max-width: 760px) 45vw, 260px" class="treat__img" />
+            <p class="treat__name">{m.name}</p>
+            <p class="treat__note">{m.note}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="split__half split__half--pm">
+      <div class="split__head">
+        <svg class="split__icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M30 6a18 18 0 1 0 12 30A15 15 0 0 1 30 6z" fill="currentColor"/><circle cx="40" cy="10" r="1.6" fill="currentColor"/><circle cx="44" cy="20" r="1.1" fill="currentColor"/></svg>
+        <h2 class="mn-h2">Night</h2>
+        <p>Something sweet to end the day.</p>
+      </div>
+      <ul class="split__grid">
+        {night.map((m) => (
+          <li class="treat">
+            <Image src={m.img} alt={m.name} widths={[360, 600]} sizes="(max-width: 760px) 45vw, 260px" class="treat__img" />
+            <p class="treat__name">{m.name}</p>
+            <p class="treat__note">{m.note}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="split__more">
+      <a class="mn-btn mn-btn--gold" href={`${base}/menu`}>Full menu &amp; prices</a>
+    </div>
+  </section>
+
+  <!-- HOW ORDERING WORKS -->
+  <section class="how">
+    <div class="mn-wrap">
+      <p class="mn-eyebrow">How ordering works</p>
+      <h2 class="mn-h2">Three steps to a <em>warm tray</em> on Saturday.</h2>
+      <ol class="how__steps">
+        <li>
+          <span class="how__num">1</span>
+          <h3>Join the email list</h3>
+          <p>You&rsquo;ll get the bakery dates and the pre-order link for each stand.</p>
+        </li>
+        <li>
+          <span class="how__num">2</span>
+          <h3>Pre-order during the window</h3>
+          <p>Each window is open for a few days, about a week before the stand. Pay by Venmo or cash.</p>
+        </li>
+        <li>
+          <span class="how__num">3</span>
+          <h3>Pick up at the porch</h3>
+          <p>Grab your order at the Saturday front porch stand.</p>
+        </li>
+      </ol>
+      <p class="how__custom">
+        Need treats for a party or event? <a href={links.customOrder} target="_blank" rel="noopener">Send a custom order request</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ABOUT TEASER -->
+  <section class="meet">
+    <div class="mn-wrap meet__grid">
+      <blockquote class="meet__quote">
+        <p>&ldquo;Baking is a passion and each item is made with love.&rdquo;</p>
+      </blockquote>
+      <div class="meet__copy">
+        <p class="mn-eyebrow">Meet the baker</p>
+        <p>
+          I&rsquo;m a former teacher, now a stay-at-home mom, sharing my favorite recipes.
+          Between teaching and a big family, these treats have been passed around for years. Now that
+          I&rsquo;m home full time, I&rsquo;m baking for the neighborhood too.
+        </p>
+        <a class="mn-btn mn-btn--ghost" href={`${base}/about`}>Read my story</a>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    // Show the next upcoming stand in the visitor's own timezone, so the card
+    // stays right between rebuilds.
+    (function () {
+      var d = new Date();
+      var today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      var slides = document.querySelectorAll('.stand__slide');
+      var next = null;
+      slides.forEach(function (s) { if (!next && s.dataset.date >= today) next = s; });
+      if (!next) next = slides[slides.length - 1];
+      slides.forEach(function (s) { s.hidden = s !== next; });
+    })();
+  </script>
+
+  <style>
+    /* HERO */
+    .hero { position: relative; overflow: hidden; padding: 4.5rem 0 7rem;
+      background: linear-gradient(180deg, #FFF6DA 0%, var(--mn-cream) 70%); }
+    .hero__sun { position: absolute; width: 620px; height: 620px; border-radius: 50%; top: -260px; left: -180px;
+      background: radial-gradient(circle, rgba(244,226,140,.9) 0%, rgba(244,226,140,.35) 40%, transparent 70%); pointer-events: none; }
+    .hero__grid { position: relative; display: grid; grid-template-columns: 1.15fr .85fr; gap: 4rem; align-items: center; }
+    .hero__title { font-family: var(--mn-ff-display); font-weight: 800; font-size: clamp(2.5rem, 5.6vw, 4.4rem);
+      line-height: 1.04; letter-spacing: -0.02em; margin: 1.1rem 0 1.5rem; }
+    .hero__am { font-style: italic; font-weight: 500; color: var(--mn-crust); }
+    .hero__pm { font-style: italic; font-weight: 500; color: var(--mn-ink); background: linear-gradient(transparent 62%, var(--mn-butter) 62%); padding: 0 .1em; }
+    .hero__lead { font-size: 1.15rem; line-height: 1.65; color: var(--mn-ink-soft); max-width: 46ch; margin-bottom: 2rem; }
+    .hero__actions { display: flex; flex-wrap: wrap; gap: .8rem; }
+    .hero__photo { position: relative; margin: 0; transform: rotate(2deg); }
+    .hero__photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 220px 220px 18px 18px;
+      border: 8px solid #fff; box-shadow: 0 30px 60px -25px rgba(45,53,66,.45); }
+    .hero__tag { position: absolute; left: -2.2rem; bottom: 2.4rem; transform: rotate(-6deg);
+      background: var(--mn-ink); color: var(--mn-cream); padding: .9rem 1.2rem; border-radius: 14px; box-shadow: 0 12px 24px -12px rgba(0,0,0,.5); }
+    .hero__tag span { display: block; font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; color: var(--mn-butter); }
+    .hero__tag strong { font-family: var(--mn-ff-display); font-style: italic; font-size: 1.7rem; font-weight: 700; }
+
+    /* STAND */
+    .stand { margin-top: -4rem; position: relative; z-index: 2; }
+    .stand__card { position: relative; overflow: hidden; background: var(--mn-night); color: var(--mn-moonlight);
+      border-radius: 24px; padding: 2.4rem 2.6rem; box-shadow: 0 30px 60px -30px rgba(28,35,48,.7); }
+    .stand__slide { position: relative; display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 2.4rem; align-items: center; }
+    .stand__slide[hidden] { display: none; }
+    .stand__label { font-size: .74rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--mn-butter); margin-bottom: .5rem; }
+    .stand__date { font-family: var(--mn-ff-display); font-size: clamp(1.6rem, 2.8vw, 2.2rem); font-weight: 700; color: #fff; line-height: 1.1; }
+    .stand__pre { margin-top: .5rem; color: rgba(233,228,214,.8); }
+    .stand__pre strong { color: #fff; }
+    .stand__list li { padding: .3rem 0 .3rem 1.4rem; position: relative; }
+    .stand__list li::before { content: ''; position: absolute; left: 0; top: .78rem; width: 8px; height: 8px; border-radius: 50%; background: var(--mn-gold); }
+    .stand__cta p { font-size: .9rem; color: rgba(233,228,214,.7); margin-top: .75rem; }
+    .stand__cta .mn-btn { border-color: var(--mn-gold); }
+    .stand__cta .mn-btn:hover { box-shadow: 0 6px 0 -1px var(--mn-butter); }
+
+    /* SPLIT */
+    .split { display: grid; grid-template-columns: 1fr 1fr; margin-top: 6rem; }
+    .split__half { padding: 4.5rem clamp(1.5rem, 4vw, 4rem) 4rem; }
+    .split__half--am { background: var(--mn-cream-deep); }
+    .split__half--pm { background: var(--mn-night-2); color: var(--mn-moonlight); }
+    .split__head { margin-bottom: 2.2rem; }
+    .split__icon { width: 44px; height: 44px; margin-bottom: .8rem; }
+    .split__half--am .split__icon { color: var(--mn-gold); }
+    .split__half--pm .split__icon { color: var(--mn-butter); }
+    .split__half--pm .mn-h2 { color: #fff; }
+    .split__head p { margin-top: .4rem; font-size: 1.05rem; opacity: .85; }
+    .split__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
+    .treat__img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 14px; transition: transform .4s var(--mn-ease); }
+    .treat:hover .treat__img { transform: translateY(-4px) rotate(-1deg); }
+    .treat__name { font-family: var(--mn-ff-display); font-weight: 700; font-size: 1.05rem; margin-top: .75rem; line-height: 1.2; }
+    .treat__note { font-size: .88rem; opacity: .75; }
+    .split__more { grid-column: 1 / -1; display: flex; justify-content: center; padding: 2.2rem 1.5rem;
+      background: linear-gradient(90deg, var(--mn-cream-deep) 50%, var(--mn-night-2) 50%); }
+
+    /* HOW */
+    .how { padding: 6rem 0 5rem; }
+    .how .mn-h2 { margin-top: .8rem; max-width: 18ch; }
+    .how__steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 3rem; counter-reset: none; }
+    .how__steps li { border-top: 2px solid var(--mn-ink); padding-top: 1.4rem; }
+    .how__num { font-family: var(--mn-ff-display); font-style: italic; font-size: 3rem; line-height: 1; color: var(--mn-gold); }
+    .how__steps h3 { font-family: var(--mn-ff-display); font-size: 1.35rem; margin: .5rem 0 .5rem; }
+    .how__steps p { color: var(--mn-ink-soft); }
+    .how__custom { margin-top: 3rem; font-size: 1.05rem; }
+    .how__custom a { font-weight: 700; border-bottom: 2px solid var(--mn-gold); }
+
+    /* MEET */
+    .meet { padding: 0 0 6rem; }
+    .meet__grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center;
+      border-top: 1px solid var(--mn-line); padding-top: 5rem; }
+    .meet__quote p { font-family: var(--mn-ff-display); font-style: italic; font-weight: 500; font-size: clamp(1.8rem, 3.6vw, 2.8rem); line-height: 1.2; color: var(--mn-crust); }
+    .meet__copy p:not(.mn-eyebrow) { margin: .8rem 0 1.6rem; color: var(--mn-ink-soft); line-height: 1.7; }
+
+    @media (max-width: 960px) {
+      .stand__slide { grid-template-columns: 1fr 1fr; }
+      .stand__cta { grid-column: 1 / -1; }
+    }
+    @media (max-width: 860px) {
+      .hero { padding: 2.5rem 0 3rem; }
+      .stand { margin-top: 0; }
+      .hero__grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .hero__photo { max-width: 380px; margin: 0 auto; }
+      .hero__tag { left: -.5rem; }
+      .split { grid-template-columns: 1fr; }
+      .split__more { background: var(--mn-night-2); }
+      .how__steps, .meet__grid { grid-template-columns: 1fr; }
+      .meet__grid { gap: 1.5rem; }
+    }
+    @media (max-width: 560px) {
+      .stand__card { padding: 1.8rem 1.5rem; }
+      .stand__slide { grid-template-columns: 1fr; gap: 1.5rem; }
+      .split__grid { grid-template-columns: repeat(2, 1fr); }
+      .split__grid .treat:last-child { display: none; }
+    }
+  </style>
+</Layout>

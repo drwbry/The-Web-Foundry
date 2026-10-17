@@ -1,0 +1,238 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../../../components/demo/morning-and-night/Layout.astro';
+import { links, stands, menu, glutenFree, flavorOfTheMonth } from '../../../components/demo/morning-and-night/data.js';
+import pumpkinMuffins from '../../../assets/demo/morning-and-night/pumpkin-muffins.jpg';
+import glazedRolls from '../../../assets/demo/morning-and-night/glazed-rolls.jpg';
+---
+<Layout
+  title={`${flavorOfTheMonth.month} Menu | Morning & Night Bakery Delights`}
+  description="Prices and pre-order dates for cinnamon rolls, breads, muffins, cookies, brownies and gluten-free treats from Morning & Night Bakery Delights in Cincinnati."
+  current="menu"
+>
+  <section class="mhead">
+    <div class="mn-wrap mhead__grid">
+      <div>
+        <p class="mn-eyebrow">The {flavorOfTheMonth.month} menu</p>
+        <h1 class="mhead__title">This month it&rsquo;s all about <em>{flavorOfTheMonth.flavor.toLowerCase()}.</em></h1>
+        <p class="mhead__lead">
+          Everything below can be pre-ordered for the Saturday porch stands. Look for the
+          <span class="pill">{flavorOfTheMonth.flavor}</span> tag to find this month&rsquo;s specials.
+        </p>
+      </div>
+      <div class="mhead__photos" aria-hidden="true">
+        <Image src={pumpkinMuffins} alt="" widths={[300, 520]} sizes="220px" class="mhead__p mhead__p--1" loading="eager" />
+        <Image src={glazedRolls} alt="" widths={[300, 520]} sizes="220px" class="mhead__p mhead__p--2" loading="eager" />
+      </div>
+    </div>
+  </section>
+
+  <!-- STAND DATES -->
+  <section class="dates" aria-labelledby="dates-title">
+    <div class="mn-wrap">
+      <h2 id="dates-title" class="dates__title">Porch stand dates</h2>
+      <ol class="dates__list">
+        {stands.map((s) => (
+          <li class="date" data-date={s.date}>
+            <p class="date__status" aria-hidden="true"></p>
+            <p class="date__day">{s.label}</p>
+            <p class="date__pre">Pre-order {s.preorder}</p>
+            <ul class="date__items">
+              {s.specials.map((i) => <li class="date__special">{i}</li>)}
+              {s.alsoAvailable.map((i) => <li>{i}</li>)}
+            </ul>
+          </li>
+        ))}
+      </ol>
+      <p class="dates__note">
+        The pre-order link goes out by email when each window opens.
+        <a href={links.emailList} target="_blank" rel="noopener">Join the list</a> so you don&rsquo;t miss it.
+      </p>
+    </div>
+  </section>
+
+  <!-- FULL MENU -->
+  <section class="menu" aria-label="Full menu">
+    <div class="mn-wrap">
+      <nav class="menu__jump" aria-label="Menu sections">
+        {menu.map((c) => <a href={`#${c.id}`}>{c.title}</a>)}
+        <a href="#gluten-free">Gluten-Free</a>
+      </nav>
+
+      <div class="menu__cols">
+        {menu.map((cat) => (
+          <section class={`cat cat--${cat.time}`} id={cat.id} aria-labelledby={`${cat.id}-h`}>
+            <h2 class="cat__title" id={`${cat.id}-h`}>
+              {cat.time === 'morning'
+                ? <svg class="cat__icon" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="9" fill="currentColor"/><g stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M24 6v5M24 37v5M6 24h5M37 24h5M11.3 11.3l3.5 3.5M33.2 33.2l3.5 3.5M11.3 36.7l3.5-3.5M33.2 14.8l3.5-3.5"/></g></svg>
+                : <svg class="cat__icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M30 6a18 18 0 1 0 12 30A15 15 0 0 1 30 6z" fill="currentColor"/></svg>}
+              {cat.title}
+            </h2>
+            {cat.note && <p class="cat__note">{cat.note}</p>}
+            {cat.items.map((item) => (
+              <article class="item">
+                <h3 class="item__name">
+                  {item.name}
+                  {item.seasonal && <span class="pill">{flavorOfTheMonth.flavor}</span>}
+                </h3>
+                {item.desc && <p class="item__desc">{item.desc}</p>}
+                {item.prices && (
+                  <dl class="prices">
+                    {item.prices.map(([size, price, extra]) => (
+                      <div class="price"><dt>{size}</dt><dd>{price}{extra && <span class="price__extra">{extra}</span>}</dd></div>
+                    ))}
+                  </dl>
+                )}
+              </article>
+            ))}
+            {cat.prices && (
+              <dl class="prices prices--shared">
+                {cat.prices.map(([size, price]) => (
+                  <div class="price"><dt>{size}</dt><dd>{price}</dd></div>
+                ))}
+              </dl>
+            )}
+          </section>
+        ))}
+      </div>
+
+      <!-- GLUTEN FREE -->
+      <section class="gf" id="gluten-free" aria-labelledby="gf-h">
+        <div class="gf__head">
+          <p class="mn-eyebrow">Made with gluten-free ingredients</p>
+          <h2 class="mn-h2" id="gf-h">Gluten-free options</h2>
+          <p class="gf__note">{glutenFree.note}</p>
+        </div>
+        <div class="gf__items">
+          {glutenFree.items.map((item) => (
+            <article class="item">
+              <h3 class="item__name">{item.name}</h3>
+              <p class="item__desc">{item.desc}</p>
+              <dl class="prices">
+                {item.prices.map(([size, price]) => (
+                  <div class="price"><dt>{size}</dt><dd>{price}</dd></div>
+                ))}
+              </dl>
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- POLICIES -->
+  <section class="policy" aria-labelledby="policy-h">
+    <div class="mn-wrap policy__grid">
+      <div>
+        <h2 class="mn-h2" id="policy-h">Custom orders &amp; <em>the fine print</em></h2>
+        <p class="policy__lead">
+          Need something that isn&rsquo;t on the stand menu? Send a request and I&rsquo;ll let you know if I can fit it in.
+          My time is limited, so I can&rsquo;t take every order.
+        </p>
+        <a class="mn-btn mn-btn--night" href={links.customOrder} target="_blank" rel="noopener">Request a custom order</a>
+      </div>
+      <dl class="policy__list">
+        <div><dt>Pickup</dt><dd>Custom orders are picked up on Fridays unless we agree on another day.</dd></div>
+        <div><dt>Payment</dt><dd>Once I confirm your order, I&rsquo;ll send a payment request with a due date. Venmo ({links.venmo}) or cash.</dd></div>
+        <div><dt>Stand pre-orders</dt><dd>Pre-order and pay by the Monday before each porch stand.</dd></div>
+        <div><dt>Refunds</dt><dd>Full refund if you cancel more than 4 days before pickup. Inside 4 days, partial refunds are at my discretion. No refunds after pickup.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <script is:inline>
+    // Mark past stands and highlight the next one, using the visitor's local date.
+    (function () {
+      var d = new Date();
+      var today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      var foundNext = false;
+      document.querySelectorAll('.date').forEach(function (el) {
+        var status = el.querySelector('.date__status');
+        if (el.dataset.date < today) { el.classList.add('is-past'); status.textContent = 'Past'; }
+        else if (!foundNext) { foundNext = true; el.classList.add('is-next'); status.textContent = el.dataset.date === today ? 'Today' : 'Up next'; }
+      });
+    })();
+  </script>
+
+  <style>
+    .pill { display: inline-block; vertical-align: middle; font-family: var(--mn-ff-body); font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      background: var(--mn-butter); color: var(--mn-crust); padding: .2rem .55rem; border-radius: 999px; margin-left: .4rem; }
+
+    /* HEAD */
+    .mhead { padding: 4rem 0 3.5rem; background: linear-gradient(180deg, #FFF6DA, var(--mn-cream)); }
+    .mhead__grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 3rem; align-items: center; }
+    .mhead__title { font-family: var(--mn-ff-display); font-weight: 800; font-size: clamp(2.3rem, 5vw, 3.8rem); line-height: 1.05; letter-spacing: -0.02em; margin: 1rem 0 1.25rem; }
+    .mhead__title em { font-weight: 500; color: var(--mn-crust); }
+    .mhead__lead { font-size: 1.12rem; color: var(--mn-ink-soft); max-width: 48ch; line-height: 1.65; }
+    .mhead__photos { position: relative; height: 320px; }
+    .mhead__p { position: absolute; width: 200px; aspect-ratio: 3 / 4; object-fit: cover; border: 7px solid #fff; border-radius: 12px; box-shadow: 0 20px 40px -20px rgba(45,53,66,.5); }
+    .mhead__p--1 { left: 0; top: 20px; transform: rotate(-5deg); }
+    .mhead__p--2 { right: 0; top: 0; transform: rotate(4deg); }
+
+    /* DATES */
+    .dates { padding: 3.5rem 0; background: var(--mn-night); color: var(--mn-moonlight); }
+    .dates__title { font-family: var(--mn-ff-display); font-size: 1.6rem; color: #fff; margin-bottom: 1.5rem; }
+    .dates__list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    .date { border: 1px solid rgba(233,228,214,.18); border-radius: 18px; padding: 1.5rem; transition: opacity .3s; }
+    .date.is-next { border-color: var(--mn-gold); background: rgba(231,181,58,.08); }
+    .date.is-past { opacity: .45; }
+    .date__status { font-size: .72rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--mn-butter); min-height: 1.1em; }
+    .date__day { font-family: var(--mn-ff-display); font-size: 1.35rem; font-weight: 700; color: #fff; margin-top: .3rem; }
+    .date__pre { font-size: .92rem; color: rgba(233,228,214,.75); margin: .2rem 0 1rem; }
+    .date__items li { font-size: .92rem; padding: .18rem 0; color: rgba(233,228,214,.85); }
+    .date__special { color: var(--mn-butter) !important; font-weight: 700; }
+    .date__special::before { content: '\2605  '; }
+    .dates__note { margin-top: 1.6rem; color: rgba(233,228,214,.8); }
+    .dates__note a { color: var(--mn-butter); font-weight: 700; border-bottom: 1px solid currentColor; }
+
+    /* MENU */
+    .menu { padding: 4rem 0 2rem; }
+    .menu__jump { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 3rem; }
+    .menu__jump a { font-weight: 700; font-size: .9rem; padding: .45rem 1rem; border: 1.5px solid var(--mn-line); border-radius: 999px; transition: border-color .2s, background .2s; }
+    .menu__jump a:hover { border-color: var(--mn-ink); background: #fff; }
+    .menu__cols { columns: 2 420px; column-gap: 4rem; }
+    .cat { break-inside: avoid; margin-bottom: 3.2rem; scroll-margin-top: 110px; }
+    .cat__title { display: flex; align-items: center; gap: .6rem; font-family: var(--mn-ff-display); font-size: 1.9rem; font-weight: 800;
+      padding-bottom: .6rem; border-bottom: 2px solid var(--mn-ink); margin-bottom: 1.2rem; }
+    .cat__icon { width: 30px; height: 30px; flex: none; }
+    .cat--morning .cat__icon { color: var(--mn-gold); }
+    .cat--night .cat__icon { color: var(--mn-ink); }
+    .cat__note { font-size: .92rem; color: var(--mn-ink-soft); font-style: italic; margin: -.4rem 0 1rem; }
+    .item { padding: .9rem 0; border-bottom: 1px dashed var(--mn-line); }
+    .item:last-of-type { border-bottom: 0; }
+    .item__name { font-family: var(--mn-ff-display); font-size: 1.22rem; font-weight: 700; line-height: 1.25; }
+    .item__desc { color: var(--mn-ink-soft); font-size: .97rem; line-height: 1.6; margin: .35rem 0 .2rem; }
+    .prices { margin-top: .5rem; }
+    .prices--shared { padding-top: .6rem; border-top: 1px solid var(--mn-line); }
+    .price { display: flex; align-items: baseline; gap: .6rem; padding: .15rem 0; }
+    .price dt { flex: none; }
+    .price::after { content: ''; order: 1; flex: 1; border-bottom: 2px dotted rgba(45,53,66,.25); transform: translateY(-4px); }
+    .price dd { order: 2; font-weight: 700; color: var(--mn-crust); text-align: right; }
+    .price__extra { display: block; font-weight: 500; font-size: .82rem; color: var(--mn-ink-soft); }
+
+    /* GF */
+    .gf { scroll-margin-top: 110px; margin: 1rem 0 4rem; display: grid; grid-template-columns: 1fr 1.4fr; gap: 3rem;
+      background: #fff; border: 2px solid var(--mn-ink); border-radius: 24px; padding: 2.6rem; box-shadow: 8px 8px 0 var(--mn-butter); }
+    .gf .mn-h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); margin: .6rem 0 1rem; }
+    .gf__note { color: var(--mn-ink-soft); font-size: .95rem; line-height: 1.65; }
+    .gf__items .item:first-child { padding-top: 0; }
+
+    /* POLICY */
+    .policy { background: var(--mn-cream-deep); padding: 5rem 0; }
+    .policy__grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 4rem; }
+    .policy__lead { color: var(--mn-ink-soft); margin: 1.2rem 0 1.8rem; line-height: 1.7; max-width: 44ch; }
+    .policy__list > div { padding: 1rem 0; border-bottom: 1px solid var(--mn-line); }
+    .policy__list > div:first-child { padding-top: 0; }
+    .policy__list dt { font-family: var(--mn-ff-display); font-weight: 700; font-size: 1.15rem; margin-bottom: .2rem; }
+    .policy__list dd { color: var(--mn-ink-soft); line-height: 1.6; }
+
+    @media (max-width: 860px) {
+      .mhead__grid, .policy__grid, .gf { grid-template-columns: 1fr; }
+      .mhead__photos { height: 260px; max-width: 380px; }
+      .mhead__p { width: 160px; }
+      .dates__list { grid-template-columns: 1fr; }
+      .gf { padding: 1.8rem 1.4rem; gap: 1.5rem; }
+      .policy__grid { gap: 2.5rem; }
+    }
+  </style>
+</Layout>

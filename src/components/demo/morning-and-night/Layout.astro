@@ -1,0 +1,181 @@
+---
+// Shared shell for the Morning & Night Bakery Delights proof of concept.
+// A private prospect pitch, not a portfolio concept: noindex, excluded from the
+// sitemap (astro.config.mjs), and not listed on the hub. No "Back to concepts"
+// button, since the prospect never came from the hub.
+import { Image } from 'astro:assets';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import DBCredit from '../../DBCredit.astro';
+import logo from '../../../assets/demo/morning-and-night/logo.png';
+import { base, links } from './data.js';
+
+const { title, description, current } = Astro.props;
+const nav = [
+  { href: `${base}`, label: 'Home', key: 'home' },
+  { href: `${base}/menu`, label: 'Menu', key: 'menu' },
+  { href: `${base}/about`, label: 'About Me', key: 'about' },
+];
+---
+<BaseLayout title={title} description={description}>
+  <Fragment slot="head">
+    <meta name="robots" content="noindex, nofollow" />
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;500;700&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&display=swap" rel="stylesheet" />
+  </Fragment>
+
+  <div class="mn-preview" role="note">
+    Concept preview by <a href="/">The Web Foundry</a> for Morning &amp; Night Bakery Delights
+  </div>
+
+  <header class="mn-nav">
+    <div class="mn-nav__inner">
+      <a href={base} class="mn-nav__brand" aria-label="Morning & Night Bakery Delights home">
+        <Image src={logo} alt="" width={64} class="mn-nav__logo" loading="eager" />
+        <span class="mn-nav__name">Morning <i>&amp;</i> Night <small>Bakery Delights</small></span>
+      </a>
+      <nav aria-label="Main">
+        <ul class="mn-nav__links">
+          {nav.map((n) => (
+            <li><a href={n.href} aria-current={current === n.key ? 'page' : undefined}>{n.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+      <a class="mn-btn mn-btn--gold mn-nav__cta" href={links.emailList} target="_blank" rel="noopener">Join the list</a>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <slot />
+  </main>
+
+  <footer class="mn-footer">
+    <div class="mn-footer__sky" aria-hidden="true"></div>
+    <div class="mn-footer__inner">
+      <div class="mn-footer__brand">
+        <Image src={logo} alt="Morning & Night Bakery Delights logo" width={140} class="mn-footer__logo" />
+        <p class="mn-footer__quote">&ldquo;Baked goods are just edible hugs with a little extra sparkle.&rdquo;</p>
+      </div>
+      <div>
+        <h2 class="mn-footer__h">Pickup</h2>
+        <p>Front porch stand in Cincinnati, OH. The pickup address comes with your order confirmation.</p>
+        <p>Pay by Venmo ({links.venmo}) or cash.</p>
+      </div>
+      <div>
+        <h2 class="mn-footer__h">Say hello</h2>
+        <ul class="mn-footer__list">
+          <li><a href={`mailto:${links.email}`}>Email me</a></li>
+          <li><a href={links.instagram} target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href={links.facebook} target="_blank" rel="noopener">Facebook</a></li>
+          <li><a href={links.customOrder} target="_blank" rel="noopener">Custom order request</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <DBCredit />
+
+  <style is:global>
+    :root {
+      --mn-cream: #FBF5E9;
+      --mn-cream-deep: #F4EAD5;
+      --mn-butter: #F4E28C;
+      --mn-gold: #E7B53A;
+      --mn-crust: #8A5527;
+      --mn-ink: #2D3542;
+      --mn-ink-soft: #55606F;
+      --mn-night: #1C2330;
+      --mn-night-2: #252E3E;
+      --mn-moonlight: #E9E4D6;
+      --mn-line: rgba(45, 53, 66, 0.14);
+      --mn-ff-display: 'Playfair Display', Georgia, serif;
+      --mn-ff-body: 'Karla', 'Trebuchet MS', sans-serif;
+      --mn-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --mn-max: 1180px;
+    }
+    body {
+      background: var(--mn-cream);
+      color: var(--mn-ink);
+      font-family: var(--mn-ff-body);
+      font-size: 1.0625rem;
+    }
+    /* Astro's width/height attributes would otherwise override aspect-ratio. */
+    #main-content img { height: auto; }
+    .mn-wrap { max-width: var(--mn-max); margin: 0 auto; padding: 0 1.5rem; }
+    .mn-eyebrow {
+      font-family: var(--mn-ff-body); font-weight: 700; font-size: .78rem;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--mn-crust);
+      display: inline-flex; align-items: center; gap: .6rem;
+    }
+    .mn-h2 {
+      font-family: var(--mn-ff-display); font-weight: 700; line-height: 1.1;
+      font-size: clamp(2rem, 4.4vw, 3.1rem); letter-spacing: -0.01em;
+    }
+    .mn-h2 em { font-style: italic; font-weight: 500; color: var(--mn-crust); }
+
+    .mn-btn {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-weight: 700; font-size: .95rem; padding: .85rem 1.4rem; border-radius: 999px;
+      border: 2px solid var(--mn-ink); transition: transform .25s var(--mn-ease), background .25s, box-shadow .25s;
+    }
+    .mn-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 -1px var(--mn-ink); }
+    .mn-btn--gold { background: var(--mn-gold); color: var(--mn-ink); }
+    .mn-btn--ghost { background: transparent; color: var(--mn-ink); }
+    .mn-btn--night { background: var(--mn-ink); color: var(--mn-cream); }
+    .mn-btn--night:hover { box-shadow: 0 6px 0 -1px var(--mn-gold); }
+
+    /* Preview strip */
+    .mn-preview {
+      background: var(--mn-ink); color: var(--mn-moonlight);
+      font-size: .8rem; text-align: center; padding: .45rem 1rem; letter-spacing: .02em;
+    }
+    .mn-preview a { color: var(--mn-butter); text-decoration: underline; text-underline-offset: 2px; }
+
+    /* Nav */
+    .mn-nav { position: sticky; top: 0; z-index: 50; background: rgba(251, 245, 233, .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--mn-line); }
+    .mn-nav__inner { max-width: var(--mn-max); margin: 0 auto; padding: .6rem 1.5rem; display: flex; align-items: center; gap: 2rem; }
+    .mn-nav__brand { display: flex; align-items: center; gap: .75rem; margin-right: auto; }
+    .mn-nav__logo { width: 52px; height: auto; }
+    .mn-nav__name { font-family: var(--mn-ff-display); font-weight: 800; font-size: 1.2rem; line-height: 1; }
+    .mn-nav__name i { color: var(--mn-gold); font-weight: 500; }
+    .mn-nav__name small { display: block; font-family: var(--mn-ff-body); font-weight: 500; font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--mn-ink-soft); margin-top: .3rem; }
+    .mn-nav__links { display: flex; gap: 1.75rem; }
+    .mn-nav__links a { font-weight: 700; font-size: .95rem; padding: .3rem 0; border-bottom: 2px solid transparent; transition: border-color .2s; }
+    .mn-nav__links a:hover, .mn-nav__links a[aria-current="page"] { border-bottom-color: var(--mn-gold); }
+    .mn-nav__cta { padding: .6rem 1.1rem; font-size: .88rem; }
+    @media (max-width: 760px) {
+      .mn-nav__inner { flex-wrap: wrap; gap: .5rem 1rem; }
+      .mn-nav__cta { display: none; }
+      .mn-nav__links { order: 3; width: 100%; justify-content: center; gap: 1.5rem; padding-top: .25rem; }
+      .mn-nav__name { font-size: 1.05rem; }
+    }
+
+    /* Footer: the page ends at night */
+    .mn-footer { position: relative; background: var(--mn-night); color: var(--mn-moonlight); padding: 5rem 1.5rem 3.5rem; overflow: hidden; }
+    .mn-footer__sky {
+      position: absolute; inset: 0; pointer-events: none; opacity: .7;
+      background-image:
+        radial-gradient(1.5px 1.5px at 12% 22%, #fff 50%, transparent 51%),
+        radial-gradient(1px 1px at 28% 64%, #fff 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 47% 18%, var(--mn-butter) 50%, transparent 51%),
+        radial-gradient(1px 1px at 63% 48%, #fff 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 81% 26%, #fff 50%, transparent 51%),
+        radial-gradient(1px 1px at 92% 72%, var(--mn-butter) 50%, transparent 51%),
+        radial-gradient(1px 1px at 6% 82%, #fff 50%, transparent 51%);
+    }
+    .mn-footer__inner { position: relative; max-width: var(--mn-max); margin: 0 auto; display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 3rem; }
+    .mn-footer__logo { width: 120px; height: auto; margin-bottom: 1.25rem; }
+    .mn-footer__quote { font-family: var(--mn-ff-display); font-style: italic; font-size: 1.25rem; line-height: 1.4; color: var(--mn-butter); max-width: 22ch; }
+    .mn-footer__h { font-family: var(--mn-ff-display); font-size: 1.15rem; margin-bottom: .9rem; color: #fff; }
+    .mn-footer p { color: rgba(233, 228, 214, .78); margin-bottom: .75rem; max-width: 34ch; }
+    .mn-footer__list li { margin-bottom: .5rem; }
+    .mn-footer__list a { color: var(--mn-moonlight); border-bottom: 1px solid rgba(244, 226, 140, .4); }
+    .mn-footer__list a:hover { color: var(--mn-butter); }
+    @media (max-width: 760px) { .mn-footer__inner { grid-template-columns: 1fr; gap: 2rem; } }
+
+    .db-credit { background: var(--mn-night); color: rgba(233, 228, 214, .6); border-top: 1px solid rgba(233, 228, 214, .1); text-align: center; font-size: .8rem; padding: 1rem 1.5rem; }
+    .db-credit a { color: var(--mn-butter); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .mn-btn, .reveal { transition: none !important; }
+      .reveal { opacity: 1 !important; transform: none !important; }
+    }
+  </style>
+</BaseLayout>
