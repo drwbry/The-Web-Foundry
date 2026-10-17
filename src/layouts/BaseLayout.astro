@@ -2,7 +2,7 @@
 import '../styles/shared.css';
 import { siteConfig } from '../config/site.js';
 
-const { title, description, ogImage = '/brand/foundry-mark.png' } = Astro.props;
+const { title, description, ogImage = '/brand/foundry-mark.png', ogImageAlt = `${siteConfig.name} mark` } = Astro.props;
 const canonicalPath = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/$/, '');
 const canonicalURL = new URL(canonicalPath, Astro.site || siteConfig.domain);
 const ogImageURL = new URL(ogImage, canonicalURL);
@@ -27,7 +27,7 @@ const ogImageURL = new URL(ogImage, canonicalURL);
     <meta property="og:url" content={canonicalURL.href} />
     <meta property="og:site_name" content={siteConfig.name} />
     <meta property="og:image" content={ogImageURL.href} />
-    <meta property="og:image:alt" content={`${siteConfig.name} mark`} />
+    <meta property="og:image:alt" content={ogImageAlt} />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />

@@ -44,6 +44,16 @@ Three rules govern these:
 
 For online ordering generally, see the ladder in `docs/features.md`. **GloriaFood is discontinued** (Oracle; retires 30 Apr 2027) — do not recommend it to any client.
 
+### Prospect demos (`/demo/<slug>`)
+
+Proof-of-concept rebuilds of a real prospect's site, sent to them as a pitch. They differ from the Concept showcases on purpose:
+
+- **Private.** Each page sets `noindex, nofollow`, and `astro.config.mjs` filters `/demo/` out of the sitemap. Don't list them on the hub or capture them with `npm run shots`. Otherwise our domain competes with the prospect's real listing.
+- **Own layout per prospect** in `src/components/demo/<slug>/`, wrapping `BaseLayout` with `DBCredit` and no `BackButton` (the prospect never came from the hub). Content lives in that folder's `data.js`.
+- **No Worker forms.** Link to the prospect's existing forms. Our Worker's fallback path would send their customers' orders to Foundry-branded emails.
+- **Their real photos, re-encoded with sharp** so the GPS EXIF is stripped. Phone photos from home businesses carry it.
+- **No home addresses.** Copy their own words rather than inventing claims, hours or reviews.
+
 ## Operational Runbooks
 
 Before changing forms, the shared Worker, client onboarding, showcase setup, DNS/email, or multi-tenant deployment, read `docs/operations-runbook.md`. Its safety checks and verification steps are mandatory. The form Worker is shared production infrastructure, so verify repository drift and deployment scope before any Worker deploy.
