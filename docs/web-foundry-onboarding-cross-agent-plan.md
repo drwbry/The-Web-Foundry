@@ -144,7 +144,7 @@ Perform these as separate, reviewable changes:
 
 - Validate the skill structure and metadata.
 - Keep the canonical directory under `db-design-website/skills/web-foundry-onboarding` so it is version-controlled.
-- Expose it through symlinks in both user skill directories. The original Claude copy is preserved at `~/.claude/skills/web-foundry-onboarding.pre-shared-20260801` until testing passes.
+- Expose it through symlinks in both user skill directories. The original Claude copy was moved out of the skills folder on 2026-10-18 and is archived at `~/.claude/archive/2026-10-18-config-tuneup/web-foundry-onboarding.pre-shared-20260801`.
 - Restart both tools so skill discovery refreshes.
 - Run one dry-run net-new scenario and one takeover scenario in each agent.
 - Confirm both agents resume from the same `docs/onboarding-state.md` and stop at the same manual gates.
@@ -164,7 +164,7 @@ Claude Code should perform or audit the Claude-facing portion of the refactor:
 
 Suggested Claude Code audit prompt:
 
-> Read `docs/web-foundry-onboarding-cross-agent-plan.md`, the canonical `skills/web-foundry-onboarding/` tree, and the preserved source at `~/.claude/skills/web-foundry-onboarding.pre-shared-20260801/SKILL.md`. Audit the completed refactor for Claude Code compatibility and source coverage without weakening Phase 0–10 or Migration M1–M9 orchestration. Confirm that every phase explicitly loads its reference, manual gates and safety warnings survived, `AGENTS.md` is canonical with a thin `CLAUDE.md` import, and Claude-specific adapters still work. Do not expose or migrate secrets. Test one mock takeover and one resumed workflow, then report gaps before changing the canonical files.
+> Read `docs/web-foundry-onboarding-cross-agent-plan.md`, the canonical `skills/web-foundry-onboarding/` tree, and the preserved source at `~/.claude/archive/2026-10-18-config-tuneup/web-foundry-onboarding.pre-shared-20260801/SKILL.md`. Audit the completed refactor for Claude Code compatibility and source coverage without weakening Phase 0–10 or Migration M1–M9 orchestration. Confirm that every phase explicitly loads its reference, manual gates and safety warnings survived, `AGENTS.md` is canonical with a thin `CLAUDE.md` import, and Claude-specific adapters still work. Do not expose or migrate secrets. Test one mock takeover and one resumed workflow, then report gaps before changing the canonical files.
 
 Claude should treat this as a review-first handoff: record findings and proposed changes in its shared plan before editing the canonical skill. After Dreux approves the findings, Claude may implement narrowly scoped compatibility fixes in the canonical directory so both agents receive the same changes.
 
@@ -266,7 +266,7 @@ import duplication the reference itself warns about.
   Codex CLI/adapter path. The "unverified third-party MCP package" warning is now scoped to Codex,
   where it belongs; previously it read as a blanket warning steering Claude away from a Coolify MCP
   it already has connected. All least-privilege and confirm-before-deploy rules are unchanged.
-- `~/.claude/skills/web-foundry-onboarding.pre-shared-20260801/SKILL.md` — its description was
+- `~/.claude/archive/2026-10-18-config-tuneup/web-foundry-onboarding.pre-shared-20260801/SKILL.md` — its description was
   trigger-competitive with the canonical skill, so a real onboarding could have invoked the stale
   1,569-line copy. The `name:` field and description now mark it archived. The 1,569-line body is
   untouched and remains a working rollback.
