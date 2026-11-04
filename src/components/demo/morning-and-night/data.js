@@ -1,7 +1,10 @@
 // Content for the Morning & Night Bakery Delights proof-of-concept (/demo/morning-and-night).
-// Transcribed from the prospect's Wix site (morningandnight.wixsite.com/bakerydelights)
-// in October 2026. Prices are copied as written there, including the $14.50 frosted
-// full tray. Her street address is deliberately left off: it's a home bakery.
+// Transcribed from the prospect's Wix site (morningandnight.wixsite.com/bakerydelights):
+// the home page menu and the monthly menu page (november-monthly-menu), November 2026.
+// Prices are copied as written there, including the $14.50 frosted full tray.
+// Her street address is deliberately left off: it's a home bakery.
+//
+// Monthly refresh: update flavorOfTheMonth, stands, and any menu items that changed.
 
 export const base = '/demo/morning-and-night';
 
@@ -16,36 +19,26 @@ export const links = {
 };
 
 export const flavorOfTheMonth = {
-  month: 'October',
-  flavor: 'Pumpkin',
+  month: 'November',
+  flavor: 'Cinnamon',
+  // Shown under the stand dates. Optional; omit when there's nothing extra to say.
+  note: 'Only one sale date this month. If you need more, send a custom order request. The last day to pick up baked goods before Thanksgiving is Monday, November 23.',
 };
 
-// ISO dates so the page script can mark past stands and highlight the next one.
+// ISO dates so the page scripts can mark past stands and highlight the next one.
+// Once every stand has passed, the pages switch to a "dates coming soon" message.
 export const stands = [
   {
-    date: '2026-10-03',
-    label: 'Saturday, October 3',
-    preorder: 'Sept. 26 to 28',
-    specials: ['Pumpkin Chocolate Chip Muffins', 'Spiced Pumpkin Mini Cupcakes'],
-    alsoAvailable: ['Cinnamon Swirl Bread', 'Classic Cinnamon Rolls', 'Cinnamon Streusel Muffins', 'Chocolate Chip Cookies', 'Iced Sugar Cookies', 'Brownie Quartets & Trays'],
-  },
-  {
-    date: '2026-10-17',
-    label: 'Saturday, October 17',
-    preorder: 'Oct. 10 to 12',
-    specials: ['Pumpkin Chocolate Chip Muffins', 'Pumpkin Snickerdoodle Cookies', 'Pumpkin Cinnamon Rolls'],
-    alsoAvailable: ['Cinnamon Swirl Bread', 'Cinnamon Rolls', 'Blueberry Muffins', 'Peanut Butter Cookies', 'Brownie Quartets'],
-  },
-  {
-    date: '2026-10-31',
-    label: 'Saturday, October 31',
-    preorder: 'Oct. 24 to 26',
-    specials: ['Pumpkin Chocolate Chip Muffins', 'Pumpkin Cinnamon Rolls'],
-    alsoAvailable: ['Cinnamon Swirl Bread', 'Cinnamon Rolls', 'Apple Cinnamon Muffins', 'Vanilla Cake Cups', 'Rice Crispy Treats', "Chocolate Chip & S'mores Cookies", 'Iced Sugar Cookies', 'Brownie Quartets'],
+    date: '2026-11-14',
+    label: 'Saturday, November 14',
+    preorder: 'Nov. 7 to 9',
+    specials: ['Cinnamon Coffee Cake Muffins', 'Apple Cinnamon Muffins', 'Blueberry Coffee Cake Muffins', 'Snickerdoodle Cookies', 'Cinnamon Rolls', 'Cinnamon Swirl Bread'],
+    alsoAvailable: ['Chocolate Chip Cookies', 'Peanut Butter Cookies', 'Brownie Quartets & Trays'],
   },
 ];
 
 // `time` drives the sun/moon marker: morning treats vs. evening treats.
+// `seasonal` items get the flavor-of-the-month tag.
 export const menu = [
   {
     id: 'breads',
@@ -54,13 +47,8 @@ export const menu = [
     items: [
       {
         name: 'Cinnamon Swirl Bread',
-        prices: [['1-lb loaf', '$10.00'], ['1/2-lb loaf', '$6.00']],
-      },
-      {
-        name: 'Pumpkin Bread',
         seasonal: true,
-        desc: 'Moist, tender pumpkin bread spiced with cinnamon and nutmeg. Order it plain or studded with chocolate chips.',
-        prices: [['3/4-lb loaf', '$8.00']],
+        prices: [['1-lb loaf', '$10.00'], ['1/2-lb loaf', '$6.00']],
       },
     ],
   },
@@ -71,14 +59,9 @@ export const menu = [
     items: [
       {
         name: 'Classic Cinnamon Rolls',
+        seasonal: true,
         desc: 'Filled with a gooey cinnamon sugar filling and topped with a sweet vanilla glaze. Add cream cheese frosting for $0.50 more per roll.',
         prices: [['Full tray (9 rolls)', '$12.00', 'with frosting $14.50'], ['Small tray (4 rolls)', '$6.00', 'with frosting $8.00']],
-      },
-      {
-        name: 'Pumpkin Cinnamon Rolls',
-        seasonal: true,
-        desc: 'Soft, fluffy rolls made with pumpkin in the dough, filled with warm cinnamon sugar and spices, and finished with vanilla glaze.',
-        prices: [['Full tray (9 rolls)', '$14.00'], ['Small tray (4 rolls)', '$8.00']],
       },
     ],
   },
@@ -86,16 +69,22 @@ export const menu = [
     id: 'muffins',
     title: 'Muffins',
     time: 'morning',
-    note: 'Dozen and half dozen orders can be split half and half between the two kinds.',
+    note: 'Dozen and half dozen orders can mix two or three kinds.',
     items: [
       {
-        name: 'Pumpkin Muffins',
+        name: 'Cinnamon Streusel',
         seasonal: true,
-        desc: 'Warmly spiced with cinnamon and nutmeg. Plain or with chocolate chips.',
+        desc: 'Buttery muffins with cinnamon sugar streusel layered in the middle and sprinkled on top.',
       },
       {
-        name: 'Blueberry Coffee Cake Muffins',
-        desc: 'A buttery muffin with juicy blueberries and a sweet cinnamon streusel on top. Made for your morning coffee.',
+        name: 'Blueberry Coffee Cake',
+        seasonal: true,
+        desc: 'A buttery muffin with juicy blueberries and a sweet cinnamon streusel on top.',
+      },
+      {
+        name: 'Apple Cinnamon',
+        seasonal: true,
+        desc: 'Buttery muffins studded with apples, with cinnamon sugar streusel in the middle and on top.',
       },
     ],
     prices: [['Half dozen', '$14.00'], ['Individual', '$3.00']],
@@ -108,40 +97,25 @@ export const menu = [
       {
         name: 'Chocolate Chip',
         desc: 'Soft, buttery centers, crisp edges, and plenty of chocolate chips.',
-        prices: [['10-ct', '$10.00'], ['3-ct', '$4.00']],
+        prices: [['10-ct', '$10.00'], ['4-ct', '$5.00']],
       },
       {
-        name: 'Peanut Butter',
-        desc: 'With or without chocolate chips.',
-        prices: [['8-ct', '$10.00'], ['3-ct', '$5.00']],
-      },
-      {
-        name: 'Pumpkin Snickerdoodles',
+        name: 'Peanut Butter or Classic Snickerdoodle',
         seasonal: true,
-        desc: 'Pumpkin flavor rolled in the classic cinnamon sugar coating.',
+        desc: 'Same price for either. Peanut butter comes with or without chocolate chips.',
         prices: [['8-ct', '$10.00'], ['3-ct', '$5.00']],
-      },
-      {
-        name: 'Classic Snickerdoodles',
-        prices: [['12-ct', '$14.00']],
       },
     ],
   },
   {
     id: 'brownies',
-    title: 'Brownies & Cakes',
+    title: 'Brownies',
     time: 'night',
     items: [
       {
         name: 'Brownie Quartet',
         desc: "Fudgy brownies with chocolate chips and a dusting of powdered sugar. The premium mix is 2 classic and 2 topped: celebration (vanilla buttercream and sprinkles), party (chocolate buttercream and candy-coated chocolate chips), or s'mores (toasted mini marshmallows and graham cracker).",
         prices: [['4-ct classic', '$7.00'], ['4-ct classic + premium', '$8.00']],
-      },
-      {
-        name: 'Spiced Pumpkin Mini Bundt Cakes',
-        seasonal: true,
-        desc: 'Light, airy pumpkin angel food cake with seasonal spices in every bite.',
-        prices: [['Single', '$4.00'], ['4-ct', '$13.00']],
       },
     ],
   },

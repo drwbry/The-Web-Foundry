@@ -12,7 +12,8 @@ import leafCookies from '../../../assets/demo/morning-and-night/leaf-cookies.jpg
 
 // Build-time guess at the next stand; the inline script below re-checks in the browser.
 const today = new Date().toISOString().slice(0, 10);
-const nextIndex = Math.max(0, stands.findIndex((s) => s.date >= today));
+// -1 means every listed stand has passed, so the card shows the "dates coming soon" slide.
+const nextIndex = stands.findIndex((s) => s.date >= today);
 
 const morning = [
   { img: swirlBread, name: 'Cinnamon Swirl Bread', note: 'From $6 a loaf' },
@@ -82,6 +83,17 @@ const night = [
             </div>
           </div>
         ))}
+        <div class="stand__slide stand__slide--soon" data-soon hidden={nextIndex !== -1}>
+          <div class="stand__when">
+            <p class="stand__label">Front porch stand</p>
+            <p class="stand__date">New dates coming soon</p>
+            <p class="stand__pre">The next stand dates go out to the email list first.</p>
+          </div>
+          <div class="stand__cta">
+            <a class="mn-btn mn-btn--gold" href={links.emailList} target="_blank" rel="noopener">Join the email list</a>
+          </div>
+        </div>
+        {flavorOfTheMonth.note && <p class="stand__note">{flavorOfTheMonth.note}</p>}
       </div>
     </div>
   </section>
@@ -177,11 +189,12 @@ const night = [
     (function () {
       var d = new Date();
       var today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-      var slides = document.querySelectorAll('.stand__slide');
+      var slides = document.querySelectorAll('.stand__slide[data-date]');
+      var soon = document.querySelector('[data-soon]');
       var next = null;
       slides.forEach(function (s) { if (!next && s.dataset.date >= today) next = s; });
-      if (!next) next = slides[slides.length - 1];
       slides.forEach(function (s) { s.hidden = s !== next; });
+      soon.hidden = !!next;
     })();
   </script>
 
@@ -213,11 +226,13 @@ const night = [
     .stand__slide { position: relative; display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 2.4rem; align-items: center; }
     .stand__slide[hidden] { display: none; }
     .stand__label { font-size: .74rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--mn-butter); margin-bottom: .5rem; }
-    .stand__date { font-family: var(--mn-ff-display); font-size: clamp(1.6rem, 2.8vw, 2.2rem); font-weight: 700; color: #fff; line-height: 1.1; }
+    .stand__date { font-family: var(--mn-ff-display); font-size: clamp(1.6rem, 2.8vw, 2.2rem); font-weight: 700; color: #fff; line-height: 1.1; text-wrap: balance; }
     .stand__pre { margin-top: .5rem; color: rgba(233,228,214,.8); }
     .stand__pre strong { color: #fff; }
     .stand__list li { padding: .3rem 0 .3rem 1.4rem; position: relative; }
     .stand__list li::before { content: ''; position: absolute; left: 0; top: .78rem; width: 8px; height: 8px; border-radius: 50%; background: var(--mn-gold); }
+    .stand__slide--soon { grid-template-columns: 2.1fr 1fr; }
+    .stand__note { position: relative; margin-top: 1.8rem; padding-top: 1.2rem; border-top: 1px solid rgba(233,228,214,.15); font-size: .95rem; color: rgba(233,228,214,.8); }
     .stand__cta p { font-size: .9rem; color: rgba(233,228,214,.7); margin-top: .75rem; }
     .stand__cta .mn-btn { border-color: var(--mn-gold); }
     .stand__cta .mn-btn:hover { box-shadow: 0 6px 0 -1px var(--mn-butter); }

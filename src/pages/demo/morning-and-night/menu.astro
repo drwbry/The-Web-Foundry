@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import Layout from '../../../components/demo/morning-and-night/Layout.astro';
 import { links, stands, menu, glutenFree, flavorOfTheMonth } from '../../../components/demo/morning-and-night/data.js';
-import pumpkinMuffins from '../../../assets/demo/morning-and-night/pumpkin-muffins.jpg';
+import muffins from '../../../assets/demo/morning-and-night/streusel-muffins.jpg';
 import glazedRolls from '../../../assets/demo/morning-and-night/glazed-rolls.jpg';
 ---
 <Layout
@@ -21,16 +21,17 @@ import glazedRolls from '../../../assets/demo/morning-and-night/glazed-rolls.jpg
         </p>
       </div>
       <div class="mhead__photos" aria-hidden="true">
-        <Image src={pumpkinMuffins} alt="" widths={[300, 520]} sizes="220px" class="mhead__p mhead__p--1" loading="eager" />
+        <Image src={muffins} alt="" widths={[300, 520]} sizes="220px" class="mhead__p mhead__p--1" loading="eager" />
         <Image src={glazedRolls} alt="" widths={[300, 520]} sizes="220px" class="mhead__p mhead__p--2" loading="eager" />
       </div>
     </div>
   </section>
 
   <!-- STAND DATES -->
-  <section class="dates" aria-labelledby="dates-title">
+  <section class:list={["dates", { "dates--single": stands.length === 1 }]} aria-labelledby="dates-title">
     <div class="mn-wrap">
       <h2 id="dates-title" class="dates__title">Porch stand dates</h2>
+      <div class="dates__body">
       <ol class="dates__list">
         {stands.map((s) => (
           <li class="date" data-date={s.date}>
@@ -44,10 +45,15 @@ import glazedRolls from '../../../assets/demo/morning-and-night/glazed-rolls.jpg
           </li>
         ))}
       </ol>
+      <div class="dates__aside">
+      <p class="dates__soon" data-soon hidden>New dates are coming soon. They go out to the email list first.</p>
+      {flavorOfTheMonth.note && <p class="dates__month-note">{flavorOfTheMonth.note}</p>}
       <p class="dates__note">
         The pre-order link goes out by email when each window opens.
         <a href={links.emailList} target="_blank" rel="noopener">Join the list</a> so you don&rsquo;t miss it.
       </p>
+      </div>
+      </div>
     </div>
   </section>
 
@@ -151,6 +157,7 @@ import glazedRolls from '../../../assets/demo/morning-and-night/glazed-rolls.jpg
         if (el.dataset.date < today) { el.classList.add('is-past'); status.textContent = 'Past'; }
         else if (!foundNext) { foundNext = true; el.classList.add('is-next'); status.textContent = el.dataset.date === today ? 'Today' : 'Up next'; }
       });
+      if (!foundNext) document.querySelector('[data-soon]').hidden = false;
     })();
   </script>
 
@@ -172,7 +179,7 @@ import glazedRolls from '../../../assets/demo/morning-and-night/glazed-rolls.jpg
     /* DATES */
     .dates { padding: 3.5rem 0; background: var(--mn-night); color: var(--mn-moonlight); }
     .dates__title { font-family: var(--mn-ff-display); font-size: 1.6rem; color: #fff; margin-bottom: 1.5rem; }
-    .dates__list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    .dates__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.2rem; }
     .date { border: 1px solid rgba(233,228,214,.18); border-radius: 18px; padding: 1.5rem; transition: opacity .3s; }
     .date.is-next { border-color: var(--mn-gold); background: rgba(231,181,58,.08); }
     .date.is-past { opacity: .45; }
@@ -182,6 +189,12 @@ import glazedRolls from '../../../assets/demo/morning-and-night/glazed-rolls.jpg
     .date__items li { font-size: .92rem; padding: .18rem 0; color: rgba(233,228,214,.85); }
     .date__special { color: var(--mn-butter) !important; font-weight: 700; }
     .date__special::before { content: '\2605  '; }
+    .dates--single .dates__body { display: grid; grid-template-columns: minmax(280px, 380px) 1fr; gap: 2rem; align-items: start; }
+    .dates__aside { display: flex; flex-direction: column; gap: 1.4rem; margin-top: 1.6rem; }
+    .dates__aside > * { margin: 0 !important; }
+    .dates--single .dates__aside { margin-top: 0; }
+    .dates__soon, .dates__month-note { margin-top: 1.4rem; padding: 1rem 1.2rem; border-left: 3px solid var(--mn-gold); background: rgba(231,181,58,.08); color: #fff; max-width: 70ch; }
+    .dates__soon[hidden] { display: none; }
     .dates__note { margin-top: 1.6rem; color: rgba(233,228,214,.8); }
     .dates__note a { color: var(--mn-butter); font-weight: 700; border-bottom: 1px solid currentColor; }
 
@@ -231,6 +244,7 @@ import glazedRolls from '../../../assets/demo/morning-and-night/glazed-rolls.jpg
       .mhead__photos { height: 260px; max-width: 380px; }
       .mhead__p { width: 160px; }
       .dates__list { grid-template-columns: 1fr; }
+      .dates--single .dates__body { grid-template-columns: 1fr; }
       .gf { padding: 1.8rem 1.4rem; gap: 1.5rem; }
       .policy__grid { gap: 2.5rem; }
     }
