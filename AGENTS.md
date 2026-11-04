@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A showcase website for **The Web Foundry** (Cincinnati locale), a community initiative that rebuilds outdated local business websites using AI vibe coding. The site demonstrates capabilities and serves as a template for future client sites. The overarching brand is "The Web Foundry" — Cincinnati is the current locale, with potential future expansion to other locales (e.g. Brown County, IN) each getting their own site with minor localization.
+A showcase website for **The Web Foundry** (Cincinnati locale), a community initiative that rebuilds outdated local business websites with AI development tools. Never use the phrase "vibe coding" in any copy. The site demonstrates capabilities and serves as a template for future client sites. The overarching brand is "The Web Foundry" — Cincinnati is the current locale, with potential future expansion to other locales (e.g. Brown County, IN) each getting their own site with minor localization.
 
 Astro static site + embedded Sanity Studio (deployed at `cincinnati-web-foundry.sanity.studio`), deployed GitHub → Coolify on push. For a visual overview of the whole website factory (stack, intake, build/deploy, form routing, Sanity update loop), open `docs/website-factory-map.html`.
 
