@@ -2,7 +2,8 @@
 // Shared shell for the Morning & Night Bakery Delights proof of concept.
 // A private prospect pitch, not a portfolio concept: noindex, excluded from the
 // sitemap (astro.config.mjs), and not listed on the hub. No "Back to concepts"
-// button, since the prospect never came from the hub.
+// button; instead a floating "Back to The Web Foundry" link, since the demo is
+// also sent to other prospects as a sample.
 import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import DBCredit from '../../DBCredit.astro';
@@ -74,6 +75,11 @@ const nav = [
     </div>
   </footer>
   <DBCredit />
+
+  <a href="/" class="mn-foundry">
+    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg>
+    <span class="mn-foundry__text"><small>Like this site?</small>Back to The Web Foundry</span>
+  </a>
 
   <style is:global>
     :root {
@@ -176,7 +182,30 @@ const nav = [
     .db-credit { background: var(--mn-night); color: rgba(233, 228, 214, .6); border-top: 1px solid rgba(233, 228, 214, .1); text-align: center; font-size: .8rem; padding: 1rem 1.5rem; }
     .db-credit a { color: var(--mn-butter); }
 
+    /* Floating link back to the Foundry hub. Styled in Foundry rust, not the
+       bakery palette, so it reads as ours and not part of her site. */
+    .mn-foundry {
+      position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 60;
+      display: inline-flex; align-items: center; gap: .7rem;
+      padding: .75rem 1.25rem .75rem 1rem; border-radius: 999px;
+      background: #b45a3c; color: #fff; font-family: var(--mn-ff-body);
+      box-shadow: 0 10px 28px -8px rgba(28, 35, 48, .55), 0 0 0 3px rgba(255, 255, 255, .85);
+      transition: transform .25s var(--mn-ease), background .25s;
+    }
+    .mn-foundry:hover { background: #c96a4c; transform: translateY(-3px); }
+    .mn-foundry:focus-visible { outline: 3px solid var(--mn-ink); outline-offset: 3px; }
+    .mn-foundry svg { width: 20px; height: 20px; flex: none; }
+    .mn-foundry__text { display: flex; flex-direction: column; line-height: 1.15; font-weight: 700; font-size: .95rem; }
+    .mn-foundry__text small { font-weight: 500; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+    /* Room so the button never covers the credit line at the very bottom. */
+    .db-credit { padding-bottom: 5.5rem; }
+    @media (max-width: 760px) {
+      .mn-foundry { right: .75rem; bottom: .75rem; padding: .65rem 1rem .65rem .85rem; }
+      .mn-foundry__text { font-size: .88rem; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
+      .mn-foundry { transition: none; }
       .mn-btn, .reveal { transition: none !important; }
       .reveal { opacity: 1 !important; transform: none !important; }
     }

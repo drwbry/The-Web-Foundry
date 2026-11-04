@@ -49,7 +49,7 @@ For online ordering generally, see the ladder in `docs/features.md`. **GloriaFoo
 Proof-of-concept rebuilds of a real prospect's site, sent to them as a pitch. They differ from the Concept showcases on purpose:
 
 - **Private.** Each page sets `noindex, nofollow`, and `astro.config.mjs` filters `/demo/` out of the sitemap. Don't list them on the hub or capture them with `npm run shots`. Otherwise our domain competes with the prospect's real listing.
-- **Own layout per prospect** in `src/components/demo/<slug>/`, wrapping `BaseLayout` with `DBCredit` and no `BackButton` (the prospect never came from the hub). Content lives in that folder's `data.js`.
+- **Own layout per prospect** in `src/components/demo/<slug>/`, wrapping `BaseLayout` with `DBCredit` and no `BackButton` (the prospect never came from the hub). Add a floating "Back to The Web Foundry" link to `/` instead, in Foundry rust rather than the prospect's palette, because demos also get sent to other prospects as samples. Content lives in that folder's `data.js`.
 - **No Worker forms.** Link to the prospect's existing forms. Our Worker's fallback path would send their customers' orders to Foundry-branded emails.
 - **Their real photos, re-encoded with sharp** so the GPS EXIF is stripped. Phone photos from home businesses carry it.
 - **No home addresses.** Copy their own words rather than inventing claims, hours or reviews.
