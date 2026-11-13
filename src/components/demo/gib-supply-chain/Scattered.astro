@@ -1,0 +1,25 @@
+---
+import {Image} from 'astro:assets';
+import {shot} from './images.js';
+const screen=shot('gib-operations-dashboard-with-menu-options.png');
+const chips=['MD04','MD07','ME58','CO24','Excel export','VLOOKUP','Email thread','Another report'];
+const steps=[['Alert','Catch shortages and exceptions early.'],['Analysis','See the full material position across plants in one view.'],['Action','Trigger the purchase or reschedule without leaving SAP.']];
+---
+<div class="gib-scattered">
+  <div><p class="gib-before-label">Today: spread across SAP</p><div class="gib-chips" aria-hidden="true">{chips.map((text,i) => <span style={`transform:rotate(${[3,-4,2,-2,4,-3,2,-1][i]}deg)`}>{text}</span>)}</div><p class="gib-sr">Today the same information is spread across separate SAP transactions, spreadsheets and email.</p></div>
+  <div class="gib-arrow" aria-hidden="true"><span>One cockpit</span><span>⟶</span></div>
+  <div><div class="gib-after"><div class="gib-after-bar"><span aria-hidden="true"><i></i><i></i><i></i></span>GIB Operations</div><a href={screen.src} target="_blank" rel="noopener"><Image src={screen} alt="GIB Operations material overview with shortage traffic lights" widths={[640,960,1280]} sizes="(min-width:900px) 45vw, 100vw" /></a></div><ul class="gib-after-steps">{steps.map(([title,text]) => <li><i aria-hidden="true"></i><div><strong>{title}</strong> {text}</div></li>)}</ul></div>
+</div>
+<style>
+.gib-scattered {display:grid;grid-template-columns:1fr 140px 1.4fr;align-items:center;gap:1.5rem;margin-top:3rem;}
+.gib-before-label {font:.78rem var(--gib-ff-mono);text-transform:uppercase;color:var(--gib-muted);}
+.gib-chips {display:flex;flex-wrap:wrap;align-content:center;gap:.8rem .3rem;min-height:230px;padding:1rem;}
+.gib-chips span {font:.9rem var(--gib-ff-mono);padding:.75rem 1rem;border:1px solid var(--gib-line);border-radius:6px;background:white;box-shadow:var(--gib-shadow);margin-left:-.4rem;}
+.gib-arrow {text-align:center;font:.75rem var(--gib-ff-mono);color:var(--gib-muted);} .gib-arrow span {display:block;} .gib-arrow span:last-child {font-size:4rem;line-height:1;}
+.gib-after {border:1px solid var(--gib-ink-3);border-radius:14px;overflow:hidden;background:var(--gib-ink);box-shadow:var(--gib-shadow);}
+.gib-after-bar {height:40px;display:flex;align-items:center;gap:1rem;background:var(--gib-ink-2);color:var(--gib-on-dark);font:.75rem var(--gib-ff-mono);padding:0 1rem;}
+.gib-after-bar span {display:flex;gap:5px;} i {width:9px;height:9px;border-radius:50%;display:inline-block;background:var(--gib-red);flex:none;} i:nth-child(2) {background:var(--gib-amber);} i:nth-child(3) {background:var(--gib-green);}
+.gib-after img {width:100%;display:block;} .gib-after-steps {list-style:none;padding:0;margin-top:1.5rem;font-size:.9rem;} .gib-after-steps li {display:flex;gap:.7rem;align-items:baseline;margin-top:.7rem;} .gib-after-steps li:nth-child(2)>i {background:var(--gib-amber);} .gib-after-steps li:nth-child(3)>i {background:var(--gib-green);}
+.gib-sr {position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;}
+@media(max-width:899px) {.gib-scattered {grid-template-columns:1fr;} .gib-chips {min-height:150px;} .gib-arrow span:last-child {transform:rotate(90deg);padding:.75rem;}}
+</style>

@@ -509,3 +509,9 @@ export const faq = [
     "a": "Yes. GIB ensures that planning signals , whether from SAP IBP or a third-party solution , translate into faster, more coordinated execution inside SAP."
   }
 ];
+export const moduleViews = Object.values(products).map(p => ({
+  key: p.slug, title: p.name, kicker: p.category, text: p.summary,
+  bullets: p.features, shot: p.tabShot, alt: `${p.name} supply chain cockpit inside SAP`,
+  href: `${base}/${p.slug}`, hrefLabel: `Open ${p.name}`,
+  tag: p.popular ? 'Most popular' : undefined,
+}));
