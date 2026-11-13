@@ -2,7 +2,7 @@
 import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import DBCredit from '../../DBCredit.astro';
-import logo from '../../../assets/demo/gib-supply-chain/logo-white.png';
+import logo from '../../../assets/demo/gib-supply-chain/logo-supply-chain-essentials.png';
 import ogPhoto from '../../../assets/demo/gib-supply-chain/hero-home.png';
 import { base, links, products } from './data.js';
 const { title, description, current } = Astro.props;
@@ -20,7 +20,7 @@ const isCurrent = (href) => Astro.url.pathname.replace(/\/$/, '') === href;
   <div class="gib-preview" role="note">Concept preview by <a href="/">The Web Foundry</a> for GIB Supply Chain</div>
   <header class="gib-nav">
     <div class="gib-wrap gib-nav-inner">
-      <a href={base} class="gib-brand" aria-label="GIB Supply Chain home"><Image src={logo} alt="GIB Supply Chain" height={44} loading="eager" /></a>
+      <a href={base} class="gib-brand" aria-label="GIB Supply Chain home"><Image src={logo} alt="GIB supply chain essentials" height={44} loading="eager" /></a>
       <nav aria-label="Main" class="gib-desktop">
         <ul class="gib-nav-links">
           <li class="gib-dropdown"><button type="button" aria-expanded="false" aria-controls="gib-platform-menu" class:list={['gib-nav-trigger', {'gib-active':current==='platform'}]}>Platform <span aria-hidden="true">⌄</span></button><ul id="gib-platform-menu" hidden>{platform.map(n => <li><a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}<small>{n.category}</small></a></li>)}</ul></li>
@@ -35,7 +35,7 @@ const isCurrent = (href) => Astro.url.pathname.replace(/\/$/, '') === href;
   </header>
   <main id="main-content"><slot /></main>
   <footer class="gib-footer"><div class="gib-wrap">
-    <div class="gib-footer-grid"><div><Image src={logo} alt="GIB Supply Chain" width={150} /><p>GIB is developed and delivered by ifm Supply Chain, a division of ifm efector.</p></div>
+    <div class="gib-footer-grid"><div><Image src={logo} alt="GIB supply chain essentials" width={180} class="gib-footer-logo" /><p>GIB is developed and delivered by ifm Supply Chain, a division of ifm efector.</p></div>
       {[{title:'Platform',items:platform},{title:'Company',items:company},{title:'Resources',items:resources}].map(group => <div><h2>{group.title}</h2><ul>{group.items.map(n => <li><a href={n.href} target={n.href.startsWith('https:') ? '_blank' : undefined} rel={n.href.startsWith('https:') ? 'noopener' : undefined}>{n.label}</a></li>)}</ul></div>)}
     </div>
     <div class="gib-footer-bottom"><span>© 2026 GIB USA, an ifm company</span><a href={links.privacy}>Privacy Policy</a></div>
@@ -124,7 +124,7 @@ body { background:var(--gib-paper); color:var(--gib-text); font-family:var(--gib
 .gib-preview a {text-decoration:underline;}
 .gib-nav {position:sticky;top:0;z-index:50;background:var(--gib-ink);color:var(--gib-on-dark);border-bottom:1px solid var(--gib-ink-3);}
 .gib-nav-inner {display:flex;gap:1.5rem;align-items:center;height:68px;}
-.gib-brand {margin-right:auto;flex:none;} .gib-brand img {height:44px;width:auto;}
+.gib-brand {margin-right:auto;flex:none;display:inline-flex;padding:6px 10px;background:var(--gib-white);border-radius:6px;} .gib-brand img {height:44px;width:auto;}
 .gib-nav-links {display:flex;align-items:center;gap:1.3rem;list-style:none;margin:0;padding:0;font-size:.9rem;}
 .gib-nav-links>li>a,.gib-nav-trigger {display:flex;align-items:center;min-height:44px;border-bottom:2px solid transparent;}
 .gib-nav button {font:inherit;color:inherit;cursor:pointer;}
@@ -140,6 +140,7 @@ body { background:var(--gib-paper); color:var(--gib-text); font-family:var(--gib
 #gib-mobile-menu ul {padding:1rem 1.5rem;list-style:none;} #gib-mobile-menu a {display:block;padding:.65rem 0;min-height:44px;}
 .gib-footer {background:var(--gib-ink);color:var(--gib-on-dark-muted);padding:4rem 0 1.5rem;font-size:.9rem;}
 .gib-footer-grid {display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:3rem;}
+.gib-footer-logo {width:180px;height:auto;padding:8px 12px;background:var(--gib-white);border-radius:6px;}
 .gib-footer-grid p {margin-top:1.5rem;} .gib-footer h2 {font-size:1rem;color:var(--gib-on-dark);margin-bottom:1rem;}
 .gib-footer ul {list-style:none;padding:0;} .gib-footer li a {display:inline-flex;align-items:center;min-height:44px;}
 .gib-footer a:hover {color:var(--gib-orange);} .gib-footer-bottom {display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-top:1px solid var(--gib-ink-3);padding-top:1.5rem;margin-top:3rem;}
