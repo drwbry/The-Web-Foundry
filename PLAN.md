@@ -1,6 +1,6 @@
 # Plan: GIB Supply Chain prospect demo at /demo/gib-supply-chain
 
-Status: built, ready for owner review
+Status: done (reviewed by Claude Code 2026-11-13; not merged to main)
 Planned by: Claude Code, 2026-11-13
 Builder: any (Codex Luna high, Sonnet, Haiku, or OMP with DeepSeek subagents)
 Built by: Codex (GPT-6), 2026-11-13
@@ -172,3 +172,5 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 12. Visual: production preview opened all ten pages at 1440, 768 and 390px in installed Chromium 130.0.6723.31 via Playwright 1.61.1. No horizontal overflow, broken images or page script errors; menu toggle/Tab/Escape/outside click, focus rings across every page, cockpit arrows/hash/native reveal and no-JS initial view pass. Reduced-motion counters retain their real values; smooth scrolling, reveals and transitions respect the preference. Specified type sizes restored. Saved 30 fully loaded full-page screenshots plus checks.json and first-screen review sheets in /tmp/gib-demo-shots/. A long Chromium capture run exited during its final focus loop after all captures; those checks passed in a fresh browser. Firefox, Safari and Edge were not available/tested. Browser Find toolbar remains manual; native text searchability and text-fragment beforematch reveal were verified.
 
 Final review: all prescribed content is included except narrative AI feature introductions, as noted above. Explicit section order/tones and full supplied hero copy were retained over general visual heuristics; long mobile heroes place their images below the first fold. No source assets, shared infrastructure, hub, sitemap configuration or dependencies changed. All Done when checks pass; committed on the original branch without push or merge.
+
+Planner review (Claude Code, 2026-11-13): rebuilt and re-ran the step 11 checks, all pass. Checked ten pages in Chromium at 1440 and 390 wide: no overflow, no console errors, cockpit tabs and menus work. Two small fixes made in review: SAP badge sizes evened out (the source images have different built-in whitespace), and the phone cockpit rail now starts with the selected pill in view. Not checked: Safari, Firefox, real phones.

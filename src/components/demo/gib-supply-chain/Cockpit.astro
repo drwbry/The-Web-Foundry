@@ -50,6 +50,8 @@ const number = (n) => String(n+1).padStart(2,'0');
     const fromHash = () => { const index=panels.findIndex(p => `#${p.id}`===location.hash); if(index>=0) select(index,false,false); };
     const orientation = () => rail.setAttribute('aria-orientation',mobile.matches?'horizontal':'vertical');
     mobile.addEventListener('change',orientation); orientation();
+    // Bring the starting pill into view on phones without scrolling the page.
+    const current = tabs.find(t => t.getAttribute('aria-selected')==='true'); if (mobile.matches && current) rail.scrollLeft = current.offsetLeft - 16;
     window.addEventListener('hashchange',fromHash); fromHash();
   });
 </script>
