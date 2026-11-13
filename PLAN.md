@@ -79,7 +79,7 @@ Each step is small enough for one subagent, and says how to check it. Do them in
   - Change: Build it per DESIGN.md sections 3 and 4 ("Layout.astro"): `BaseLayout` wrapper, `noindex` meta, font link, the global `:root` tokens and base type styles, preview bar, sticky nav with the Platform dropdown and the mobile menu (both are a button with `aria-expanded` plus one small script), footer, then `DBCredit`, then the floating "Back to The Web Foundry" link. Retrieve the `navbar` guide first.
   - Check: create a temporary `src/pages/demo/gib-supply-chain/index.astro` that renders the layout with one `<h1>`. `npm run build` passes. `grep -c 'noindex, nofollow' dist/demo/gib-supply-chain/index.html` prints `1` or more.
 
-- [ ] **3. Small components**
+- [x] **3. Small components**
   - Files (all in `src/components/demo/gib-supply-chain/`): `Eyebrow.astro`, `Button.astro`, `Section.astro`, `Frame.astro`, `Quote.astro`, `Stats.astro`, `Faq.astro`, `CtaBand.astro`, `CaseStudy.astro`, `LogoWall.astro`, `CertBadges.astro`, `ModuleCards.astro`
   - Change: Build each per DESIGN.md section 4, with the listed props and nothing extra. `Stats` also accepts the optional per-item `text` field described in the `ai.astro` section, and draws ring gauges for percent values.
   - Check: `npm run build` passes after the home page (step 5) imports them. No component file is longer than about 150 lines.
@@ -150,3 +150,5 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 1. Data: four complete products and five FAQs transcribed with specified typo fixes, real statistics and no em dashes. All screenshot filenames exist, capability counts are 5/6/6/5, each product has four stats; build passes.
 
 2. Layout: private shell, responsive disclosure navigation, footer, DBCredit and exact rust Foundry link built. Temporary home builds with noindex. Read Modern Web Guidance navbar; retained the specified button mechanics and followed guidance to open via Enter/Space rather than on focus (section 7 checklist conflicts with the guide).
+
+3. Small components: all twelve built, including native searchable FAQ, real counter fallbacks, percent gauges, imported badges/logos and case cards. Temporary fixture compiled every component successfully (all under 150 lines); fixture removed. Home import verification follows in step 5. Read accordion and search-hidden-content guides.

@@ -1,0 +1,15 @@
+---
+const {href, variant='primary', external=false} = Astro.props;
+---
+<a class:list={['gib-button', `gib-button-${variant}`]} href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}><slot />{variant==='link' && <span aria-hidden="true">→</span>}</a>
+<style>
+.gib-button {display:inline-flex;align-items:center;justify-content:center;gap:.6rem;min-height:44px;padding:.8rem 1.3rem;border-radius:8px;font-weight:600;line-height:1.3;text-decoration:none;transition:transform .2s var(--gib-ease),background .2s;}
+.gib-button-primary {background:var(--gib-orange);color:var(--gib-ink);}
+.gib-button-primary:hover {background:#ff8b46;transform:translateY(-1px);}
+.gib-button-ghost {color:inherit;border:1px solid color-mix(in srgb,currentColor 30%,transparent);background:transparent;}
+.gib-button-ghost:hover {border-color:currentColor;}
+.gib-button-link {padding:.65rem 0;color:var(--gib-orange-ink);} :global(.gib-section-dark) .gib-button-link {color:var(--gib-orange);}
+.gib-button-link span {transition:transform .2s;} .gib-button-link:hover span {transform:translateX(3px);}
+.gib-button:focus-visible {outline:2px solid var(--gib-orange);outline-offset:3px;}
+@media(prefers-reduced-motion:reduce) {.gib-button,.gib-button span {transition:none;}}
+</style>

@@ -1,0 +1,10 @@
+---
+const {items} = Astro.props;
+---
+<div class="gib-faq">{items.map(item => <details><summary>{item.q}<span aria-hidden="true" class="gib-faq-icon"></span></summary><p>{item.a}</p></details>)}</div>
+<style>
+details {border-top:1px solid var(--gib-line);padding:1rem 0;} details:last-child {border-bottom:1px solid var(--gib-line);}
+summary {list-style:none;font-size:1.25rem;font-weight:600;cursor:pointer;display:flex;gap:1rem;align-items:center;min-height:44px;} summary::-webkit-details-marker {display:none;}
+.gib-faq-icon {margin-left:auto;flex:none;color:var(--gib-orange-ink);} .gib-faq-icon::before {content:'+';} details[open] .gib-faq-icon::before {content:'−';}
+p {padding-top:1rem;color:var(--gib-muted);}
+</style>

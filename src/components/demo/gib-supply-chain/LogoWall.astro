@@ -1,0 +1,18 @@
+---
+import {Image} from 'astro:assets';
+import Section from './Section.astro';
+import Eyebrow from './Eyebrow.astro';
+import agilent from '../../../assets/demo/gib-supply-chain/logos/agilent.png';
+import basf from '../../../assets/demo/gib-supply-chain/logos/basf-chemetall.png';
+import borgwarner from '../../../assets/demo/gib-supply-chain/logos/borgwarner.png';
+import dana from '../../../assets/demo/gib-supply-chain/logos/dana.png';
+import tata from '../../../assets/demo/gib-supply-chain/logos/tata.png';
+import te from '../../../assets/demo/gib-supply-chain/logos/te-connectivity.png';
+const logos=[[agilent,'Agilent'],[basf,'BASF Chemetall'],[borgwarner,'BorgWarner'],[dana,'Dana'],[tata,'Tata'],[te,'TE Connectivity']];
+---
+<Section tone="light"><Eyebrow text="Trusted in complex manufacturing and distribution" /><p>25+ years of SAP supply chain expertise, serving customers worldwide.</p><div class="gib-logos">{logos.map(([src,alt]) => <div class="gib-logo reveal"><Image src={src} alt={alt} height={40} /></div>)}</div></Section>
+<style>
+.gib-logos {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1rem;margin-top:2rem;} .gib-logo {background:white;display:flex;align-items:center;justify-content:center;padding:1.5rem 1rem;border:1px solid var(--gib-line);border-radius:8px;}
+img {max-width:100%;max-height:40px;width:auto;object-fit:contain;filter:grayscale(1);opacity:.75;} .gib-logo:hover img {filter:none;opacity:1;}
+@media(max-width:899px) {.gib-logos {grid-template-columns:repeat(3,minmax(0,1fr));}} @media(max-width:480px) {.gib-logos {grid-template-columns:repeat(2,minmax(0,1fr));}}
+</style>

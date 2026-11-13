@@ -1,0 +1,12 @@
+---
+const {tone='light', id} = Astro.props;
+---
+<section class:list={['gib-section', `gib-section-${tone}`]} id={id}><div class="gib-wrap"><slot /></div></section>
+<style>
+.gib-section {padding-block:clamp(4rem,9vw,7.5rem);}
+.gib-section-light {background:var(--gib-paper);color:var(--gib-text);}
+.gib-section-white {background:var(--gib-white);color:var(--gib-text);}
+.gib-section-dark {background:var(--gib-ink);color:var(--gib-on-dark);}
+.gib-section :global(.gib-eyebrow) {color:var(--gib-muted);} .gib-section-dark :global(.gib-eyebrow),.gib-section-dark :global(.gib-muted) {color:var(--gib-on-dark-muted);}
+.gib-section-dark :global(.gib-card) {background:var(--gib-ink-2);border-color:var(--gib-ink-3);}
+</style>

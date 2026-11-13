@@ -1,0 +1,13 @@
+---
+import {base,products} from './data.js';
+import Eyebrow from './Eyebrow.astro';
+import Button from './Button.astro';
+const {exclude} = Astro.props;
+---
+<div class="gib-modules">{Object.values(products).filter(p => p.slug!==exclude).map((p,i) => <article class:list={['gib-module','reveal',`reveal-delay-${i+1}`]}><Eyebrow text={p.category} /><h3>{p.name}</h3>{p.popular && <span class="gib-popular">Most popular</span>}<p>{p.summary}</p><Button href={`${base}/${p.slug}`} variant="link">{p.verb}</Button></article>)}</div>
+<style>
+.gib-modules {display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;}
+.gib-module {position:relative;background:var(--gib-white);border:1px solid var(--gib-line);padding:1.75rem;border-radius:14px;display:flex;align-items:flex-start;flex-direction:column;}
+.gib-module :global(.gib-button) {margin-top:auto;} .gib-module :global(.gib-eyebrow) {font-size:.68rem;}
+.gib-popular {font:.7rem var(--gib-ff-mono);color:var(--gib-orange-ink);border:1px solid currentColor;padding:.25rem .5rem;border-radius:20px;margin-bottom:.75rem;}
+</style>

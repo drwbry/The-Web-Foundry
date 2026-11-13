@@ -1,0 +1,11 @@
+---
+import {Image} from 'astro:assets';
+import clean from '../../../assets/demo/gib-supply-chain/logos/sap-cert-clean-core.png';
+import rise from '../../../assets/demo/gib-supply-chain/logos/sap-cert-rise.png';
+import integration from '../../../assets/demo/gib-supply-chain/logos/sap-cert-integration.png';
+const badges=[[clean,'SAP Certified: clean core, SAP S/4HANA Cloud'],[rise,'SAP Certified: works with RISE with SAP'],[integration,'SAP Certified: integration with SAP S/4HANA']];
+---
+<div class="gib-badges">{badges.map(([src,alt]) => <span><Image src={src} alt={alt} height={40} /></span>)}</div>
+<style>
+.gib-badges {display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.5rem;} span {background:white;border-radius:8px;padding:.5rem .9rem;display:flex;align-items:center;} img {height:40px!important;width:auto;}
+</style>

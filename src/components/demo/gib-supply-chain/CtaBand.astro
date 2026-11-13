@@ -1,0 +1,10 @@
+---
+import Section from './Section.astro';
+import Button from './Button.astro';
+import {base,links} from './data.js';
+const {heading,text,primaryLabel='Get a demo'} = Astro.props;
+---
+<Section tone="dark"><div class="gib-cta gib-center"><h2 class="reveal">{heading}</h2>{text && <p class="gib-lead gib-muted">{text}</p>}<div class="gib-actions"><Button href={links.demo} external>{primaryLabel}</Button><Button href={`${base}/platform`} variant="ghost">Explore the platform</Button></div></div></Section>
+<style>
+.gib-cta {background:radial-gradient(ellipse at center,rgba(243,112,33,.12),transparent 70%);padding-block:1rem;} .gib-actions {justify-content:center;}
+</style>
