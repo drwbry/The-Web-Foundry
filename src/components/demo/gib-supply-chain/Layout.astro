@@ -61,10 +61,10 @@ const isCurrent = (href) => Astro.url.pathname.replace(/\/$/, '') === href;
       button.setAttribute('aria-expanded', String(open));
     });
     button.parentElement!.addEventListener('focusout', e => {
-      if (e.relatedTarget && !button.parentElement!.contains(e.relatedTarget as Node)) close(button);
+      if (e.relatedTarget && !(button.closest('.gib-dropdown') || header).contains(e.relatedTarget as Node)) close(button);
     });
   });
-  document.addEventListener('click', e => { if (!header.contains(e.target as Node)) controls.forEach(b => close(b)); });
+  document.addEventListener('click', e => controls.forEach(b => { if (!(b.closest('.gib-dropdown') || header).contains(e.target as Node)) close(b); }));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') controls.filter(b => b.getAttribute('aria-expanded') === 'true').forEach(b => close(b, true)); });
   matchMedia('(max-width: 959px)').addEventListener('change', () => controls.forEach(b => close(b)));
 </script>

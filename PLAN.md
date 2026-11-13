@@ -119,7 +119,7 @@ Each step is small enough for one subagent, and says how to check it. Do them in
   - Change: Seven sections per DESIGN.md section 6 ("ai.astro"), content from `source/ai-in-gib.md`. The disclaimer line under the AI features grid is required.
   - Check: `npm run build` passes. The page contains `may not be available in all product releases`. The four stat ranges render as text (`15-40%`), not animated numbers.
 
-- [ ] **11. Link and rule sweep**
+- [x] **11. Link and rule sweep**
   - Files: any file in the two demo code folders
   - Change: Fix whatever these checks find.
   - Check, all must pass:
@@ -166,3 +166,5 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 9. Solutions / GIB for SAP: prescribed sections and source copy reviewed; build passes, four solution steps have their four symbols, and eight SAP cards are numbered 01-08.
 
 10. AI: seven sections, four feature blocks and required release disclaimer built; build passes and all four ranges are text without counters. Kept the explicit dark Stats then dark CTA order despite the general band-alternation checklist; narrative feature introductions omitted in favor of the prescribed heading/item grids.
+
+11. Link/rule sweep: ten routes checked with HTML parsing, including all local anchors, unique IDs, image zoom targets, one h1 and robots tag per page. Required Foundry return and inherited DBCredit privacy links point to existing hub routes, exceptions to the ten-page-only wording. No forms/em dashes/sitemap entries; status restricted to allowed paths. Cleaned punctuation spacing and fixed menu focus retention/outside clicks. Build passes. Validation scripts account for Astro minifying empty alt attributes and inlining shared counter code.

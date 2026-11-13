@@ -38,7 +38,7 @@ export const products = {
       "GIB Forecast is the engine behind a reliable, consensus-driven demand planning process. It delivers the visibility, statistical intelligence, and structural discipline needed to generate accurate forecasts, manage lifecycle changes, and continuously improve planning performance directly within your SAP environment."
     ],
     "heroQuote": {
-      "text": "Before human staff gets involved, automated processes have loaded the data and then run forecast models and outlier analysis against it. They just show up and can start actually doing value-added tasks of getting the data right. [...] There's full transparency now between what the demand planner is doing with the data and what the actual planner , a production planner for example , is going to do to execute that plan.",
+      "text": "Before human staff gets involved, automated processes have loaded the data and then run forecast models and outlier analysis against it. They just show up and can start actually doing value-added tasks of getting the data right. [...] There's full transparency now between what the demand planner is doing with the data and what the actual planner, a production planner for example, is going to do to execute that plan.",
       "name": "Ross Fasco",
       "role": "SAP Supply Chain Architect at Agilent Technologies"
     },
@@ -47,12 +47,12 @@ export const products = {
     "capabilities": [
       {
         "title": "Establish Complete Forecast Transparency",
-        "text": "GIB Forecast provides full transparency into how forecast values are generated, adjusted, and transferred across versions, hierarchies, and time horizons. Planners can compare historical actuals, statistical results, manual corrections, and consensus values in one structured view. Trend patterns, seasonality, and structural demand shifts become visible across planning levels , from aggregated turnover planning down to individual material detail.",
+        "text": "GIB Forecast provides full transparency into how forecast values are generated, adjusted, and transferred across versions, hierarchies, and time horizons. Planners can compare historical actuals, statistical results, manual corrections, and consensus values in one structured view. Trend patterns, seasonality, and structural demand shifts become visible across planning levels, from aggregated turnover planning down to individual material detail.",
         "shot": "scx-demand-planning-sheet-1280x720-en.png"
       },
       {
         "title": "Optimize Forecast Performance Over Time",
-        "text": "Forecast quality is measured before it impacts inventory, procurement, and production decisions. GIB evaluates multiple statistical models , including seasonal methods, Croston for intermittent demand, and regression approaches , and scores them using established error metrics such as MAD, RMSE, tracking signal, and WMAPE. Smooth demand, seasonal products, and intermittent spare parts are treated differently to avoid systematic distortion and bias. Planners can objectively select the best-fit model per material or hierarchy and monitor bias and volatility over time. Instead of relying on static parameters, forecast logic is continuously validated against real performance.",
+        "text": "Forecast quality is measured before it impacts inventory, procurement, and production decisions. GIB evaluates multiple statistical models, including seasonal methods, Croston for intermittent demand, and regression approaches, and scores them using established error metrics such as MAD, RMSE, tracking signal, and WMAPE. Smooth demand, seasonal products, and intermittent spare parts are treated differently to avoid systematic distortion and bias. Planners can objectively select the best-fit model per material or hierarchy and monitor bias and volatility over time. Instead of relying on static parameters, forecast logic is continuously validated against real performance.",
         "shot": "gxf-seasonal-en.png"
       },
       {
@@ -67,7 +67,7 @@ export const products = {
       },
       {
         "title": "Control Forecast Hierarchies and Versions at Scale",
-        "text": "Forecasting operates across structured hierarchies , from product groups down to individual materials, plants, and regions. Multiple versions allow statistical baselines, consensus adjustments, and approved forecasts to coexist in a controlled framework. Decisions remain traceable and aligned.",
+        "text": "Forecasting operates across structured hierarchies, from product groups down to individual materials, plants, and regions. Multiple versions allow statistical baselines, consensus adjustments, and approved forecasts to coexist in a controlled framework. Decisions remain traceable and aligned.",
         "shot": "gxf-demand-segmentation-en.png"
       }
     ],
@@ -144,7 +144,7 @@ export const products = {
       "GIB Inventory is the inventory control layer for SAP ECC and SAP S/4HANA. It analyzes historical material movements to calculate stock, consumption, and variability metrics, classifies materials based on value and demand variability, and assigns MRP and service level logic systematically. Instead of relying on static master data settings, planners can evaluate coverage against replenishment lead time, simulate parameter changes before execution, and apply approved updates directly within SAP."
     ],
     "heroQuote": {
-      "text": "By using GIB Inventory and GIB Operations , we have sped up our material planning processes by more than 67%. We have been able to reduce our scrapping by 73% - the interaction with GIB Forecast has played a significant role here - and last but not least, we have been able to increase our delivery readiness by 3%.",
+      "text": "By using GIB Inventory and GIB Operations, we have sped up our material planning processes by more than 67%. We have been able to reduce our scrapping by 73% - the interaction with GIB Forecast has played a significant role here - and last but not least, we have been able to increase our delivery readiness by 3%.",
       "name": "Mehmet Kozan",
       "role": "Manager, Supply Chain Management at Baier & Schneider (Brunnen)"
     },
@@ -168,7 +168,7 @@ export const products = {
       },
       {
         "title": "Stabilize Replenishment and Coverage Logic",
-        "text": "Replenishment Lead Time (RLT) is calculated using defined priority logic and compared to forward-looking Range of Coverage (RoC). This makes it possible to identify materials where coverage is too short relative to replenishment time, or excessively long relative to demand. Inventory availability is evaluated using days of supply versus actual lead time performance , not stock quantity alone.\n\nFor example, if a material has 10-20 days of supply but requires 51-60 days to replenish based on the RLT, then it is immediately flagged as a supply risk (red section). Materials are positioned within a structured RoC matrix, allowing planners to identify exposure at a glance and drill into detailed analysis directly within SAP.",
+        "text": "Replenishment Lead Time (RLT) is calculated using defined priority logic and compared to forward-looking Range of Coverage (RoC). This makes it possible to identify materials where coverage is too short relative to replenishment time, or excessively long relative to demand. Inventory availability is evaluated using days of supply versus actual lead time performance, not stock quantity alone.\n\nFor example, if a material has 10-20 days of supply but requires 51-60 days to replenish based on the RLT, then it is immediately flagged as a supply risk (red section). Materials are positioned within a structured RoC matrix, allowing planners to identify exposure at a glance and drill into detailed analysis directly within SAP.",
         "shot": "gib-inventory-roc-with-rlt-matrix.png"
       },
       {
@@ -178,7 +178,7 @@ export const products = {
       },
       {
         "title": "Match and Apply Corrected Parameters to SAP Master Data (MRP Matching)",
-        "text": "GIB compares recalculated MRP parameters , including safety stock, lot-sizing procedures, MRP types, and service levels , against existing SAP material master data. Differences between current and proposed values are clearly identified, allowing planners to review and approve adjustments before they are written back. Updates follow a controlled process aligned with defined policy rules, ensuring parameter changes are deliberate and consistent across materials.",
+        "text": "GIB compares recalculated MRP parameters, including safety stock, lot-sizing procedures, MRP types, and service levels, against existing SAP material master data. Differences between current and proposed values are clearly identified, allowing planners to review and approve adjustments before they are written back. Updates follow a controlled process aligned with defined policy rules, ensuring parameter changes are deliberate and consistent across materials.",
         "shot": "gib-inventory-mrp-parameter-matching.png"
       }
     ],
@@ -332,7 +332,7 @@ export const products = {
         "role": "FFF Enterprises | Pharmaceutical Distribution"
       },
       {
-        "text": "Before GIB, I had to create a file from CO24, connect it with an old file using VLOOKUP, and manually enter the relevant dates. Now I can open a current overview within one minute, see all relevant dates, and clearly identify critical parts. The missing part is now the issue , not the system.",
+        "text": "Before GIB, I had to create a file from CO24, connect it with an old file using VLOOKUP, and manually enter the relevant dates. Now I can open a current overview within one minute, see all relevant dates, and clearly identify critical parts. The missing part is now the issue, not the system.",
         "name": "Teresa Castro",
         "role": "Procurement Team Leader | Bosch Security & Safety Systems, KEENFINITY"
       },
@@ -367,7 +367,7 @@ export const products = {
     "name": "GIB Production",
     "category": "Production Planning & Scheduling",
     "verb": "Schedule",
-    "summary": "Schedule against real capacity , fewer changeovers, bottlenecks, and missed materials.",
+    "summary": "Schedule against real capacity, fewer changeovers, bottlenecks, and missed materials.",
     "features": [
       "Multi-resource planning",
       "Capacity sequencing",
@@ -506,7 +506,7 @@ export const faq = [
   },
   {
     "q": "Is GIB relevant if we already use SAP IBP or other planning tools?",
-    "a": "Yes. GIB ensures that planning signals , whether from SAP IBP or a third-party solution , translate into faster, more coordinated execution inside SAP."
+    "a": "Yes. GIB ensures that planning signals, whether from SAP IBP or a third-party solution, translate into faster, more coordinated execution inside SAP."
   }
 ];
 export const moduleViews = Object.values(products).map(p => ({
