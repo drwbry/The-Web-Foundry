@@ -1,0 +1,138 @@
+# Plan: GIB Supply Chain prospect demo at /demo/gib-supply-chain
+
+Status: ready to build
+Planned by: Claude Code, 2026-11-13
+Builder: any (Codex Luna high, Sonnet, Haiku, or OMP with DeepSeek subagents)
+Built by: <filled in by the builder>
+Stakes: normal
+
+## Goal
+
+A ten-page proof-of-concept rebuild of https://www.gibsupplychain.com lives at `/demo/gib-supply-chain` on The Web Foundry site. It keeps GIB's own content but shows a modern, clean, easy-to-scan design, so the owner can send the link to GIB as a pitch.
+
+## Context
+
+- Repo: `db-design-website` (Astro 5 static site, deployed by Coolify when `main` is pushed). Work on the branch `demo/gib-supply-chain`, which already exists and holds this plan.
+- **Read these first, in this order:**
+  1. `docs/demo/gib-supply-chain/DESIGN.md`. The full design and content spec. It decides every visual and copy question. Follow it exactly.
+  2. `src/components/demo/morning-and-night/Layout.astro` and `src/pages/demo/morning-and-night/index.astro`. The existing prospect demo. Copy its structure and code style.
+  3. `docs/shared-utilities.md`. Explains the `.reveal` and `data-count` helpers that `shared.js` already provides.
+- Everything you need is already in the repo. Do not fetch anything from the internet.
+  - GIB's page text: `docs/demo/gib-supply-chain/source/*.md` (one file per page of their site).
+  - GIB's images: `src/assets/demo/gib-supply-chain/` (logo, symbols, hero images, `logos/`, and 22 product screenshots in `shots/`). In the source files, `[IMAGE: shots/x.png]` names the local file to use at that spot. `[image not kept: ...]` means skip it.
+- New files only. The demo is self-contained in three folders:
+  - `src/components/demo/gib-supply-chain/` (layout, components, `data.js`, `images.js`)
+  - `src/pages/demo/gib-supply-chain/` (pages)
+  - `src/assets/demo/gib-supply-chain/` (already filled; do not add or change images)
+- Constraints:
+  - `astro.config.mjs` already keeps `/demo/` out of the sitemap. Do not edit it.
+  - No new npm packages. No Tailwind. Plain scoped CSS in each `.astro` file, the same as the rest of the repo.
+  - Internal links have no trailing slash: `/demo/gib-supply-chain/platform`.
+  - No em dashes in page text. Details in DESIGN.md section 2.
+
+## Out of scope
+
+- GIB's Resources pages: blog, case study articles, webinars, industry and topic tag pages, and the `scx-for-*` landing pages. Link out to the live site instead (links are in DESIGN.md section 5).
+- Forms of any kind. Every "Get a demo" button is a link to the live GIB site.
+- Sanity, the form Worker, `src/config/site.js`, the hub page, `src/styles/`, `src/scripts/`, `astro.config.mjs`, `npm run shots`. Do not touch them.
+- Listing this demo on the hub, in the nav, or in the sitemap.
+- Rewriting GIB's copy. The only rewritten copy is what DESIGN.md section 6 gives word for word. Everything else is transcribed from the source files.
+- Adding sections, images, icons libraries, animations or pages that DESIGN.md does not list.
+
+## Ask before doing
+
+- Pushing or merging to `main`. That deploys to the live site. Commit on `demo/gib-supply-chain` only. The owner merges after review.
+- Editing any file outside the three demo folders listed above.
+- Adding a dependency.
+- Using any GIB image that is not already in `src/assets/demo/gib-supply-chain/`. The quote badges, staff headshots and GIFs were left out on purpose.
+- If a source file and DESIGN.md disagree, or a piece of content named in DESIGN.md cannot be found in the source file: stop guessing, leave that item out, and write it in the Build log.
+- Data rule (who may see this repo's code): any, including DeepSeek. This is a public marketing site with no secrets.
+
+## Steps
+
+Each step is small enough for one subagent, and says how to check it. Do them in order. Steps 5 to 10 only depend on steps 1 to 4, so they can run in parallel after step 4.
+
+After every step, `npm run build` must finish with no errors.
+
+- [ ] **0. Set up**
+  - Files: none
+  - Change: `git checkout demo/gib-supply-chain`. Run `npm install`.
+  - Check: `npm run build` passes before you change anything. `ls src/assets/demo/gib-supply-chain/shots | wc -l` prints `22`.
+
+- [ ] **1. Data files**
+  - Files: `src/components/demo/gib-supply-chain/data.js`, `src/components/demo/gib-supply-chain/images.js`
+  - Change: Create both exactly as DESIGN.md section 5 describes. Export `base`, `links`, `products` (four products, every field filled from `source/gib-forecast.md`, `gib-inventory.md`, `gib-operations.md`, `gib-production.md`), and `faq` (five items from the end of `source/home.md`). Use the fixed tables in section 5 for category, verb, tabShot, stats and closing headings. Apply the typo fixes listed there. Replace every em dash.
+  - Check: `grep -c "—" src/components/demo/gib-supply-chain/data.js` prints `0`. Every `shot:` and `tabShot:` value is a file name that exists in `src/assets/demo/gib-supply-chain/shots/`. Each product has 4 stats. Capability counts: forecast 5, inventory 6, operations 6, production 5.
+
+- [ ] **2. Layout**
+  - Files: `src/components/demo/gib-supply-chain/Layout.astro`
+  - Change: Build it per DESIGN.md sections 3 and 4 ("Layout.astro"): `BaseLayout` wrapper, `noindex` meta, font link, the global `:root` tokens and base type styles, preview bar, sticky nav with the CSS-only Platform dropdown and the `<details>` mobile menu, footer with the credit line. No `DBCredit`.
+  - Check: create a temporary `src/pages/demo/gib-supply-chain/index.astro` that renders the layout with one `<h1>`. `npm run build` passes. `grep -c 'noindex, nofollow' dist/demo/gib-supply-chain/index.html` prints `1` or more.
+
+- [ ] **3. Small components**
+  - Files (all in `src/components/demo/gib-supply-chain/`): `Eyebrow.astro`, `Button.astro`, `Section.astro`, `Frame.astro`, `Quote.astro`, `Stats.astro`, `Faq.astro`, `CtaBand.astro`, `CaseStudy.astro`, `LogoWall.astro`, `CertBadges.astro`, `ModuleCards.astro`
+  - Change: Build each per DESIGN.md section 4, with the listed props and nothing extra. `Stats` also accepts the optional per-item `text` field described in the `ai.astro` section.
+  - Check: `npm run build` passes after the home page (step 5) imports them. No component file is longer than about 150 lines.
+
+- [ ] **4. Module tabs**
+  - Files: `src/components/demo/gib-supply-chain/ModuleTabs.astro`
+  - Change: Build per DESIGN.md section 4 ("ModuleTabs.astro"): four ARIA tabs, Operations selected by default, all panels in the HTML, a script under 40 lines that toggles `hidden`, arrow-key support, and all panels visible when JavaScript is off.
+  - Check: in `npm run dev`, clicking each tab swaps the panel and screenshot. Left and right arrow keys move between tabs. With JavaScript disabled in the browser, all four panels show stacked.
+
+- [ ] **5. Home page**
+  - Files: `src/pages/demo/gib-supply-chain/index.astro`
+  - Change: Replace the temporary page with the ten sections in DESIGN.md section 6 ("index.astro"), in that order, using the exact copy given there.
+  - Check: `npm run build` passes. The built page has exactly one `<h1>`. It contains the text `It's just not in one place` and `Nature`. `grep -c "—" src/pages/demo/gib-supply-chain/index.astro` prints `0`.
+
+- [ ] **6. Product pages**
+  - Files: `src/pages/demo/gib-supply-chain/[product].astro`
+  - Change: One dynamic route with `getStaticPaths` over the four products, with the nine sections in DESIGN.md section 6 ("[product].astro"). Screenshots come from `shot(name)` in `images.js`. Hero images: import the four `hero-*.png` files and pick by slug.
+  - Check: `npm run build` creates `dist/demo/gib-supply-chain/forecast/index.html`, `inventory/index.html`, `operations/index.html` and `production/index.html`. The Outcomes section appears only on production. The case study card and "Watch the video" button appear only on operations. Each page shows its four real stat values, not `0`.
+
+- [ ] **7. Platform page**
+  - Files: `src/pages/demo/gib-supply-chain/platform.astro`
+  - Change: Seven sections per DESIGN.md section 6 ("platform.astro"), content from `source/gib-platform.md`.
+  - Check: `npm run build` passes. The page has the four capability group titles and four module cards with feature lists.
+
+- [ ] **8. Why GIB page**
+  - Files: `src/pages/demo/gib-supply-chain/why-gib.astro`
+  - Change: Six sections per DESIGN.md section 6 ("why-gib.astro"), content from `source/why-gib.md`.
+  - Check: `npm run build` passes. The page has the four measures numbered 01 to 04 and four quotes.
+
+- [ ] **9. Solutions and GIB for SAP pages**
+  - Files: `src/pages/demo/gib-supply-chain/solutions.astro`, `src/pages/demo/gib-supply-chain/gib-for-sap.astro`
+  - Change: Per DESIGN.md section 6, content from `source/solutions.md` and `source/gib-for-sap.md`.
+  - Check: `npm run build` passes. Solutions shows four step cards with the four symbol images. GIB for SAP shows eight numbered capability cards.
+
+- [ ] **10. AI page**
+  - Files: `src/pages/demo/gib-supply-chain/ai.astro`
+  - Change: Seven sections per DESIGN.md section 6 ("ai.astro"), content from `source/ai-in-gib.md`. The disclaimer line under the AI features grid is required.
+  - Check: `npm run build` passes. The page contains `may not be available in all product releases`. The four stat ranges render as text (`15-40%`), not animated numbers.
+
+- [ ] **11. Link and rule sweep**
+  - Files: any file in the two demo code folders
+  - Change: Fix whatever these checks find.
+  - Check, all must pass:
+    - `grep -rn "—" src/components/demo/gib-supply-chain src/pages/demo/gib-supply-chain` prints nothing.
+    - `grep -rLZ 'noindex, nofollow' dist/demo/gib-supply-chain --include=index.html | tr '\0' '\n'` prints nothing (every page has the tag).
+    - `grep -c "gib-supply-chain" dist/sitemap-0.xml` prints `0`.
+    - `grep -rn "<form" src/components/demo/gib-supply-chain src/pages/demo/gib-supply-chain` prints nothing.
+    - Every internal `href` in the demo points at one of the ten pages or an `#id` that exists on that page. List the built pages with `find dist/demo/gib-supply-chain -name index.html` and compare.
+    - `git status --short` shows changes only inside `src/components/demo/gib-supply-chain/`, `src/pages/demo/gib-supply-chain/` and `PLAN.md`.
+
+- [ ] **12. Visual check** (needs judgment)
+  - Files: any file in the two demo code folders
+  - Change: Run `npm run preview`. Open every page at 1440px, 768px and 390px wide. Go through the checklist in DESIGN.md section 7 and fix what fails. If Playwright's Chromium is installed (`npx playwright --version` works and a browser launches), save full-page screenshots of all ten pages at 1440px and 390px to `/tmp/gib-demo-shots/` for the owner. If it is not installed, skip the screenshots and say so in the Build log. Do not install it.
+  - Check: no horizontal scroll at 390px on any page. The mobile menu opens. Tabbing shows a focus ring on every link and button. No image is broken.
+
+## Done when
+
+- [ ] `npm run build` passes with no errors or warnings about missing images
+- [ ] All ten pages exist under `dist/demo/gib-supply-chain/`: home, platform, forecast, inventory, operations, production, why-gib, solutions, gib-for-sap, ai
+- [ ] Every check in step 11 passes
+- [ ] The Build log below lists anything left out, anything that differed from DESIGN.md, and whether screenshots were captured
+- [ ] Committed on `demo/gib-supply-chain` (not pushed to `main`, not merged)
+
+## Build log
+
+<The builder adds short notes here: what was done per step, anything that differed from the plan, open questions. The planner reads this during review.>
