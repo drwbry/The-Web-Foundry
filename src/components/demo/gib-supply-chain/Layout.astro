@@ -1,0 +1,174 @@
+---
+import { Image, getImage } from 'astro:assets';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import DBCredit from '../../DBCredit.astro';
+import logo from '../../../assets/demo/gib-supply-chain/logo-white.png';
+import ogPhoto from '../../../assets/demo/gib-supply-chain/hero-home.png';
+import { base, links, products } from './data.js';
+const { title, description, current } = Astro.props;
+const og = await getImage({ src: ogPhoto, width: 1200, height: 630, fit: 'contain', background: '#F5F7F9', format: 'jpg' });
+const platform = [{ label: 'Platform overview', href: `${base}/platform`, category: 'Embedded in SAP' }, ...Object.values(products).map(p => ({label:p.name, href:`${base}/${p.slug}`, category:p.category})), {label:'AI in GIB', href:`${base}/ai`, category:'Operational intelligence'}];
+const company = [{label:'Solutions', href:`${base}/solutions`, key:'solutions'}, {label:'Why GIB', href:`${base}/why-gib`, key:'why'}, {label:'GIB for SAP', href:`${base}/gib-for-sap`, key:'sap'}];
+const resources = [{label:'Case studies', href:links.caseStudies}, {label:'Webinars', href:links.webinars}, {label:'Blog', href:links.resources}, {label:'Customer portal', href:links.portal}, {label:'Community forum', href:links.community}];
+const isCurrent = (href) => Astro.url.pathname.replace(/\/$/, '') === href;
+---
+<BaseLayout title={title} description={description} ogImage={og.src} ogImageAlt="GIB supply chain dashboard inside SAP">
+  <Fragment slot="head">
+    <meta name="robots" content="noindex, nofollow" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </Fragment>
+  <div class="gib-preview" role="note">Concept preview by <a href="/">The Web Foundry</a> for GIB Supply Chain</div>
+  <header class="gib-nav">
+    <div class="gib-wrap gib-nav-inner">
+      <a href={base} class="gib-brand" aria-label="GIB Supply Chain home"><Image src={logo} alt="GIB Supply Chain" height={44} loading="eager" /></a>
+      <nav aria-label="Main" class="gib-desktop">
+        <ul class="gib-nav-links">
+          <li class="gib-dropdown"><button type="button" aria-expanded="false" aria-controls="gib-platform-menu" class:list={['gib-nav-trigger', {'gib-active':current==='platform'}]}>Platform <span aria-hidden="true">⌄</span></button><ul id="gib-platform-menu" hidden>{platform.map(n => <li><a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}<small>{n.category}</small></a></li>)}</ul></li>
+          {company.map(n => <li><a href={n.href} aria-current={current===n.key ? 'page' : undefined}>{n.label}</a></li>)}
+          <li><a href={links.resources} target="_blank" rel="noopener">Resources ↗</a></li>
+        </ul>
+      </nav>
+      <a class="gib-nav-cta" href={links.demo} target="_blank" rel="noopener">Get a demo</a>
+      <button type="button" class="gib-mobile-trigger" aria-expanded="false" aria-controls="gib-mobile-menu">Menu</button>
+    </div>
+    <nav id="gib-mobile-menu" aria-label="Mobile main" hidden><ul>{[...platform,...company,{label:'Resources ↗',href:links.resources}].map(n => <li><a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined} target={n.href.startsWith('https:') ? '_blank' : undefined} rel={n.href.startsWith('https:') ? 'noopener' : undefined}>{n.label}</a></li>)}</ul></nav>
+  </header>
+  <main id="main-content"><slot /></main>
+  <footer class="gib-footer"><div class="gib-wrap">
+    <div class="gib-footer-grid"><div><Image src={logo} alt="GIB Supply Chain" width={150} /><p>GIB is developed and delivered by ifm Supply Chain, a division of ifm efector.</p></div>
+      {[{title:'Platform',items:platform},{title:'Company',items:company},{title:'Resources',items:resources}].map(group => <div><h2>{group.title}</h2><ul>{group.items.map(n => <li><a href={n.href} target={n.href.startsWith('https:') ? '_blank' : undefined} rel={n.href.startsWith('https:') ? 'noopener' : undefined}>{n.label}</a></li>)}</ul></div>)}
+    </div>
+    <div class="gib-footer-bottom"><span>© 2026 GIB USA, an ifm company</span><a href={links.privacy}>Privacy Policy</a></div>
+    <p class="gib-disclaimer">This is a concept preview, not the official GIB website. Visit <a href={links.site}>gibsupplychain.com</a> for the live site.</p>
+  </div></footer>
+  <DBCredit />
+  <a href="/" class="gib-foundry"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg><span class="gib-foundry__text"><small>Like this site?</small>Back to The Web Foundry</span></a>
+</BaseLayout>
+<script>
+  const header = document.querySelector<HTMLElement>('.gib-nav')!;
+  const controls = [...header.querySelectorAll<HTMLButtonElement>('button[aria-controls]')];
+  const close = (button: HTMLButtonElement, focus = false) => {
+    document.getElementById(button.getAttribute('aria-controls')!)!.hidden = true;
+    button.setAttribute('aria-expanded', 'false');
+    if (focus) button.focus();
+  };
+  controls.forEach(button => {
+    button.addEventListener('click', () => {
+      const panel = document.getElementById(button.getAttribute('aria-controls')!)!;
+      const open = panel.hidden;
+      controls.forEach(b => close(b));
+      panel.hidden = !open;
+      button.setAttribute('aria-expanded', String(open));
+    });
+    button.parentElement!.addEventListener('focusout', e => {
+      if (e.relatedTarget && !button.parentElement!.contains(e.relatedTarget as Node)) close(button);
+    });
+  });
+  document.addEventListener('click', e => { if (!header.contains(e.target as Node)) controls.forEach(b => close(b)); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') controls.filter(b => b.getAttribute('aria-expanded') === 'true').forEach(b => close(b, true)); });
+  matchMedia('(max-width: 959px)').addEventListener('change', () => controls.forEach(b => close(b)));
+</script>
+<style is:global>
+:root {
+  --gib-ink: #0E1116;        /* darkest band, nav, footer */
+  --gib-ink-2: #171C24;      /* cards on dark */
+  --gib-ink-3: #232A35;      /* borders on dark */
+  --gib-paper: #F5F7F9;      /* light band */
+  --gib-white: #FFFFFF;      /* cards on light */
+  --gib-line: #E1E6EB;       /* borders on light */
+  --gib-text: #1B222C;       /* body text on light */
+  --gib-muted: #56616F;      /* secondary text on light */
+  --gib-on-dark: #F2F4F7;    /* body text on dark */
+  --gib-on-dark-muted: #A9B4C0;
+  --gib-orange: #F37021;     /* brand accent, buttons, highlights on dark */
+  --gib-orange-ink: #B4480C; /* orange for text and links on light */
+  --gib-steel: #6E8BA0;
+  --gib-steel-light: #BCCCDD;
+  --gib-red: #D64545;
+  --gib-amber: #E6A117;
+  --gib-green: #2E9E5B;
+  --gib-ff: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --gib-ff-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --gib-max: 1200px;
+  --gib-radius: 14px;
+  --gib-radius-sm: 8px;
+  --gib-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --gib-shadow: 0 1px 2px rgba(14,17,22,.06), 0 12px 32px rgba(14,17,22,.08);
+}
+
+body { background:var(--gib-paper); color:var(--gib-text); font-family:var(--gib-ff); font-size:1.0625rem; line-height:1.6; }
+#main-content img { height:auto; max-width:100%; }
+.gib-wrap { max-width:var(--gib-max); margin-inline:auto; padding-inline:1.5rem; }
+#main-content h1 {font-size:clamp(2.4rem,5vw,4rem);font-weight:700;line-height:1.05;letter-spacing:-.02em;text-wrap:balance;margin:.8rem 0 1.5rem;}
+#main-content h2 {font-size:clamp(1.8rem,3.2vw,2.6rem);font-weight:700;line-height:1.12;letter-spacing:-.015em;margin:.8rem 0 1.5rem;text-wrap:balance;}
+#main-content h3 {font-size:1.25rem;font-weight:600;line-height:1.3;margin:.6rem 0;}
+#main-content p {max-width:68ch;margin-bottom:1rem;white-space:pre-line;}
+.gib-lead {font-size:clamp(1.1rem,1.5vw,1.3rem);line-height:1.5;max-width:60ch;}
+.gib-muted {color:var(--gib-muted);}
+.gib-actions {display:flex;gap:1rem;flex-wrap:wrap;margin-block:1.5rem;align-items:center;}
+.gib-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem;}
+.gib-grid-three {grid-template-columns:repeat(3,minmax(0,1fr));}
+.gib-grid-four {grid-template-columns:repeat(4,minmax(0,1fr));}
+.gib-card {padding:1.75rem;border:1px solid var(--gib-line);border-radius:var(--gib-radius);background:var(--gib-white);}
+.gib-hero {display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;}
+.gib-hero-panel {padding:1.5rem;background:var(--gib-paper);border-radius:20px;min-width:0;}
+.gib-hero-panel img {width:100%;}
+.gib-number {font-family:var(--gib-ff-mono);font-size:2.5rem;color:var(--gib-orange-ink);}
+.gib-checks {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem 2rem;margin-block:1.5rem;list-style:none;}
+.gib-checks li::before {content:'✓';color:var(--gib-green);margin-right:.6rem;}
+.gib-center {text-align:center;} .gib-center p {margin-inline:auto;}
+:where(a,button,summary):focus-visible {outline:2px solid var(--gib-orange);outline-offset:3px;}
+:where(button,a,summary) {touch-action:manipulation;}
+:where([id]) {scroll-margin-top:90px;}
+.gib-preview {background:var(--gib-orange);color:var(--gib-ink);text-align:center;font-size:.8rem;padding:.4rem 1rem;}
+.gib-preview a {text-decoration:underline;}
+.gib-nav {position:sticky;top:0;z-index:50;background:var(--gib-ink);color:var(--gib-on-dark);border-bottom:1px solid var(--gib-ink-3);}
+.gib-nav-inner {display:flex;gap:1.5rem;align-items:center;height:68px;}
+.gib-brand {margin-right:auto;flex:none;} .gib-brand img {height:44px;width:auto;}
+.gib-nav-links {display:flex;align-items:center;gap:1.3rem;list-style:none;margin:0;padding:0;font-size:.9rem;}
+.gib-nav-links>li>a,.gib-nav-trigger {display:flex;align-items:center;min-height:44px;border-bottom:2px solid transparent;}
+.gib-nav button {font:inherit;color:inherit;cursor:pointer;}
+.gib-nav-trigger {background:none;border:0;gap:.5rem;}
+.gib-nav a[aria-current],.gib-nav .gib-active {border-bottom:2px solid var(--gib-orange);}
+.gib-dropdown {position:relative;}
+#gib-platform-menu {position:absolute;top:100%;left:0;background:var(--gib-ink-2);border:1px solid var(--gib-ink-3);width:320px;padding:.6rem;border-radius:8px;list-style:none;box-shadow:var(--gib-shadow);}
+#gib-platform-menu a {display:block;padding:.6rem .8rem;border-radius:4px;}
+#gib-platform-menu a:hover {background:var(--gib-ink-3);} #gib-platform-menu small {display:block;color:var(--gib-on-dark-muted);font-size:.75rem;}
+.gib-nav-cta {background:var(--gib-orange);color:var(--gib-ink);padding:.6rem 1rem;border-radius:8px;font-size:.9rem;font-weight:600;}
+.gib-mobile-trigger {display:none;background:none;border:1px solid var(--gib-ink-3);padding:.5rem .8rem;border-radius:8px;min-height:44px;}
+#gib-mobile-menu {max-height:calc(100dvh - 68px);overflow:auto;border-top:1px solid var(--gib-ink-3);}
+#gib-mobile-menu ul {padding:1rem 1.5rem;list-style:none;} #gib-mobile-menu a {display:block;padding:.65rem 0;min-height:44px;}
+.gib-footer {background:var(--gib-ink);color:var(--gib-on-dark-muted);padding:4rem 0 1.5rem;font-size:.9rem;}
+.gib-footer-grid {display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:3rem;}
+.gib-footer-grid p {margin-top:1.5rem;} .gib-footer h2 {font-size:1rem;color:var(--gib-on-dark);margin-bottom:1rem;}
+.gib-footer ul {list-style:none;padding:0;} .gib-footer li a {display:inline-flex;align-items:center;min-height:44px;}
+.gib-footer a:hover {color:var(--gib-orange);} .gib-footer-bottom {display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-top:1px solid var(--gib-ink-3);padding-top:1.5rem;margin-top:3rem;}
+.gib-disclaimer {font-size:.8rem;margin-top:1rem;} .gib-disclaimer a {text-decoration:underline;}
+.db-credit {background:var(--gib-ink);color:var(--gib-on-dark-muted);text-align:center;padding:1rem 1.5rem 5.5rem;border-top:1px solid var(--gib-ink-3);font-size:.8rem;}
+.db-credit a {color:var(--gib-orange);}
+    .gib-foundry {
+      position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 60;
+      display: inline-flex; align-items: center; gap: .7rem;
+      padding: .75rem 1.25rem .75rem 1rem; border-radius: 999px;
+      background: #b45a3c; color: #fff; font-family: var(--gib-ff);
+      box-shadow: 0 10px 28px -8px rgba(28, 35, 48, .55), 0 0 0 3px rgba(255, 255, 255, .85);
+      transition: transform .25s var(--gib-ease), background .25s;
+    }
+    .gib-foundry:hover { background: #c96a4c; transform: translateY(-3px); }
+    .gib-foundry:focus-visible { outline: 3px solid var(--gib-ink); outline-offset: 3px; }
+    .gib-foundry svg { width: 20px; height: 20px; flex: none; }
+    .gib-foundry__text { display: flex; flex-direction: column; line-height: 1.15; font-weight: 700; font-size: .95rem; }
+    .gib-foundry__text small { font-weight: 500; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+    /* Room so the button never covers the credit line at the very bottom. */
+    .db-credit { padding-bottom: 5.5rem; }
+    @media (max-width: 760px) {
+      .gib-foundry { right: .75rem; bottom: .75rem; padding: .65rem 1rem .65rem .85rem; }
+      .gib-foundry__text { font-size: .88rem; }
+    }
+
+
+@media(max-width:959px) {.gib-desktop {display:none;} .gib-mobile-trigger {display:block;} .gib-nav-inner {gap:.75rem;} }
+@media(max-width:899px) {.gib-hero,.gib-grid {grid-template-columns:1fr;} .gib-grid-four {grid-template-columns:repeat(2,minmax(0,1fr));} .gib-footer-grid {grid-template-columns:1fr;gap:2rem;} .gib-hero {gap:2rem;} }
+@media(max-width:480px) {.gib-nav-cta {padding:.55rem .7rem;font-size:.8rem;} .gib-checks,.gib-grid-four {grid-template-columns:1fr;} }
+@media(prefers-reduced-motion:reduce) {.gib-foundry {transition:none;} .reveal {opacity:1!important;transform:none!important;transition:none!important;} }
+</style>

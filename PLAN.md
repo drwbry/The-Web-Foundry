@@ -74,7 +74,7 @@ Each step is small enough for one subagent, and says how to check it. Do them in
   - Change: Create both exactly as DESIGN.md section 5 describes. Export `base`, `links`, `products` (four products, every field filled from `source/gib-forecast.md`, `gib-inventory.md`, `gib-operations.md`, `gib-production.md`), and `faq` (five items from the end of `source/home.md`). Use the fixed tables in section 5 for category, verb, tabShot, stats and closing headings. Apply the typo fixes listed there. Replace every em dash.
   - Check: `grep -c "—" src/components/demo/gib-supply-chain/data.js` prints `0`. Every `shot:` and `tabShot:` value is a file name that exists in `src/assets/demo/gib-supply-chain/shots/`. Each product has 4 stats. Capability counts: forecast 5, inventory 6, operations 6, production 5.
 
-- [ ] **2. Layout**
+- [x] **2. Layout**
   - Files: `src/components/demo/gib-supply-chain/Layout.astro`
   - Change: Build it per DESIGN.md sections 3 and 4 ("Layout.astro"): `BaseLayout` wrapper, `noindex` meta, font link, the global `:root` tokens and base type styles, preview bar, sticky nav with the Platform dropdown and the mobile menu (both are a button with `aria-expanded` plus one small script), footer, then `DBCredit`, then the floating "Back to The Web Foundry" link. Retrieve the `navbar` guide first.
   - Check: create a temporary `src/pages/demo/gib-supply-chain/index.astro` that renders the layout with one `<h1>`. `npm run build` passes. `grep -c 'noindex, nofollow' dist/demo/gib-supply-chain/index.html` prints `1` or more.
@@ -148,3 +148,5 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 0. Setup: clean current branch `drwbry/GIB-demo-website-build`; npm install completed, 22 screenshots confirmed, baseline build passed. This worktree lacks Sanity environment values, so builds export the existing main checkout .env without copying it. No STATUS.md exists; the plan restricts edits to demo code and this log, so none was created.
 
 1. Data: four complete products and five FAQs transcribed with specified typo fixes, real statistics and no em dashes. All screenshot filenames exist, capability counts are 5/6/6/5, each product has four stats; build passes.
+
+2. Layout: private shell, responsive disclosure navigation, footer, DBCredit and exact rust Foundry link built. Temporary home builds with noindex. Read Modern Web Guidance navbar; retained the specified button mechanics and followed guidance to open via Enter/Space rather than on focus (section 7 checklist conflicts with the guide).
