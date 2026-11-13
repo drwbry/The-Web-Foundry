@@ -109,7 +109,7 @@ Each step is small enough for one subagent, and says how to check it. Do them in
   - Change: Six sections per DESIGN.md section 6 ("why-gib.astro"), content from `source/why-gib.md`.
   - Check: `npm run build` passes. The page has the four measures numbered 01 to 04 and four quotes.
 
-- [ ] **9. Solutions and GIB for SAP pages**
+- [x] **9. Solutions and GIB for SAP pages**
   - Files: `src/pages/demo/gib-supply-chain/solutions.astro`, `src/pages/demo/gib-supply-chain/gib-for-sap.astro`
   - Change: Per DESIGN.md section 6, content from `source/solutions.md` and `source/gib-for-sap.md`.
   - Check: `npm run build` passes. Solutions shows four step cards with the four symbol images. GIB for SAP shows eight numbered capability cards.
@@ -162,3 +162,5 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 7. Platform: seven prescribed sections, four capability groups and the four-view platform cockpit reviewed against source; build and title/tab checks pass.
 
 8. Why GIB: all six sections, four measures numbered 01-04, featured quote and four customer quotes match the source. Build and counts pass.
+
+9. Solutions / GIB for SAP: prescribed sections and source copy reviewed; build passes, four solution steps have their four symbols, and eight SAP cards are numbered 01-08.
