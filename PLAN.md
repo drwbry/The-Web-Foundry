@@ -114,7 +114,7 @@ Each step is small enough for one subagent, and says how to check it. Do them in
   - Change: Per DESIGN.md section 6, content from `source/solutions.md` and `source/gib-for-sap.md`.
   - Check: `npm run build` passes. Solutions shows four step cards with the four symbol images. GIB for SAP shows eight numbered capability cards.
 
-- [ ] **10. AI page**
+- [x] **10. AI page**
   - Files: `src/pages/demo/gib-supply-chain/ai.astro`
   - Change: Seven sections per DESIGN.md section 6 ("ai.astro"), content from `source/ai-in-gib.md`. The disclaimer line under the AI features grid is required.
   - Check: `npm run build` passes. The page contains `may not be available in all product releases`. The four stat ranges render as text (`15-40%`), not animated numbers.
@@ -164,3 +164,5 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 8. Why GIB: all six sections, four measures numbered 01-04, featured quote and four customer quotes match the source. Build and counts pass.
 
 9. Solutions / GIB for SAP: prescribed sections and source copy reviewed; build passes, four solution steps have their four symbols, and eight SAP cards are numbered 01-08.
+
+10. AI: seven sections, four feature blocks and required release disclaimer built; build passes and all four ranges are text without counters. Kept the explicit dark Stats then dark CTA order despite the general band-alternation checklist; narrative feature introductions omitted in favor of the prescribed heading/item grids.
