@@ -104,7 +104,7 @@ Each step is small enough for one subagent, and says how to check it. Do them in
   - Change: Seven sections per DESIGN.md section 6 ("platform.astro"), content from `source/gib-platform.md`.
   - Check: `npm run build` passes. The page has the four capability group titles and the platform cockpit with four module views.
 
-- [ ] **8. Why GIB page**
+- [x] **8. Why GIB page**
   - Files: `src/pages/demo/gib-supply-chain/why-gib.astro`
   - Change: Six sections per DESIGN.md section 6 ("why-gib.astro"), content from `source/why-gib.md`.
   - Check: `npm run build` passes. The page has the four measures numbered 01 to 04 and four quotes.
@@ -160,3 +160,5 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 6. Products: shared static route generates four pages with 5/6/6/5 cockpit views, exact source hero/quote/closing content and real values/gauges. Build and conditional Outcomes/FFF/video checks pass. Explicit page section tones take precedence over the generic alternation checklist (hero quote and capability bands are both light on three products).
 
 7. Platform: seven prescribed sections, four capability groups and the four-view platform cockpit reviewed against source; build and title/tab checks pass.
+
+8. Why GIB: all six sections, four measures numbered 01-04, featured quote and four customer quotes match the source. Build and counts pass.

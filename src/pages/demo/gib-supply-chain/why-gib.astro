@@ -1,0 +1,108 @@
+---
+import {Image} from 'astro:assets';
+import Layout from '../../../components/demo/gib-supply-chain/Layout.astro';
+import Section from '../../../components/demo/gib-supply-chain/Section.astro';
+import Eyebrow from '../../../components/demo/gib-supply-chain/Eyebrow.astro';
+import Button from '../../../components/demo/gib-supply-chain/Button.astro';
+import Quote from '../../../components/demo/gib-supply-chain/Quote.astro';
+import CertBadges from '../../../components/demo/gib-supply-chain/CertBadges.astro';
+import CtaBand from '../../../components/demo/gib-supply-chain/CtaBand.astro';
+import hero from '../../../assets/demo/gib-supply-chain/hero-operations.png';
+import {links} from '../../../components/demo/gib-supply-chain/data.js';
+const measures = [
+  {
+    "title": "Decision Speed",
+    "line": "Accelerate how work moves through SAP",
+    "text": "Decision speed is not just about alerts. It’s about how quickly planners can evaluate information, coordinate across roles, and execute actions. GIB reduces friction in the decision process itself, improving responsiveness across the supply chain and enabling supply chain teams to move from analysis to execution faster inside SAP."
+  },
+  {
+    "title": "Rework Rate",
+    "line": "Increase first-time execution quality",
+    "text": "Rework happens when operational decisions have to be adjusted after execution. Orders are changed, parameters are revised, or transactions are reversed. GIB improves the quality and completeness of information available at the moment a decision is made, so actions are correct the first time and require fewer downstream adjustments."
+  },
+  {
+    "title": "Exception Cycle Time",
+    "line": "Shorten the time to operational resolution",
+    "text": "Operational issues like supply gaps, scheduling conflicts, and coverage risks are part of daily supply chain management. What matters is how quickly they are resolved. GIB enables teams to identify, prioritize, and address issues directly within SAP, reducing the time between detection and resolution."
+  },
+  {
+    "title": "Workaround Frequency",
+    "line": "Reduce reliance on parallel processes",
+    "text": "When coordination requires exporting data, reconciling spreadsheets, or emailing across functions, execution slows and system integrity weakens. GIB keeps evaluation and action within SAP, reducing the need for external coordination layers."
+  }
+];
+const benefits = [
+  {
+    "title": "Built Exclusively for SAP",
+    "text": "Operational control embedded directly within SAP preserves system integrity while giving you a distinct advantage in how work is structured, prioritized, and executed."
+  },
+  {
+    "title": "Built-in, Not Bolted On",
+    "text": "There is no data replication layer, no detached planning engine, and no separation between optimization and execution with GIB."
+  },
+  {
+    "title": "End-to-End Operational Scope",
+    "text": "Grow your business on a fully coordinated supply chain , where demand, inventory, MRP, procurement, and production operate in sync."
+  }
+];
+const heroQuote = {
+  "text": "GIB makes navigating SAP much easier. I've reduced the number of transactions I have to interact with and I feel it provides better information, or at least presents it in a way that is better than the standard methods.",
+  "name": "Materials Manager",
+  "role": "Manufacturer | +1B Annual Revenue"
+};
+const quotes = [
+  {
+    "text": "There isn’t anything that really stands out as a dislike of the tool. Early on, our main challenge was understanding what more we could do with it after deployment without bringing in consulting. The GIB user community has since been very helpful in giving us ideas and helping us continue to expand how we use the solution.",
+    "name": "Systems Manager, Sourcing",
+    "role": "Manufacturer | +2B Annual Revenue"
+  },
+  {
+    "text": "The GIB team has been a fantastic partner since day one and we could not operate without their product. They are proactive in their communication and highly responsive when we reach out. GIB fosters knowledge sharing between users and regularly solicits and acts on feedback.",
+    "name": "Manager, Global Aftermarket Operations",
+    "role": "DANA | Automotive Manufacturer"
+  },
+  {
+    "text": "Ten out of ten, the support we received was top notch every step along the way.",
+    "name": "Supply Chain Data Analyst",
+    "role": "Healthcare and Biotech | $5B+ Annual Revenue"
+  },
+  {
+    "text": "The hands-on experience of the GIB team has helped ensure the success of the implementations completed so far and gives us confidence that upcoming projects will be equally successful.",
+    "name": "Automotive Parts Manufacturer",
+    "role": "+$45B Annual Revenue | 10,000+ Headcount"
+  }
+];
+---
+<Layout title="Embedded Operational Control for SAP Supply Chains | GIB Platform" description="GIB transforms how supply chains teams use SAP by delivering unparalleled transparency and coordination across planning, inventory, procurement, and production." current="why">
+  <Section tone="dark">
+    <div class="gib-hero">
+      <div>
+        <Eyebrow text="Why GIB" />
+        <h1>An easier way to manage, coordinate, and execute supply chain processes in SAP</h1>
+        <p class="gib-lead">For SAP ECC and SAP S/4HANA.</p>
+        <div class="gib-actions"><Button href={links.demo} external>Get a demo</Button></div>
+        <CertBadges />
+      </div>
+      <div class="gib-hero-panel"><Image src={hero} alt="GIB Operations material and procurement overview running inside SAP" widths={[640,960,1280]} sizes="(min-width:900px) 45vw, 100vw" loading="eager" fetchpriority="high" /></div>
+    </div>
+  </Section>
+  <Section tone="light"><Quote {...heroQuote} featured /></Section>
+  <Section tone="white">
+    <Eyebrow text="Built-in cross-functional intelligence" />
+    <h2 class="reveal">Remove the friction that slows your supply chain down</h2>
+    <div class="gib-measures">{measures.map((measure,i) => <article class="gib-measure reveal"><span class="gib-number">{String(i+1).padStart(2,'0')}</span><div><h3>{measure.title}</h3><p><strong>{measure.line}</strong></p><p class="gib-muted">{measure.text}</p></div></article>)}</div>
+  </Section>
+  <Section tone="dark">
+    <h2 class="reveal">Key benefits only GIB delivers</h2>
+    <div class="gib-grid gib-grid-three">{benefits.map((benefit,i) => <article class:list={['gib-card','reveal',`reveal-delay-${i+1}`]}><h3>{benefit.title}</h3><p class="gib-muted">{benefit.text}</p></article>)}</div>
+  </Section>
+  <Section tone="light"><div class="gib-grid">{quotes.map(quote => <Quote {...quote} />)}</div></Section>
+  <CtaBand heading="Optimize supply chain performance in SAP." text="SAP executes transactions. GIB improves how work moves, how decisions are made, and how execution happens across your supply chain organization." />
+</Layout>
+<style>
+.gib-measures {margin-top:2rem;}
+.gib-measure {display:grid;grid-template-columns:100px minmax(0,1fr);gap:2rem;padding:2rem 0;border-top:1px solid var(--gib-line);align-items:start;}
+.gib-measure:last-child {border-bottom:1px solid var(--gib-line);}
+.gib-measure .gib-number {font-size:clamp(2.6rem,5vw,4rem);line-height:1.1;padding-top:.5rem;}
+@media(max-width:899px) {.gib-measure {grid-template-columns:60px minmax(0,1fr);gap:1rem;}}
+</style>
