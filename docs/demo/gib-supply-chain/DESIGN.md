@@ -10,11 +10,12 @@ GIB sells supply chain software that runs inside SAP. Their buyers are supply ch
 
 The demo must feel: calm, precise, enterprise, fast to scan. A visitor should understand what GIB is in five seconds and find their module in one click.
 
-Three ideas carry the design. Use them everywhere, and do not add others.
+Four ideas carry the design. Use them everywhere, and do not add others.
 
-1. **Traffic lights.** GIB's own SAP screens mark materials red, amber, green. We reuse that as the brand motif: three small dots before eyebrow labels, and red / amber / green for the "Alert, Analysis, Action" steps.
-2. **Framed screenshots.** Real product screenshots, shown inside a simple window frame, are the main imagery. No stock photos. No illustrations. No invented dashboards.
-3. **Dark and light bands.** Pages alternate dark ink bands and light paper bands so sections are easy to tell apart.
+1. **The cockpit.** This is the main one. GIB's biggest selling point is that it pulls information that is normally spread across many SAP transactions into one or a few customizable screens, with stronger visuals, for each user and department. GIB calls these screens cockpits. The demo site should work the same way: instead of making visitors scroll through a long page, each module is shown as one cockpit window with a rail of views on the left and the live screen on the right. The site's layout proves the product's point. See `Cockpit.astro`, `Scattered.astro` and the gauge tiles in `Stats.astro`.
+2. **Traffic lights.** GIB's own SAP screens mark materials red, amber, green. We reuse that as the brand motif: three small dots before eyebrow labels, and red / amber / green for the "Alert, Analysis, Action" steps.
+3. **Framed screenshots.** Real product screenshots, shown inside a simple window frame, are the main imagery. No stock photos. No illustrations. No invented dashboards: the cockpit windows only ever show GIB's real screenshots, real feature names and real customer numbers.
+4. **Dark and light bands.** Pages alternate dark ink bands and light paper bands so sections are easy to tell apart.
 
 ## 2. Hard rules
 
@@ -133,14 +134,40 @@ A `<figure>` with `<blockquote>` and `<figcaption>`. A large orange `“` mark a
 **`Stats.astro`** (props: `items` = array of `{ value, prefix, suffix, label, source }`)
 A dark band with a 4-column grid (2 columns below 900px). Each cell: the number in mono, then the label. The number is `<span>{prefix}</span><span data-count={value}>{value}</span><span>{suffix}</span>`. The repo's `shared.js` animates any `[data-count]` element from 0 on scroll, so write the real value as the text too (it is the no-JS fallback). `source`, when present, is a small mono line under the label, for example `GIB Operations`. A thin `--gib-ink-3` line separates cells.
 
+Gauge tiles: when an item's suffix is `%`, draw a ring gauge to the left of the number, 56px wide, filled to that percentage. Use a `conic-gradient` from `--gib-orange` to `--gib-ink-3` with a round mask, or an SVG circle with `stroke-dasharray`. Values above 100 show a full ring. Items that are not percentages (hours, months, money, ranges) show no ring. The ring is decoration (`aria-hidden`). Together the four tiles should read like an instrument panel. Do not add any number that is not in the data.
+
 **`ModuleCards.astro`** (props: `exclude` optional slug)
 Four cards linking to the four product pages, from `products` data: category eyebrow, name, summary, `link`-style button using the product's `verb` (Plan, Optimize, Coordinate, Schedule). Operations shows a small "Most popular" tag. `exclude` drops one card (used on product pages to show the other three).
 
-**`ModuleTabs.astro`** (no props; home page only)
-The centerpiece of the home page. Dark band. Four tabs across the top (Forecast, Inventory, Operations, Production). Operations is selected by default. The panel shows, left: category eyebrow, name as h3, summary, the feature list with small green check marks, and a link button to the product page. Right: that product's `tabShot` in a `Frame`.
-- Markup: real ARIA tabs (`role="tablist"`, `role="tab"`, `role="tabpanel"`, `aria-selected`, `aria-controls`). Arrow keys move between tabs.
-- All four panels are in the HTML. JavaScript only toggles the `hidden` attribute. If JavaScript is off, show all four panels stacked (add a `gib-js` class to the component from the script and only hide panels under `.gib-js`).
-- Write the script as a plain `<script>` in the component, under 40 lines.
+**`Cockpit.astro`** (props: `label`, `views`, `initial` default `0`, `id`)
+The signature component. It is used on the home page, the platform page and all four product pages. It looks like one application window, not like a web page section.
+
+`views` is an array of `{ key, title, kicker, text, bullets, shot, alt, href, hrefLabel, tag }`. Only `key` and `title` are required.
+
+Structure, top to bottom:
+- **Title bar.** 40px tall, `--gib-ink-2`. Left: three 9px dots (red, amber, green). Then `label` in mono, for example `GIB Platform` or `GIB Operations`. Right: a mono counter that shows the selected view, for example `03 / 06`.
+- **Body.** Two parts side by side.
+  - **Rail** (left, 280px, `--gib-ink-2`, right border `--gib-ink-3`). One button per view, stacked. Each button shows a mono number (`01`, `02` ...) and the view `title`. If the view has `tag` (for example `Most popular`), show it as a small orange outline pill. The selected button has a 3px orange left border, `--gib-ink-3` background and white text. The others are `--gib-on-dark-muted`.
+  - **Screen** (right, fills the rest, `--gib-ink` background, 1.5rem padding). Top: the view's `kicker` in mono (optional), `title` as h3, then `text`. If the view has `bullets`, show them in two columns with small green check marks. If it has `href`, show a `link` button with `hrefLabel`. Below that: the view's `shot` image at full width with radius 8px and a 1px `--gib-ink-3` border. The image links to the full-size file in a new tab. Do not wrap it in `Frame`; the cockpit window is already the frame.
+- **Status bar.** 32px, `--gib-ink-2`, mono `.75rem`, `--gib-on-dark-muted`. Left: a green dot and the text `Inside SAP S/4HANA and SAP ECC`. Right: `No separate database. No middleware.`
+
+The whole window has radius 14px, a 1px `--gib-ink-3` border and a deep shadow (`0 30px 80px rgba(0,0,0,.35)`). It always uses the dark colors above, whatever band it sits on. Put it on a dark or a light band as the page spec says.
+
+Behavior:
+- Real ARIA tabs with vertical orientation: the rail is `role="tablist" aria-orientation="vertical"`, each button is `role="tab"` with `aria-selected` and `aria-controls`, each screen is `role="tabpanel"`. Up and down arrow keys move between views. Home and End jump to first and last.
+- All screens are in the HTML. JavaScript only toggles the `hidden` attribute and updates the counter. The swap is a 200ms fade.
+- No JavaScript: show every screen stacked, one after another, and turn the rail into a plain list of anchor links. Do this by having the script add a `gib-js` class to the component, and only apply the hiding and the side-by-side tab layout under `.gib-js`.
+- Each screen has `id={`${id}-${key}`}` so other parts of the page can link straight to a view. On load, if the URL hash matches a screen id, select that view.
+- The first image (the `initial` view) is `loading="eager"` when the cockpit is near the top of a page; all others are lazy.
+- Below 900px: the rail becomes a horizontally scrolling row of pill buttons above the screen (`overflow-x: auto`, no wrapping, each pill at least 44px tall). The status bar keeps only its left text.
+- Several cockpits can be on one site but only one per page. Write the script as a plain `<script>` in the component, under 60 lines, and scope every query to the component root.
+
+**`Scattered.astro`** (no props; home page only)
+A before and after picture that explains the cockpit idea in one glance. Three columns on desktop: before, arrow, after. Stacked on mobile.
+- **Before** (left). Mono eyebrow `Today: spread across SAP`. A loose cluster of eight small chips, each rotated by a few degrees (between -4 and 4) and slightly overlapping, so it looks untidy on purpose. Chips are white with a `--gib-line` border and mono text. The chips are, exactly: `MD04`, `MD07`, `ME58`, `CO24`, `Excel export`, `VLOOKUP`, `Email thread`, `Another report`. These come from GIB's own customer quotes. Do not add other transaction codes.
+- **Arrow** (middle). A thin line with an arrowhead and the mono label `One cockpit`. On mobile it points down.
+- **After** (right). A small cockpit window: the same title bar as `Cockpit.astro` with the label `GIB Operations`, and under it the screenshot `shots/gib-operations-dashboard-with-menu-options.png`. Under the window, three short lines with traffic light dots: red `Alert`, amber `Analysis`, green `Action`, each followed by its sentence from section 6.
+- The chips are decoration: give the cluster `aria-hidden="true"` and add a visually hidden sentence for screen readers: `Today the same information is spread across separate SAP transactions, spreadsheets and email.`
 
 **`Faq.astro`** (props: `items` = array of `{ q, a }`)
 Native `<details>` elements, one per question, separated by `--gib-line` rules. Summary is h3-sized with a `+` that turns to `−` when open. No JavaScript.
@@ -195,7 +222,7 @@ export function shot(name) {
 }
 ```
 
-A wrong file name then fails the build instead of shipping a broken image. In `data.js`, store screenshot file names as strings (for example `shot: 'gib-operations-missing-parts.png'`) and call `shot()` in the page. Import hero images, logos and symbols directly in the component that uses them.
+A wrong file name then fails the build instead of shipping a broken image. In `data.js`, store screenshot file names as strings (for example `shot: 'gib-operations-missing-parts.png'`) and call `shot()` in the page. `moduleViews` in `data.js` therefore also holds file names; the page maps them through `shot()` before passing the views to `Cockpit`. Import hero images, logos and symbols directly in the component that uses them.
 
 ### `products`
 
@@ -276,17 +303,19 @@ This page has the only rewritten copy in the demo. Use it exactly.
 2. **LogoWall** (light).
    - Eyebrow: `Trusted in complex manufacturing and distribution`
    - Line: `25+ years of SAP supply chain expertise, serving customers worldwide.`
-3. **The problem and the fix** (white). Two columns.
-   - Left: h2 `SAP holds every signal. It doesn't connect them.` Then one paragraph: `The shortage, the material position, and the purchase order sit in separate screens. Coordinating a response across planners, buyers, and schedulers still happens in Excel and email.`
-   - Right: three stacked cards, each with one big colored dot, a mono step label and a sentence.
-     - red, `01 Alert`: `Catch shortages and exceptions early.`
-     - amber, `02 Analysis`: `See the full material position across plants in one view.`
-     - green, `03 Action`: `Trigger the purchase or reschedule without leaving SAP.`
-   - A thin vertical line connects the three dots.
-4. **ModuleTabs** (dark).
+3. **The problem and the fix** (white).
+   - Eyebrow: `From scattered to one screen`
+   - h2: `SAP holds every signal. It doesn't connect them.`
+   - Paragraph: `The shortage, the material position, and the purchase order sit in separate screens. Coordinating a response across planners, buyers, and schedulers still happens in Excel and email.`
+   - Then `Scattered`. Its three "after" lines are:
+     - red, `Alert`: `Catch shortages and exceptions early.`
+     - amber, `Analysis`: `See the full material position across plants in one view.`
+     - green, `Action`: `Trigger the purchase or reschedule without leaving SAP.`
+4. **The platform cockpit** (dark).
    - Eyebrow: `The GIB platform`
-   - h2: `One embedded platform for end-to-end supply chain operations in SAP`
+   - h2: `One cockpit for each part of your supply chain`
    - Lead: `GIB is deployed directly inside your SAP system as an SAP certified clean core extension. It reads your existing SAP data and executes through standard SAP processes. If a field exists in your SAP tables, GIB can use it.`
+   - Then `Cockpit` with `label="GIB Platform"`, `id="modules"`, `initial={2}` (Operations). Four views, one per product, in the order forecast, inventory, operations, production. Map each product to a view like this: `key: slug`, `title: name`, `kicker: category`, `text: summary`, `bullets: features`, `shot: tabShot`, `href: ${base}/${slug}`, `hrefLabel: "Open " + name`, `tag: "Most popular"` for operations only.
 5. **No middleware** (light). Centered.
    - h2: `No separate database or system. No middleware.`
    - Lead: `Planners and buyers work in the SAP screens they already use, and every decision runs on current data, not a copy.`
@@ -306,13 +335,12 @@ This page has the only rewritten copy in the demo. Use it exactly.
 
 One file builds all four pages with `getStaticPaths` over `Object.values(products)`, so the URLs are `/demo/gib-supply-chain/forecast`, `/inventory`, `/operations`, `/production`. `current="platform"`.
 
-1. **Hero** (dark). Eyebrow `SAP S/4HANA | SAP ECC`. h1 = product name. Lead = `tagline`. Then `intro` paragraphs in `--gib-on-dark-muted`. Buttons: primary `Get a demo`; ghost `See what it does` → `#capabilities`. Right: the product's `hero` image on a `--gib-paper` panel, same as the home hero.
+1. **Hero** (dark). Eyebrow `SAP S/4HANA | SAP ECC`. h1 = product name. Lead = `tagline`. Then `intro` paragraphs in `--gib-on-dark-muted`. Buttons: primary `Get a demo`; ghost `Open the cockpit` → `#capabilities`. Right: the product's `hero` image on a `--gib-paper` panel, same as the home hero.
 2. **Hero quote** (light). One featured `Quote` from `heroQuote`.
 3. **Outcomes** (white). Production only. h2 `Manufacturers use GIB Production to`. Four cards from `outcomes`.
-4. **Capabilities** (white, `id="capabilities"`). h2 = `capabilitiesHeading`, lead = `capabilitiesSub`.
-   - On desktop, a sticky left column (30% wide, `position: sticky; top: 100px`) lists the capability titles as anchor links, numbered `01`, `02` and so on in mono. The right column holds one block per capability: number, h3 title, paragraph, then the `Frame` with its screenshot. 5rem between blocks. Each block has an `id` so the links work, and `scroll-margin-top: 100px`.
-   - On mobile, hide the left list and show the blocks only.
-5. **Stats** (dark). Eyebrow: `Why customers choose {name}`. The product's four `stats`, no `source`.
+4. **The cockpit** (light, `id="capabilities"`). This is the heart of the page. h2 = `capabilitiesHeading`, lead = `capabilitiesSub`. Then `Cockpit` with `label={name}` and `id="view"`. One view per capability: `key` is `1`, `2` and so on, `title` and `text` from the capability, `shot` from `shot(capability.shot)`. No bullets, no link. Write alt text for each screenshot from the capability title, for example "GIB Operations screen: prioritize exception messages and coverage risk". If a capability has no `shot`, its screen shows the title and text only.
+   - Under the cockpit, one centered muted line: `Screens shown are from GIB running inside SAP. Select a view on the left.`
+5. **Stats** (dark). Eyebrow: `Why customers choose {name}`. The product's four `stats`, no `source`. Percent items get ring gauges (see `Stats.astro`).
 6. **Quotes** (light). Up to four `Quote` cards in a 2-column grid.
 7. **CaseStudy** (white). Only when `spotlight` exists.
 8. **Closing** (dark). h2 = `closingHeading`. The `closing` bullets as a 2-column list with green check marks. Primary button `Request a demo` → `links.demo`. Operations only: add a ghost button `Watch the video` → `links.operationsVideo` (external).
@@ -324,7 +352,7 @@ One file builds all four pages with `getStaticPaths` over `Object.values(product
 2. Featured `Quote` (light): the Director of Purchasing quote.
 3. Four capability groups (white). h2 and lead from "Improve System Performance, Drive Better Supply Chain Outcomes". A 2x2 grid of cards: Cross-Functional Workspaces, Built-In Collaboration, Decision Prioritization, Embedded Optimization Logic. Each card: the small line above the title in the source as an eyebrow (no lights), the title, and its four bullets.
 4. Statement (dark). The sentence that starts "GIB turns SAP from a system that records outcomes" as a centered h2, then `CertBadges`.
-5. Modules (light, `id="modules"`). h2 `Four modules. One SAP system.` Then `ModuleCards`, but larger: each card also lists the product's `features`.
+5. Modules (light, `id="modules"`). Eyebrow `Role-based operational cockpits`. h2 `Four modules. One SAP system.` Lead: `Planners, buyers, schedulers, and production teams each get a workspace built for their job, on the same live SAP data.` Then the same `Cockpit` as home page section 4 (same four views, `label="GIB Platform"`, `initial={2}`). To avoid writing the mapping twice, export a `moduleViews` array from `data.js` and use it on both pages.
 6. Quotes (white): the three quotes under "What Our Customers Are Saying".
 7. `CtaBand`. Heading: `See the platform on your own SAP data.` Text: leave empty.
 
@@ -373,6 +401,8 @@ Before calling a page done, check it against this list.
 - No section has more than about 90 words of body text in one block. Where the source is longer, keep their sentences but break them into the cards and rows described above. Do not cut facts.
 - Bands alternate. Two dark bands never touch. Two bands of the same light tone never touch.
 - Orange appears in small amounts: buttons, quote marks, the active tab, the preview bar. It is never a section background (the preview bar is the only exception).
-- Every screenshot is inside a `Frame`. Every hero image is on a paper panel.
+- Every screenshot is inside a `Cockpit`, the `Scattered` window or a `Frame`. Every hero image is on a paper panel.
+- The cockpit reads as one application window: title bar, rail, screen, status bar. On a 1440px screen the whole window fits in the viewport without scrolling for most views.
+- A visitor can see every capability of a module without scrolling the page, by clicking through the rail.
 - At 390px wide nothing scrolls sideways, tap targets are at least 44px tall, and the mobile menu opens and closes.
-- Tab through the page with the keyboard: every link and button shows the orange focus ring, and the Platform dropdown opens on focus.
+- Tab through the page with the keyboard: every link and button shows the orange focus ring, the Platform dropdown opens on focus, and the arrow keys move through the cockpit rail.

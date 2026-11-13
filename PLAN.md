@@ -14,7 +14,7 @@ A ten-page proof-of-concept rebuild of https://www.gibsupplychain.com lives at `
 
 - Repo: `db-design-website` (Astro 5 static site, deployed by Coolify when `main` is pushed). Work on the branch `demo/gib-supply-chain`, which already exists and holds this plan.
 - **Read these first, in this order:**
-  1. `docs/demo/gib-supply-chain/DESIGN.md`. The full design and content spec. It decides every visual and copy question. Follow it exactly.
+  1. `docs/demo/gib-supply-chain/DESIGN.md`. The full design and content spec. It decides every visual and copy question. Follow it exactly. Its main idea is the "cockpit": each module is shown as one application window with a rail of views, the way GIB's own product pulls scattered SAP data into one screen.
   2. `src/components/demo/morning-and-night/Layout.astro` and `src/pages/demo/morning-and-night/index.astro`. The existing prospect demo. Copy its structure and code style.
   3. `docs/shared-utilities.md`. Explains the `.reveal` and `data-count` helpers that `shared.js` already provides.
 - Everything you need is already in the repo. Do not fetch anything from the internet.
@@ -71,28 +71,28 @@ After every step, `npm run build` must finish with no errors.
 
 - [ ] **3. Small components**
   - Files (all in `src/components/demo/gib-supply-chain/`): `Eyebrow.astro`, `Button.astro`, `Section.astro`, `Frame.astro`, `Quote.astro`, `Stats.astro`, `Faq.astro`, `CtaBand.astro`, `CaseStudy.astro`, `LogoWall.astro`, `CertBadges.astro`, `ModuleCards.astro`
-  - Change: Build each per DESIGN.md section 4, with the listed props and nothing extra. `Stats` also accepts the optional per-item `text` field described in the `ai.astro` section.
+  - Change: Build each per DESIGN.md section 4, with the listed props and nothing extra. `Stats` also accepts the optional per-item `text` field described in the `ai.astro` section, and draws ring gauges for percent values.
   - Check: `npm run build` passes after the home page (step 5) imports them. No component file is longer than about 150 lines.
 
-- [ ] **4. Module tabs**
-  - Files: `src/components/demo/gib-supply-chain/ModuleTabs.astro`
-  - Change: Build per DESIGN.md section 4 ("ModuleTabs.astro"): four ARIA tabs, Operations selected by default, all panels in the HTML, a script under 40 lines that toggles `hidden`, arrow-key support, and all panels visible when JavaScript is off.
-  - Check: in `npm run dev`, clicking each tab swaps the panel and screenshot. Left and right arrow keys move between tabs. With JavaScript disabled in the browser, all four panels show stacked.
+- [ ] **4. Cockpit and Scattered** (the signature components; give this step to the strongest model you have)
+  - Files: `src/components/demo/gib-supply-chain/Cockpit.astro`, `src/components/demo/gib-supply-chain/Scattered.astro`. Also add the `moduleViews` export to `data.js`.
+  - Change: Build both per DESIGN.md section 4. `Cockpit` is one application window: title bar, left rail of views, screen, status bar. Vertical ARIA tabs, arrow keys, hash deep links, all screens visible when JavaScript is off, rail turns into scrolling pills below 900px, script under 60 lines. `Scattered` is the before and after picture with the eight exact chips.
+  - Check: in `npm run dev`, on a test page with four views: clicking a rail button swaps the screen and the `03 / 04` counter. Up and down arrows move between views. Loading the page with `#modules-inventory` in the URL opens the Inventory view. With JavaScript disabled, all screens show stacked. At 390px wide the rail is a scrolling row of pills and nothing overflows the page.
 
 - [ ] **5. Home page**
   - Files: `src/pages/demo/gib-supply-chain/index.astro`
-  - Change: Replace the temporary page with the ten sections in DESIGN.md section 6 ("index.astro"), in that order, using the exact copy given there.
-  - Check: `npm run build` passes. The built page has exactly one `<h1>`. It contains the text `It's just not in one place` and `Nature`. `grep -c "—" src/pages/demo/gib-supply-chain/index.astro` prints `0`.
+  - Change: Replace the temporary page with the ten sections in DESIGN.md section 6 ("index.astro"), in that order, using the exact copy given there. Section 3 uses `Scattered`. Section 4 uses `Cockpit` with `moduleViews`.
+  - Check: `npm run build` passes. The built page has exactly one `<h1>`. It contains the text `It's just not in one place`, `Nature` and `MD04`. The cockpit opens on Operations. `grep -c "—" src/pages/demo/gib-supply-chain/index.astro` prints `0`.
 
 - [ ] **6. Product pages**
   - Files: `src/pages/demo/gib-supply-chain/[product].astro`
-  - Change: One dynamic route with `getStaticPaths` over the four products, with the nine sections in DESIGN.md section 6 ("[product].astro"). Screenshots come from `shot(name)` in `images.js`. Hero images: import the four `hero-*.png` files and pick by slug.
-  - Check: `npm run build` creates `dist/demo/gib-supply-chain/forecast/index.html`, `inventory/index.html`, `operations/index.html` and `production/index.html`. The Outcomes section appears only on production. The case study card and "Watch the video" button appear only on operations. Each page shows its four real stat values, not `0`.
+  - Change: One dynamic route with `getStaticPaths` over the four products, with the nine sections in DESIGN.md section 6 ("[product].astro"). Section 4 is a `Cockpit` with one view per capability. Screenshots come from `shot(name)` in `images.js`. Hero images: import the four `hero-*.png` files and pick by slug.
+  - Check: `npm run build` creates `dist/demo/gib-supply-chain/forecast/index.html`, `inventory/index.html`, `operations/index.html` and `production/index.html`. The Outcomes section appears only on production. The case study card and "Watch the video" button appear only on operations. Each page shows its four real stat values, not `0`, with ring gauges on the percent values. Each page has one cockpit whose rail lists every capability (forecast 5, inventory 6, operations 6, production 5).
 
 - [ ] **7. Platform page**
   - Files: `src/pages/demo/gib-supply-chain/platform.astro`
   - Change: Seven sections per DESIGN.md section 6 ("platform.astro"), content from `source/gib-platform.md`.
-  - Check: `npm run build` passes. The page has the four capability group titles and four module cards with feature lists.
+  - Check: `npm run build` passes. The page has the four capability group titles and the platform cockpit with four module views.
 
 - [ ] **8. Why GIB page**
   - Files: `src/pages/demo/gib-supply-chain/why-gib.astro`
