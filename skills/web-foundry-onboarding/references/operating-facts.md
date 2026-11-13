@@ -22,17 +22,9 @@ Steps marked **[MANUAL]** require the user to act. Pause and wait for confirmati
 
 For a non-technical visual overview, the template repo includes `docs/website-factory-map.html`. Use it to orient Dreux or collaborators to the stack, intake inputs, build/deploy flows, form routing, and Sanity update loop. Update that file whenever the core onboarding workflow or infrastructure meaningfully changes.
 
-### Companion Skills to Use During Onboarding
+### Design and companion capabilities
 
-These names are the original Claude Code adapters. In Codex, use the matching capability in `references/tool-adapters.md`; the capability gate is mandatory even when the named companion skill is unavailable.
-
-| Skill | When to use |
-|-------|-------------|
-| `frontend-design` | **Phase 4d** — invoke for all design decisions: palette, fonts, layout, hero composition, visual balance. Don't guess at design. |
-| `superpowers:brainstorming` | **Phase 4d** — before building pages, brainstorm creative approaches for the client's unique needs (e.g. custom features like mowing schedule groups). |
-| `superpowers:requesting-code-review` | **Phase 4h / Phase 9** — after build completes, run a code review against the Site Plan to catch missed requirements, accessibility issues, or design inconsistencies. |
-| `superpowers:verification-before-completion` | **Phase 9** — before declaring QA complete, verify all checklist items with actual commands/evidence, not assumptions. |
-| `audit-website` | **Phase 9** — run a site audit on the live domain after deployment to catch SEO, performance, and security issues. |
+Use [design-and-platform.md](design-and-platform.md) for client-led design, Modern Web Guidance, and optional design references. Use [tool-adapters.md](tool-adapters.md) for available capabilities. Direct work by the active model is valid; a particular companion skill, plugin, or separate reviewer is not a prerequisite. Review against the approved brief and gather real QA evidence before handoff.
 
 ---
 
@@ -43,7 +35,7 @@ These names are the original Claude Code adapters. In Codex, use the matching ca
 | Sanity | One project per client — created fresh in Phase 2. Project ID assigned by Sanity at creation. |
 | Sanity dataset | `production` (simple name — each project is already isolated per client) |
 | Sanity Studio URL | `[client-slug].sanity.studio` — deployed per client in Phase 4b |
-| Sanity free tier | Sufficient for all client sites — 500k CDN requests/month, 10GB bandwidth, 5GB storage per project |
+| Provider plans/limits | Verify current official plan terms when the client decision depends on them. Quotas and third-party fees in older examples are not guaranteed current. |
 | Template repo | `github.com/drwbry/The-Web-Foundry` (local clone: `~/projects/the-web-foundry/db-design-website`) |
 | Client repos dir | `~/projects/the-web-foundry/clients/[client-slug]-website` |
 | Worker URL | `https://web-foundry-form-relay.cincinnati-web-foundry.workers.dev` |
@@ -51,7 +43,7 @@ These names are the original Claude Code adapters. In Codex, use the matching ca
 | Turnstile | One widget per client — create in Cloudflare dashboard, record site key in Site Plan |
 | VPS IP | `148.113.196.32` — used for DNS A records only. Direct port 8000 access is firewalled off. |
 | Coolify dashboard/API | `https://coolify.thewebfoundry.org` (moved here from `148.113.196.32:8000` ~2026-07-30 for security; update if it moves again) |
-| Resend from | `forms@cincinnatiwebfoundry.com` |
+| Resend from | Current Worker source uses `noreply@cincinnatiwebfoundry.com`; verify the actual sender before client allowlisting. |
 | Sanity env vars | `SANITY_PROJECT_ID` + `SANITY_DATASET` — both need "Available at Buildtime" in Coolify |
 | Booking embeds | Calendly (free tier) is the default; Acuity/Square Appointments/OpenTable/Resy if client already uses one |
 | Ordering | Ladder, in order: **(1) Foundry-built pre-order form** (our Worker, $0, no third-party account — the default) → **(2) Square Online free plan** ($0/mo + 2.9%+$0.30, real cart, link-out not embed) → **(3) paid SaaS** only for delivery dispatch/POS depth. **GloriaFood is discontinued** (Oracle; retires 30 Apr 2027, no new signups) — never propose it. |

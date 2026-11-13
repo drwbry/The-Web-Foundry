@@ -66,7 +66,7 @@ Once `dig` returns the correct IP:
 
 ### Note on Form Email Records
 
-Client domains do **not** need Resend/email DNS records. All form emails send from `forms@cincinnatiwebfoundry.com` (Foundry domain). SPF, DKIM, DMARC, and MX records for Resend only exist on `cincinnatiwebfoundry.com`.
+Client domains do **not** need new Resend DNS records solely for the shared form relay. Current Worker source sends from `noreply@cincinnatiwebfoundry.com`; verify the actual deployed sender before allowlisting. Preserve all existing client mail records. A separately approved branded Send As setup can need Resend records on the client's domain (see the operations runbook).
 
 ---
 

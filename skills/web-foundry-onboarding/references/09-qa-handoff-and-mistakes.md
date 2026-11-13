@@ -13,7 +13,7 @@
 
 **Before starting:** invoke the `code review` capability from `tool-adapters.md` to review all code against the Site Plan. Then invoke the `verification` capability to verify each item below with actual evidence (not assumptions).
 
-Run through every item. Do not skip.
+Check every applicable item; mark genuinely absent features `n/a` with a reason. Use [design-and-platform.md](design-and-platform.md) for platform/fallback review and creative judgment. Companion skills are optional; rendered and functional evidence is required.
 
 ### Content & Functionality
 - [ ] All pages render without errors
@@ -21,9 +21,9 @@ Run through every item. Do not skip.
 - [ ] Sanity fallback values work (test with empty/missing content)
 - [ ] All internal links work (no 404s)
 - [ ] All external links open correctly (maps, social, booking embeds)
-- [ ] Third-party embeds actually function end-to-end, not just render: Calendly (book a real test slot), Square Online (place a test order if the client set one up), Stripe Payment Link (opens; if testing payment, use the client's Stripe **test mode** + card `4242 4242 4242 4242`)
+- [ ] Third-party integrations work, not just render. Use an owner-approved test window/account for bookings, orders, or messages; never create a paid order or charge as an incidental check. Verify payment behavior only in the provider's test mode.
 - [ ] Pre-order form (if built): submit one, confirm the order reference shows in the success message and lands in the client's notification email, and that a past pickup date can't be chosen
-- [ ] No `REPLACE_ME` placeholders left in `src/config/site.js` or page code (`grep -rn "REPLACE_ME" src/`)
+- [ ] Inspect `rg -n 'REPLACE_ME' src/`: no placeholders appear to visitors, no rendered links point at them, and all integrations required for launch are configured. An intentionally omitted integration may retain its gated config placeholder with the decision recorded.
 - [ ] Privacy page has correct business name and contact info (and doesn't render unstyled — see the hub.css token trap)
 - [ ] No leftover fictional showcase content (business names, phone numbers, Unsplash photos): `grep -rin "peak flow\|sweet crumb\|lumière\|lumiere\|555-" src/`
 - [ ] No "free" language anywhere in Web Foundry-related copy (footer badge, credits)
@@ -39,6 +39,16 @@ Run through every item. Do not skip.
 - [ ] Form shows success message after submission
 - [ ] Form shows error gracefully if submission fails
 - [ ] Worker logs are clean during live test submission (no unexpected 4xx/5xx)
+- [ ] Each configured `notifyEmails` recipient receives its separate copy; check delivery, not just provider acceptance
+- [ ] Per-site Turnstile enforcement is on and verified with the live widget; complete the pending Phase 5 live gate before handoff
+
+### Accessibility & Compatibility
+
+- [ ] Keyboard reaches and operates navigation, menus, forms, and primary actions; focus is visible and returns sensibly after dismissing overlays
+- [ ] Form fields have visible associated labels, errors are connected to their fields, and submission status is announced
+- [ ] Contrast, heading structure, image alternatives, and zoom/reflow are usable
+- [ ] Reduced motion does not hide content or block actions; content remains readable without animation/JS and a verified phone/email alternative is available for JS-only forms
+- [ ] New browser features match the documented support policy or have a tested simpler fallback; record any Safari/Firefox/device checks that could not run
 
 ### Responsive & Visual
 
@@ -56,6 +66,7 @@ Verify visually with real screenshots, not by reading CSS — Playwright is a de
 - [ ] Images load, are properly sized, and have alt text
 - [ ] Logo and favicon appear correctly
 - [ ] No horizontal scrolling on any viewport
+- [ ] The composition, copy, assets, and primary action serve this client's approved brief; style-detector preferences do not override justified design choices
 
 ### SEO & Performance
 - [ ] `<title>` tag is set with business name on every page
@@ -74,13 +85,13 @@ Verify visually with real screenshots, not by reading CSS — Playwright is a de
 - [ ] Git push to `main` → Coolify auto-deploy fires
 
 ### Navigation
-- [ ] Nav bar appears on all pages (fixed, top)
+- [ ] Site navigation appears consistently on planned pages, with positioning appropriate to the design
 - [ ] Logo links to homepage
 - [ ] Active page is highlighted in nav
 - [ ] All nav links work correctly
 - [ ] CTA button links to contact/booking page
-- [ ] Mobile hamburger menu opens/closes correctly
-- [ ] Nav doesn't overlap page content (hero has enough top padding)
+- [ ] The chosen mobile navigation works by touch and keyboard, including open/close state when collapsible
+- [ ] Navigation does not obscure content, anchors, or keyboard focus
 
 ### DBCredit badge
 - [ ] "Built with The Web Foundry" badge appears on all pages
@@ -98,13 +109,15 @@ Verify visually with real screenshots, not by reading CSS — Playwright is a de
    - Show them draft vs. published state
 2. Send a follow-up email with:
    - Studio URL: `https://[client-slug].sanity.studio`
-   - Their login credentials (they set their own via invite)
+   - How to use their account invitation/login (they set their own password; never send credentials)
    - Quick reference for what they can edit
 
 ### For all clients:
 - Confirm the client has verified the live site
 - Confirm form submissions are arriving at the correct email
 - Provide contact info for future support/changes
+
+Prepare handoff material locally. Send email/messages only when the owner explicitly authorizes sending them; approval to build a site does not itself authorize client outreach.
 
 ---
 
@@ -120,7 +133,7 @@ Verify visually with real screenshots, not by reading CSS — Playwright is a de
 | Adding both naked and `www` to a Turnstile widget | Redundant — a hostname automatically authorizes all its subdomains. List the naked domain only. |
 | Leaving `enforceTurnstile: false` after launch | Cloudflare's Turnstile page warns *"Siteverify isn't being called"* — because the Worker only calls siteverify when the flag is on. Tokens are issued and discarded, so the form has no bot protection beyond CORS + honeypot. Flip to `true` per site after live verification, then submit a real form to confirm. |
 | **[TAKEOVER]** Trusting Cloudflare's DNS auto-scan | It cannot enumerate a zone — it guesses common names and silently misses account-specific records (third-party DKIM selectors especially). Export the zone from the registrar and diff. See Migration Track M2. |
-| **[TAKEOVER]** Importing a zone file onto existing records | Cloudflare's import is additive. Duplicate SPF = DMARC `permerror`. Delete all records first, then import, then check the count. |
+| **[TAKEOVER]** Importing a zone file onto existing records | Import is additive. Follow M3: clear only approved non-authoritative staging records after backup; never empty a live zone. Diff and verify the final record set. |
 | **[TAKEOVER]** Importing with "Proxy imported DNS records" checked | Breaks DKIM CNAMEs, M365 service endpoints, and blocks Let's Encrypt on apex/www. Import unproxied. |
 | **[TAKEOVER]** Delegating nameservers without pre-verifying the zone | Cloudflare serves the zone before delegation — `dig @<assigned-ns>` and confirm every mail record first. Turns the riskiest step into a verified one. |
 | **[TAKEOVER]** Adding domains in Coolify before DNS resolves | Traefik burns Let's Encrypt's 5-failures-per-hostname-per-hour limit on failed challenges, delaying the real cert by up to an hour. On takeovers, do DNS first (Migration Track M5). |
@@ -140,7 +153,7 @@ Verify visually with real screenshots, not by reading CSS — Playwright is a de
 | Turning on strict Turnstile before widget/hostnames are verified | Legit submissions fail with `Verification failed` |
 | Using global `ENFORCE_TURNSTILE=true` to fix one site | Can hard-fail forms for every client on the shared Worker; prefer per-site KV `enforceTurnstile` |
 | Assuming `enforceTurnstile`/`ENFORCE_TURNSTILE` gate anything without checking `worker/index.js` | For a long time these were documented here but never actually read in the code — Turnstile verification was unconditionally mandatory regardless of either setting. Fixed 2026-07-08 (template repo commit `8baaf33`): KV lookup now happens before the Turnstile check so both flags actually work, defaulting fail-open. If you ever touch this logic again, verify both branches live against the deployed Worker — a no-token POST to a fail-open site should return `{"success":true}`, and to an `enforceTurnstile:true` site should 400 — don't trust it just because the code compiles. |
-| Assuming all Turnstile widgets share one secret because they're in the same Cloudflare account | They don't — each widget (site key) has its own distinct secret key. Fixed 2026-07-29 (ITA Data Solutions live test): flipping `enforceTurnstile:true` for any client without their own `turnstileSecretKey` in KV hard-fails every submission with `invalid-input-secret`, because the Worker was sending the wrong secret for that client's widget. This was invisible platform-wide for months since `enforceTurnstile` defaulted to `false` everywhere — siteverify was never actually exercised for any client until that night. The Worker now reads `config.turnstileSecretKey` per-site (falling back to the global env var only when absent); every client's widget secret must be added to their KV entry (Phase 5d Step 5) before their flag is ever flipped to `true`. **Terry's Lawncare and MAB Assets almost certainly have the same gap** — their KV entries predate this fix and don't have `turnstileSecretKey` set. |
+| Assuming widget secrets are shared or inferring current client state from old incidents | Each widget has its own secret. Match the live site key to the widget, store the secret securely, and verify a real submission after enforcement. The runbook records the September 2026 fixes; inspect current state rather than repeating the old unresolved-client assumption. |
 | Running `wrangler` commands (KV, `deploy`) from a client fork's `worker/` directory | There's one shared Worker, deployed only from the template repo's `worker/`. A client fork's copy (if not deleted per Phase 3) is a stale snapshot — deploying from there silently regresses the shared Worker to whatever code existed at fork time. Always `cd ~/projects/the-web-foundry/db-design-website/worker` first. |
 | Running `cd studio && npx sanity deploy` from the template repo when you meant a client's studio | Each client has a separate Sanity project — running from `db-design-website/studio` deploys the *template's own* studio (`cincinnati-web-foundry.sanity.studio`, project `dll5zv5a`), not the client's. Not destructive (schema deploys don't touch documents) but not what you meant. Always `cd` into the specific client repo's `studio/` first, and check `sanity.cli.ts`'s `projectId` if unsure which project you're about to deploy to. |
 | Forgetting honeypot field in form | Bots can spam without it |
@@ -149,7 +162,7 @@ Verify visually with real screenshots, not by reading CSS — Playwright is a de
 | Concurrent Coolify builds | Queue them — VPS has limited CPU |
 | Setting up webhook in wrong Sanity project | Each client has their own project — go to that client's project in sanity.io/manage, not a different one |
 | Sanity webhook returns 401 Unauthenticated | Coolify requires auth — add `Authorization: Bearer [token]` in the webhook's HTTP Headers section. The URL alone is not enough. |
-| Creating a new Coolify API token for every client | One token covers the whole Coolify instance — create it once, reuse it for every client's Sanity webhook |
+| Reusing a Coolify token without checking authorization | Use an approved deploy credential with the intended team/application access; verify the exact UUID in each webhook. Never copy MCP credentials or broaden scope just to reuse a token. |
 | Not adding `www` domain in Coolify | www visitors get SSL error or 404 |
 | Using "Proxied" (orange cloud) for A records in Cloudflare | Interferes with Traefik/Let's Encrypt cert provisioning — always use "DNS only" (grey cloud) |
 | Adding MX records manually when using CF Email Routing | Cloudflare adds them automatically when Email Routing is enabled — don't add manually |
@@ -161,7 +174,7 @@ Verify visually with real screenshots, not by reading CSS — Playwright is a de
 | Not seeding initial content before build | Pages render with fallback/empty states |
 | Forgetting privacy page | Every site needs one — update template with client info |
 | Deleting `hub.css` without re-tokening `privacy.astro` | Privacy page styles reference hub tokens (`--ink`, `--accent`, `--muted`, `--cream`) — page silently renders unstyled/invisible. Redefine tokens with client palette. |
-| Rebuilding a page the showcase already solved | Harvest the industry-matching showcase page first (plumber=trades, bakery=food, salon=appointments) — re-skin tokens + content instead of building from scratch |
+| Rebuilding an integration the showcase already solved | Reuse the working mechanism where applicable; adapt or redesign the page to the approved client brief. A fresh composition is valid. |
 | Shipping fictional showcase content | Grep for `peak flow`, `sweet crumb`, `lumière`, `555-` before launch — no demo names, phones, or Unsplash placeholders in a client site |
 | Hardcoding integration URLs inline in markup/JS | All fork-swappable values (Calendly URL, Stripe link, site_id, phone, Worker URL, Turnstile key) live in `src/config/site.js` — nowhere else |
 | Recommending GloriaFood at all | It's discontinued — Oracle retires it 30 Apr 2027 and it takes no new signups. Older versions of this skill made it the default; that advice is dead. Use the ordering ladder: pre-order form → Square Online → paid SaaS. |
@@ -177,8 +190,8 @@ Verify visually with real screenshots, not by reading CSS — Playwright is a de
 | Hardcoding the Coolify base URL anywhere (workflow files, docs, scripts) | It has already moved once (`148.113.196.32:8000` → `https://coolify.thewebfoundry.org`, 2026-07-30, for security) and direct IP:port access was firewalled off in the process. Every hardcoded copy broke silently and stayed broken for days before anyone noticed. If it moves again, grep the whole `the-web-foundry` tree for the old value — don't assume you found every reference. |
 | Trusting Coolify's "auto-deploy on push" toggle without a live test | The `coolify-web-foundry` GitHub App's webhook URL (GitHub → Developer settings → GitHub Apps) does **not** auto-update when Coolify's own URL changes — it's a separate manual setting. Found broken platform-wide 2026-08-01: it had been silently failing since ~2026-07-30, so every client site stopped auto-deploying and nobody noticed because nothing errors visibly — the push just does nothing. Verify with a real test (empty commit, check the app's deployment history for a new `is_webhook: true` entry within ~2 minutes), not by reading the toggle state. |
 | Copy-pasting a custom GitHub Actions deploy workflow (`curl .../api/v1/deploy?uuid=...`) between client repos without changing the `uuid` | Found 2026-08-01: `mabassets-website` and `terrys-lawncare-website` both had `db-design-website`'s UUID hardcoded in their own `deploy.yml`, inherited from copying the template's workflow. Combined with a missing `COOLIFY_TOKEN` secret in both repos, these workflows had failed on literally every run since creation (day one for both) without anyone noticing, because Coolify's native webhook was doing the real deploying instead. If you use this pattern at all, prefer the native GitHub App webhook (Step 5) and treat this workflow as redundant, or double-check the UUID through the active Coolify adapter's application listing every time it is copied. |
-| Left-heavy hero with no visual balance | Hero needs centered layout or visual element (image/illustration) on the right — don't leave half the viewport empty |
-| Skipping `design exploration` | Design decisions should go through the active agent adapter, not be guessed. Invoke it in Phase 4d. |
+| Applying one hero formula to every client | Judge hierarchy and balance in rendered output; intentional whitespace, asymmetry, and a text-led hero can suit the brief. |
+| Designing without client context | Use the approved direction and real assets; optional design references help specific decisions without dictating a universal style. |
 | Skipping `code review` before QA | Run the active agent's code-review capability against the Site Plan before declaring Phase 9 complete |
 | Coolify domains without `https://` prefix | Domains field requires full URL: `https://domain.com,https://www.domain.com` — without protocol, Traefik won't route |
 | "no available server" after deploy | Restart the Coolify proxy (Servers → Proxy → Restart), and ensure domains have `https://` prefix |

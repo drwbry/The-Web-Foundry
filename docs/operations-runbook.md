@@ -23,11 +23,11 @@ All forms POST to a **shared Cloudflare Worker** (`worker/index.js`) deployed at
 - **CORS lockdown** — Worker only accepts requests from domains listed in `ALLOWED_ORIGINS` env var
 - **Honeypot** — hidden `botcheck` checkbox catches naive bots
 
-**Worker env vars** (set via `wrangler secret put`):
+**Worker configuration** (credentials use `wrangler secret put`; plain configuration uses `wrangler.toml`):
 - `TURNSTILE_SECRET_KEY` — fallback Turnstile server key, used only for sites with no
   per-site secret in KV (e.g. the Foundry hub's own form). **Not shared across client
   widgets** — see the KV `turnstileSecretKey` field below for why this matters.
-- `ALLOWED_ORIGINS` — comma-separated allowed domains (e.g. `https://cincinnatiwebfoundry.com,http://localhost:4321`)
+- `ALLOWED_ORIGINS` — plain `[vars]` entry in `wrangler.toml`, not a secret; comma-separated allowed origins
 - `RESEND_API_KEY` — Resend email API key
 - `TO_EMAIL` — internal notification recipient
 - `ENFORCE_TURNSTILE` — optional strict mode (`true` to hard-fail invalid/missing Turnstile; default launch-safe mode is unset/false)
@@ -50,7 +50,7 @@ sending the internal notification to more than one inbox — e.g. a client's own
 alongside the Foundry's failsafe address. Accepts a string or an array of strings:
 
 ```json
-{ "toEmail": "failsafe@example.com", "notifyEmails": "sales@client.com" }
+{ "toEmail": "sales@client.example", "notifyEmails": "foundry-archive@example.test" }
 ```
 
 Each extra recipient gets its **own separate email**, never a `cc`. That is the whole point of the
@@ -74,15 +74,24 @@ Notes:
 form. Always read → modify → put the full object → read back and confirm:
 
 ```bash
-cd worker && set -a && . ./.env && set +a
+(
+set -euo pipefail
+cd ~/projects/the-web-foundry/db-design-website/worker
+set -a
+. ./.env
+set +a
 NS=<WEB_FOUNDRY_SITES namespace id>
+KV_TMP=$(mktemp)
+trap 'rm -f "$KV_TMP"' EXIT
 
 npx wrangler kv key get <site_id> --namespace-id $NS --remote \
-  | python3 -c 'import json,sys; d=json.load(sys.stdin); d["notifyEmails"]="sales@client.com"; print(json.dumps(d))' \
-  > /tmp/site-kv.json
+  | python3 -c 'import json,sys; d=json.load(sys.stdin); d["notifyEmails"]="foundry-archive@example.test"; print(json.dumps(d))' \
+  > "$KV_TMP"
 
-npx wrangler kv key put <site_id> --path /tmp/site-kv.json --namespace-id $NS --remote
-npx wrangler kv key get <site_id> --namespace-id $NS --remote   # confirm turnstileSecretKey survived
+npx wrangler kv key put <site_id> --path "$KV_TMP" --namespace-id $NS --remote
+npx wrangler kv key get <site_id> --namespace-id $NS --remote \
+  | jq '{toEmail, notifyEmails, enforceTurnstile, hasTurnstileSecret: ((.turnstileSecretKey // "") | length > 0)}'
+)
 ```
 
 **Sending identity (for client-side allowlisting):** the Worker sends from
@@ -244,9 +253,9 @@ Also update `docs/cowork-intake-brief.md` and `docs/intake-form.md` if the chang
 ## Adding a New Showcase Page
 
 1. Copy the structure of an existing showcase page in `src/pages/showcase/`
-2. Pick a distinct aesthetic (fonts, palette, motion style) — use the active tool's frontend or product-design workflow; in Claude Code, use the **frontend-design** skill
+2. Pick a distinct aesthetic that suits the industry; a frontend/design skill is optional. See the canonical skill's `references/design-and-platform.md`.
 3. Link from `index.astro` — add a new `.project-card` in the showcase grid
-4. Add the matching color swatches and mock wireframe CSS using the `.project-card__mock--[name]` pattern
+4. Capture real card screenshots with `npm run shots` and commit the PNGs, as required by `AGENTS.md`; do not recreate CSS mock previews
 5. Add a Turnstile widget (`<div class="cf-turnstile" data-sitekey="..." data-theme="auto">`) inside the contact form
 
 ## DNS & Email Setup
@@ -254,10 +263,10 @@ Also update `docs/cowork-intake-brief.md` and `docs/intake-form.md` if the chang
 All domains use **Cloudflare for DNS management** and **Cloudflare Email Routing** for email forwarding (beyond form submissions).
 
 ### DNS Migration Process
-1. Add domain to Cloudflare (creates nameserver pair)
-2. Update domain registrar nameservers to point to Cloudflare
-3. Cloudflare auto-imports existing DNS records (no data loss)
-4. Verify Resend DKIM/SPF/MX records are present and verified
+1. Determine net-new versus takeover using the canonical onboarding skill. For takeovers, follow its `references/01-migration-track.md` before any DNS write.
+2. Inventory/export the authoritative zone, capture old content, and prepare the destination records. Cloudflare auto-scan is incomplete and cannot establish that all mail records survived.
+3. Verify every required record on the assigned Cloudflare nameservers before approved delegation; preserve MX, SPF, DMARC, DKIM, SRV, and bounce records.
+4. Follow the track's cutover order, verify public DNS/HTTPS and real inbound/outbound mail, then finish redirects. Keep the old host until its required content and redirects are verified.
 
 ### Email Routing via Cloudflare
 **For form submissions:** Cloudflare Worker + Resend (handled by `worker/index.js`)
@@ -300,7 +309,7 @@ Gotchas:
 
 **Why Cloudflare:**
 - Single source of truth for DNS + email routing
-- Auto-migrates records on nameserver switch
+- Supports preparing and verifying records before the nameserver switch; authoritative exports still need reconciliation
 - Email Routing is free tier included
 - Scales across all client sites
 
@@ -312,7 +321,7 @@ This codebase is designed as a **base template** for spinning up client websites
 - Each client = 1 static Astro site forked from this template repo
 - All sites share one Cloudflare Worker for form handling (serverless, zero VPS cost)
 - Client sites use standard routes (`/menu`, `/services`, `/testimonials`) not `/showcase`
-- Each client gets their own domain, GitHub repo, Coolify deployment, and Sanity dataset
+- Each client gets their own domain, GitHub repo, Coolify deployment, and isolated Sanity project with a `production` dataset
 
 **Scaling the Worker:**
 - Add each new client domain to the Worker's `ALLOWED_ORIGINS`

@@ -40,7 +40,7 @@ Three rules govern these:
 - **Forking lifts the block.** Moving a demo into a client site means copying that demo's `integrations` block up to a top-level `siteConfig.integrations`, the flat shape the client repos use.
 - **The salon's Calendly event is shared with MAB Properties** (`calendly.com/foundrysolutionsllc/30min`). Calendly's free tier allows exactly one event type. Renaming it is fine; **changing its URL slug breaks MAB's `/rentals` page.**
 
-**The demos deliberately have no `WEB_FOUNDRY_SITES` KV entry.** With no entry, the Worker's fallback path brands demo confirmation emails as The Web Foundry and appends the Foundry CTA block — so a prospect who tests a demo form gets a sales touch. This is intentional; do not "fix" it by adding KV entries. One consequence: the bakery pre-order's `order_id` appears in the internal notification but not in the submitter's confirmation, which uses the generic template.
+**The demos deliberately have no `WEB_FOUNDRY_SITES` KV entry.** With no entry, the Worker's fallback path brands demo confirmation emails as The Web Foundry and appends the Foundry CTA block — so a prospect who tests a demo form gets a sales touch. This is intentional; do not "fix" it by adding KV entries. The current Worker source includes non-hidden submitted fields such as `order_id` in the confirmation summary; verify deployed behavior before promising specific email content.
 
 For online ordering generally, see the ladder in `docs/features.md`. **GloriaFood is discontinued** (Oracle; retires 30 Apr 2027) — do not recommend it to any client.
 

@@ -77,25 +77,28 @@ All client sites go under `~/projects/the-web-foundry/clients/`. This keeps clie
 
 ### Step 2: Harvest the matching showcase page, then clean up [automated]
 
-**The showcase pages are intentionally industry templates.** Before deleting anything, pick the one matching the client's industry and copy it as the starting point for their homepage — it already carries a complete, proven design system (palette tokens, fonts, section rhythm) and a working Worker form:
+**The showcase pages are working references.** Before cleanup, inspect the industry match and reuse relevant mechanisms (forms, booking, menu data, payment links). Use the approved design direction to decide whether to adapt a full page or build a fresh composition; the client does not need to inherit its visual style:
 
 | Client industry | Start from | What it demonstrates |
 |-----------------|-----------|----------------------|
 | Trades / home services (plumber, HVAC, lawn care, electrician) | `src/pages/showcase/plumber.astro` | Emergency CTA, trust badges, animated stats bar, Sanity hours, service cards, **Stripe "Pay Your Invoice" section** |
 | Food service (bakery, café, restaurant, bar) | `src/pages/showcase/bakery.astro` | Sanity PDF menu, daily-specials strip, warm artisan aesthetic, **pre-order form with order reference** |
 | Appointments / beauty (salon, spa, barber, studio) | `src/pages/showcase/salon.astro` | Service+price grid, Sanity gallery, **two-column booking: lazy-loaded Calendly + inquiry form** |
+| None of the above | Nearest applicable mechanisms, or a fresh design | — |
 
 Each demo carries a working reference implementation of its industry's signature mechanism, so forking gives you the pattern rather than a blank section. Demo integration values live at `siteConfig.showcase.<demo>.integrations.*`; **forking means lifting that block up to a top-level `siteConfig.integrations`**, the flat shape the client repos use.
-| None of the above | Nearest aesthetic match, or fresh through the `design exploration` capability | — |
 
-Copy it to `src/pages/index.astro` (overwriting the hub page), then re-skin: each showcase page defines its full palette as CSS custom properties in `:root {}` at the top of its `<style>` block — swap those token values for the client's palette, swap the fonts link, and replace the fictional business content. **Do not keep the fictional business's name, phone, address, or Unsplash photos in the shipped site.**
+When adapting a showcase, copy it to `src/pages/index.astro` and replace the fictional content, palette, fonts, and assets. When designing fresh, reuse only the applicable mechanisms. **Do not ship fictional business details or demo placeholder photos.**
 
-**Then delete the rest:**
+**Clean up only the new client copy, after inspecting the files:**
 - `src/pages/showcase/` (entire directory — after harvesting)
 - `src/pages/about.astro` (Web Foundry about page)
 - `src/styles/hub.css` (hub page styles — Sora/Plus Jakarta Sans, slate/terracotta; not client branding)
 - `src/scripts/main.js` (hub-specific: hamburger, contact modal, hub form submit — the showcase pages carry their own inline form scripts)
-- `docs/` (entire directory — Web Foundry internal specs, intake briefs, and Claude Design imports; none of it belongs in a client repo)
+- Remove inherited Foundry-only specs/intake briefs from `docs/`; **preserve** the client's approved Site Plan, design notes, migration evidence, and `docs/onboarding-state.md`. Do not delete `docs/` wholesale.
+- Remove inherited prospect demos (`src/pages/demo/` and their assets/components) and Foundry-only captures that are outside the approved client scope.
+- Inspect `.github/workflows/` before the first push. Remove or reconfigure inherited deployment workflows that target the template's Coolify UUID; do not let a client push deploy the template or duplicate the chosen production trigger.
+- Remove an inherited `skills/web-foundry-onboarding/` copy from the client fork; both agents use the canonical shared skill, not a stale fork of its playbook.
 
 > ⚠ **privacy.astro token trap:** `src/pages/privacy.astro` styles reference hub.css tokens (`--ink`, `--accent`, `--muted`, `--cream`). Deleting `hub.css` without re-pointing those breaks the page silently (invisible/unstyled text). Redefine those custom properties with the client's palette in the privacy page's own style block (or the client's global stylesheet) as part of this step. Same applies to any other page that imported `hub.css`.
 
@@ -114,7 +117,7 @@ Copy it to `src/pages/index.astro` (overwriting the hub page), then re-skin: eac
 - `src/scripts/shared.js` (scroll reveal + counters — auto-initializes)
 - `src/styles/shared.css` (global resets, .container, responsive utilities)
 - `src/pages/privacy.astro` (update content for client's business + fix tokens per the trap above)
-- `playwright` devDependency (used for visual QA in Phase 9 — needs `npx playwright install chromium` once per machine, plus `sudo env "PATH=$PATH" npx playwright install-deps chromium` on a fresh WSL box)
+- `playwright` devDependency (used for visual QA in Phase 9; reuse an existing browser cache where possible). A browser or OS dependency install needs the applicable environment authorization; never run `sudo` without the owner's explicit OK in this session.
 
 **Delete these (not needed for client sites):**
 - `src/components/BackButton.astro` (replaced by site-wide nav bar — see Step 4 below)
@@ -230,11 +233,10 @@ export default defineCliConfig({
 ### Step 4: Update shared components + create Nav [automated]
 
 **Create `src/components/Nav.astro`** — every client site needs a persistent navigation bar. Build it with:
-- Fixed position at top, dark-themed with backdrop blur
-- Logo (linked to `/`), page links, and a CTA button (e.g. "Get Estimate", "Book Now")
-- Active page highlighting based on `Astro.url.pathname`
-- Responsive: hamburger menu on mobile (≤768px) with slide-down link list
-- Style it using the client's palette (CSS custom properties)
+- A home link, the planned page links, and the primary action where useful
+- Current-page indication based on `Astro.url.pathname`
+- Accessible keyboard/touch behavior and a layout that works at narrow widths; choose the mobile pattern and breakpoint from the content
+- Styling and positioning that suit the approved design. Fixed/sticky, dark backgrounds, blur, and slide-down menus are choices, not requirements. See [design-and-platform.md](design-and-platform.md).
 
 **`src/layouts/BaseLayout.astro`** — update:
 - Import and render `<Nav />` inside `<body>` before `<slot />`
@@ -274,7 +276,7 @@ Style the footer with the **client's** palette (it lives on their site) — the 
 - `public/logo.svg` (or `.png`) — client's logo
 - Any brand images to `public/images/`
 
-**Wait for confirmation before starting Phase 4.**
+Use supplied assets already present in the workspace. Request only missing client-owned material; record agreed draft substitutes without blocking independent work. Missing assets must not lead to fabricated business claims or photographs presented as the client's own.
 
 ### Step 6: Set up cross-agent project context [automated]
 

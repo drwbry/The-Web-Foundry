@@ -50,7 +50,7 @@ else
   warn 'Wrangler missing; Phase 5 requires an authenticated Wrangler or Cloudflare connector'
 fi
 
-if command -v squirrel >/dev/null 2>&1; then pass 'squirrel website auditor available'; else warn 'squirrel missing; install before the Phase 9 live audit'; fi
+if command -v squirrel >/dev/null 2>&1; then pass 'Optional squirrel website auditor available'; else warn 'squirrel absent; use available browser/audit tools for Phase 9 (no install required)'; fi
 
 coolify_credential_file=${WEB_FOUNDRY_COOLIFY_ENV:-${XDG_CONFIG_HOME:-${HOME}/.config}/web-foundry/coolify.env}
 

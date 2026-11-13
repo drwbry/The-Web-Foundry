@@ -57,17 +57,15 @@ If the client provided content (hours, menu PDF, gallery images, etc.), enter it
 ### 4d: Build Pages
 
 - Client pages use standard routes (`/`, `/menu`, `/services`, `/about`, `/privacy`) — NOT `/showcase/`
-- **Invoke the `design exploration` capability** using `tool-adapters.md` for all design decisions (palette, fonts, layout, spacing, visual balance). Don't guess at design — record and review the direction before implementation.
-- Define full palette as CSS custom properties in `:root {}` at top of each page's `<style>` block
+- Use the approved design direction and [design-and-platform.md](design-and-platform.md). Let the active model make routine design decisions; a companion design skill is optional.
+- Consult Modern Web Guidance for material browser-platform choices and unfamiliar patterns; adapt guidance to Astro and the project's browser policy.
+- Define reusable palette, typography, and spacing tokens in the existing shared stylesheet/theme; keep deliberate page-specific overrides local. Do not duplicate a full palette on every page.
 - `useCdn: false` in Sanity client — always (already set in sanityClient.ts)
-- All Sanity queries should have **fallback values** in case content hasn't been entered yet — the site must look complete even with an empty Sanity dataset
+- Handle missing Sanity content with verified fallback copy or an honest empty/omitted section. Never fill missing hours, prices, reviews, or credentials with invented facts.
 - Set Astro `trailingSlash` explicitly (`'never'` unless the project has a clear reason otherwise) so sitemap URLs, canonicals, and deployed routes stay consistent
 - Update `public/robots.txt` to point at the client's own sitemap URL, never the template domain
 
-**Hero section design:**
-- The homepage hero must be visually balanced — avoid text-heavy left-aligned layouts with empty right space
-- Options: centered text with decorative flanking elements, split layout with image/illustration on right, full-width centered with background treatment
-- Use stock imagery (Unsplash) or SVG illustrations as placeholders if the client hasn't provided photos yet
+**Page composition:** communicate the business and the visitor's next useful action clearly. Choose imagery, type, whitespace, alignment, and motion for this client; asymmetry and a text-led hero are valid. Check the result at real viewport sizes. Draft imagery needs clear provenance and a plan for replacement where necessary.
 
 **Privacy page** — update `privacy.astro` with client's business name and contact info. Keep the generic policy structure.
 
@@ -114,7 +112,7 @@ Every integration below is fully static — a client-side embed or a link-out. N
 - Give it its own `formSubjects.preorder` entry so notifications are distinguishable from the contact form.
 - Same honeypot + `site_id` + Turnstile + JSON-POST rules as any other form.
 - Reference implementation: the bakery showcase's `#order` section.
-- Note: `order_id` reaches the client's notification email, but **not** the customer's confirmation — that uses the Worker's generic template. Say "we'll confirm by email" rather than promising the reference will appear there.
+- The current Worker source includes non-hidden fields such as `order_id` in both notification and confirmation summaries. Verify the deployed behavior with a real test before promising specific email content; an emailed request is not proof that the business accepted the order.
 
 *Rung 2 — Square Online free plan* (client wants a real cart or payment at order time, or already runs Square POS):
 
@@ -131,18 +129,23 @@ Every integration below is fully static — a client-side embed or a link-out. N
 Every contact form must include:
 
 - **Name and email are always required** (`required` attribute)
-- **Phone input** uses `type="tel"` with auto-formatting
+- **Phone input** uses `type="tel"` and appropriate autocomplete. Format for the client's audience; do not silently discard valid international numbers.
 - **`site_id` hidden field is required** — this is the *only* routing mechanism. The Worker looks `site_id` up in KV to find the client's `toEmail`. There is **no `to_email` form field**: the Worker deliberately ignores client-supplied recipients (otherwise anyone could edit the hidden field and redirect/spam-relay submissions). If it's missing, submissions silently fall back to the Foundry inbox.
 
 ```html
 <!-- Turnstile script is already loaded by BaseLayout.astro -->
-<form id="contact-form" novalidate>
+<!-- Native validation is the default; use novalidate only with complete accessible custom validation. -->
+<form id="contact-form">
   <!-- Visible form fields — name and email are ALWAYS required -->
-  <input type="text" name="name" required>
-  <input type="email" name="email" required>
-  <input type="tel" name="phone" placeholder="(513) 555-0123">
+  <label for="contact-name">Name</label>
+  <input id="contact-name" type="text" name="name" autocomplete="name" required>
+  <label for="contact-email">Email</label>
+  <input id="contact-email" type="email" name="email" autocomplete="email" required>
+  <label for="contact-phone">Phone</label>
+  <input id="contact-phone" type="tel" name="phone" autocomplete="tel">
   <!-- ...other fields as needed... -->
-  <textarea name="message" required></textarea>
+  <label for="contact-message">Message</label>
+  <textarea id="contact-message" name="message" required></textarea>
 
   <!-- Required hidden/security fields -->
   <input type="hidden" name="site_id" value="[client-slug]">
@@ -152,11 +155,12 @@ Every contact form must include:
   </div>
   <div class="cf-turnstile" data-sitekey="[turnstile-site-key]" data-theme="auto"></div>
 
-  <button type="submit">Send</button>
+  <button type="submit" disabled>Send message</button>
+  <p id="contact-status" role="status" aria-live="polite"></p>
 </form>
 ```
 
-> **No `action`/`method` attributes** — the Worker only accepts JSON, so a native (non-JS) form post would fail with `Invalid JSON`. Submission is handled entirely by the JS handler in 4g; `subject` is added to the JSON payload there rather than as a hidden field.
+> **No native form submission to the Worker** — it only accepts JSON. With no `action`/`method`, HTML defaults to a GET to the current page, so keep the submit button disabled until the JS handler is attached; do not let absent/broken JS send personal fields into a URL. Provide a verified contact alternative. The handler in 4g sends JSON and adds `subject` to the payload rather than using a hidden field.
 
 **Form fields the Worker expects:**
 | Field | Required | Notes |
@@ -177,13 +181,15 @@ Any additional fields are passed through to the internal notification email as k
 ### 4g: Form Submission UX
 
 Add client-side JavaScript to handle form submission gracefully (the current hub `src/scripts/main.js` form handler in the template is the reference implementation — the showcase pages carry equivalent inline versions):
-- **Phone number auto-formatting** — all `input[type="tel"]` fields auto-format to `(XXX) XXX-XXXX` as the user types (strips non-digits, caps at 10 digits)
+- Preserve valid phone input for the intended audience; US formatting is optional, not a universal ten-digit cap
 - Show a loading state while submitting
+- Attach the submit handler before enabling the submit button; prevent the form's native submission
 - Display success/error messages inline (no page redirect)
 - Send **JSON payloads** to the Worker (`Content-Type: application/json`) rather than multipart `FormData`; add `subject` to the payload in JS
 - Reset form on success
 - On failure: show inline error, keep the form visible, re-enable the button, **and call `window.turnstile.reset()`** — a consumed token is single-use, so without the reset the user's retry silently fails verification
 - Only show success state when **`res.ok === true` AND the body reports success**; never hide form or show success on failed requests
+- Use visible labels, field-associated validation errors, and an announced status message. Provide the client's verified phone/email as an alternative when JS or the widget cannot run; do not add a native POST to the JSON-only Worker.
 
 ### 4h: Verify Local Build
 
@@ -192,6 +198,6 @@ npm run build
 npm run preview
 ```
 
-Check all pages render, Sanity data appears (or fallbacks work), form posts successfully to the Worker, and no build errors.
+Check all pages render, Sanity data appears (or honest fallbacks work), and there are no build errors. Exercise client-side form success, failure, and retry behavior with intercepted/mock responses locally. A real Worker submission sends email: use only an authorized test recipient/window. If live routing is not configured yet, record the pending delivery test for Phases 5/9; do not block a local build on a domain that is not deployed.
 
 ---

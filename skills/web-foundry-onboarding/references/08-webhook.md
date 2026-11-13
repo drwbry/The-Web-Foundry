@@ -28,7 +28,7 @@ https://coolify.thewebfoundry.org/api/v1/deploy?uuid=[uuid]&force=false
 
 In Coolify → click your **profile/avatar** → **API Tokens**.
 
-One token covers all clients on the same Coolify instance — create it once and reuse it for every new client webhook. If a token already exists from a previous client, use the same one.
+Use an already approved deploy credential only when its team/application access covers this exact client. Reuse does not require a new token per site, but must not broaden access or copy credentials from MCP configuration. Follow `tool-adapters.md`; no `root`, `write`, or `read:sensitive` permission is needed for this documented deploy path. Keep the token in provider/owner credential storage, never in chat or repo files.
 
 > **Keep this token somewhere safe** — you can't view it again after creation.
 
@@ -57,7 +57,7 @@ One token covers all clients on the same Coolify instance — create it once and
 
 5. Save the webhook.
 
-Since each client has their own project, the webhook is already scoped to only their content — no risk of cross-client rebuilds.
+The Sanity project scopes the content trigger, but the URL's Coolify UUID selects the deployment target. Verify both identities; a copied webhook can otherwise rebuild the wrong client.
 
 ### Verify
 

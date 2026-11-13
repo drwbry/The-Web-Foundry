@@ -99,10 +99,7 @@ record survives** — those are the mail-critical set. Only the web records shou
 
 **Import: Cloudflare → DNS → Records → Import and Export → Import DNS records.**
 
-> ⚠ **The import is ADDITIVE, not a replace.** Importing on top of auto-scanned records produces
-> duplicate MX and **duplicate SPF — a hard DMARC `permerror`**, which is worse than the missing
-> records you started with. **Delete every existing record in the Cloudflare DNS table first**,
-> then import, then confirm the record count matches your file exactly.
+> ⚠ **The import is ADDITIVE, not a replace.** Prevent duplicate MX/SPF records. Clear auto-scanned staging records only after verifying the exact destination zone is **not yet authoritative**, exporting its current records, and obtaining approval for the replacement. Never empty an authoritative/live zone under this instruction. If it is already authoritative or its state is uncertain, stop and plan a scoped record diff with rollback. After import, confirm the corrected record set and count.
 
 Import **unproxied**. Leave "Proxy imported DNS records" unchecked — mail records, Microsoft
 service endpoints, and third-party hosts all break behind the orange cloud, and the apex/`www`
@@ -134,6 +131,8 @@ it's an outage, before delegation it's a typo.
 > confirm the pair by checking an existing Foundry domain.
 
 ### M5 — Cutover ordering (DIFFERENT from net-new) ⚠
+
+Before this step, complete M7's old-content capture and agree the redirect scope; its verification still happens after cutover. Record the original nameservers/zone, the rollback route, and the owner's accepted interruption window before delegation.
 
 **Net-new does Coolify (Phase 6) → DNS (Phase 7). A takeover reverses this.**
 
@@ -171,7 +170,7 @@ Re-run the full M4 check against public resolvers (drop the `@$NS`), then verify
 - [ ] Old site's key legacy paths redirect (see M7)
 
 > **M365 quarantine gotcha:** Exchange Online may quarantine the Worker's confirmation email from
-> `forms@cincinnatiwebfoundry.com` — it did on the ITA run. Before KV `toEmail` ever points at an
+> the Worker's actual sender — the current source uses `noreply@cincinnatiwebfoundry.com`. Before KV `toEmail` ever points at an
 > address on the client's domain, have their M365 admin allowlist that sender in Exchange Online
 > Protection. Otherwise lead notifications land in quarantine silently.
 

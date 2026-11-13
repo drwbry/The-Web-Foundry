@@ -19,7 +19,7 @@ When uncertain, choose `takeover` until Migration M1 proves the lower-risk path.
 
 ## State discovery
 
-Use the client repository's `docs/onboarding-state.md`. If the repository does not exist yet, use `/home/dreux/projects/the-web-foundry/onboarding/[client-slug]/onboarding-state.md` as the default pre-repository location. Move it into the client repository during Phase 3, preserve its session history, and remove the pre-repository copy after verifying the move.
+Use the client repository's `docs/onboarding-state.md`. If the repository does not exist yet, use `/home/ubuntu/projects/the-web-foundry/onboarding/[client-slug]/onboarding-state.md` as the default pre-repository location. Move it into the client repository during Phase 3, preserve its session history, and remove the pre-repository copy after verifying the move. Fork cleanup must preserve this file and the client's approved planning/migration documents.
 
 For an explicitly requested mock or read-only dry run, keep the state draft in memory and do not create either file. Mark external facts `unverified` and explain that the run cannot be resumed reliably until persistent state is authorized.
 
@@ -106,6 +106,7 @@ On a `net-new` track, leave the M1–M9 rows at `n/a` and keep them in the table
 - Treat `complete` as evidence-backed, not merely checked.
 - Revalidate DNS, HTTPS, deployments, and webhooks if enough time has passed for external state to change.
 - Do not repeat provider writes just because a different agent resumed the work.
+- If Phase 5 configuration is ready but live checks await deployment/DNS, resume the next incomplete dependency in Phases 6–8. Keep Phase 5's live checks pending until Phase 9 verifies them; they do not force a pre-deployment loop.
 - If evidence conflicts, mark the gate `needs-review`, explain the conflict, and resolve it before advancing.
 - Update the session log before ending every onboarding session.
 

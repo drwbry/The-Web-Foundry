@@ -90,6 +90,7 @@ Ask for each:
 - Do they have professional photos, or do we need to source stock?
 - Any reference websites they love the look of?
 - Tone/aesthetic: (warm & cozy, sleek & modern, bold & industrial, luxe & minimal, etc.)
+- Record any established identity or design choices to preserve. Use [design-and-platform.md](design-and-platform.md) for design judgment, relevant platform lookups, and the default browser policy. Ask only for inputs still missing from the brief, repository, or session.
 
 ### Technical
 - Do they have an existing domain, or does one need to be registered?
@@ -162,6 +163,8 @@ Design:
   - Fonts:           [headings / body]
   - Aesthetic:       [description]
   - Photos:          existing | stock | TBD
+  - Browser support: Foundry default in design-and-platform.md | explicit client requirement
+  - Key interactions/fallbacks: [only material decisions; no component-by-component specification]
 
 Assets needed before build:
   - [ ] Logo file
