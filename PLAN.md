@@ -64,7 +64,7 @@ A ten-page proof-of-concept rebuild of https://www.gibsupplychain.com lives at `
 
 Each step is small enough for one subagent, and says how to check it. Do them in order. Steps 5 to 10 only depend on steps 1 to 4, so an orchestrator may hand them to parallel subagents after step 4; a single agent just does them in order.
 
-- [ ] **0. Set up**
+- [x] **0. Set up**
   - Files: none
   - Change: Stay on the current branch. Run `git status` to confirm it is clean and that `PLAN.md` is at the repo root. Run `npm install`.
   - Check: `npm run build` passes before you change anything. `ls src/assets/demo/gib-supply-chain/shots | wc -l` prints `22`.
@@ -145,4 +145,4 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 
 ## Build log
 
-<The builder adds short notes here: what was done per step, anything that differed from the plan, open questions. The planner reads this during review.>
+0. Setup: clean current branch `drwbry/GIB-demo-website-build`; npm install completed, 22 screenshots confirmed, baseline build passed. This worktree lacks Sanity environment values, so builds export the existing main checkout .env without copying it. No STATUS.md exists; the plan restricts edits to demo code and this log, so none was created.
