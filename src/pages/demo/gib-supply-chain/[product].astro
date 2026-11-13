@@ -1,0 +1,49 @@
+---
+import {Image} from 'astro:assets';
+import Layout from '../../../components/demo/gib-supply-chain/Layout.astro';
+import Section from '../../../components/demo/gib-supply-chain/Section.astro';
+import Eyebrow from '../../../components/demo/gib-supply-chain/Eyebrow.astro';
+import Button from '../../../components/demo/gib-supply-chain/Button.astro';
+import Quote from '../../../components/demo/gib-supply-chain/Quote.astro';
+import Cockpit from '../../../components/demo/gib-supply-chain/Cockpit.astro';
+import Stats from '../../../components/demo/gib-supply-chain/Stats.astro';
+import CaseStudy from '../../../components/demo/gib-supply-chain/CaseStudy.astro';
+import ModuleCards from '../../../components/demo/gib-supply-chain/ModuleCards.astro';
+import {base,links,products} from '../../../components/demo/gib-supply-chain/data.js';
+import {shot} from '../../../components/demo/gib-supply-chain/images.js';
+import forecast from '../../../assets/demo/gib-supply-chain/hero-forecast.png';
+import inventory from '../../../assets/demo/gib-supply-chain/hero-inventory.png';
+import operations from '../../../assets/demo/gib-supply-chain/hero-operations.png';
+import production from '../../../assets/demo/gib-supply-chain/hero-production.png';
+import caseFFF from '../../../assets/demo/gib-supply-chain/case-fff.png';
+export function getStaticPaths() {
+  return Object.values(products).map(product => ({params:{product:product.slug},props:{product}}));
+}
+const {product:p} = Astro.props;
+const heroes = {forecast,inventory,operations,production};
+const metadata = {
+  forecast:['Demand Forecasting Software for SAP | GIB Forecast','Improve forecast accuracy in SAP using statistical demand planning, segmentation, and scenario simulation embedded directly in SAP ECC and S/4HANA.'],
+  inventory:['Embedded Inventory Optimization Software for SAP S/4HANA & ECC | GIB','Design and control safety stock, service levels, and MRP parameters in SAP. GIB continuously evaluates and improves inventory settings inside SAP.'],
+  operations:['SAP MRP Cockpit & Procurement Management | GIB Operations','See all MRP data in one screen. Prioritize shortages, monitor suppliers, manage missing parts, and execute procurement and production actions directly within SAP.'],
+  production:['Production Planning and Scheduling Software for SAP ECC & S/4HANA | GIB','Improve on-time delivery, reduce bottlenecks, and align production with real capacity using GIB Production inside SAP ECC and S/4HANA.'],
+};
+const views = p.capabilities.map((c,i) => ({key:String(i+1),title:c.title,text:c.text,shot:c.shot ? shot(c.shot) : undefined,alt:`${p.name} screen: ${c.title.toLowerCase()}`}));
+---
+<Layout title={metadata[p.slug][0]} description={metadata[p.slug][1]} current="platform">
+  <Section tone="dark"><div class="gib-hero">
+    <div><Eyebrow text="SAP S/4HANA | SAP ECC" /><h1>{p.name}</h1><p class="gib-lead">{p.tagline}</p>{p.intro.map(text=><p class="gib-muted">{text}</p>)}<div class="gib-actions"><Button href={links.demo} external>Get a demo</Button><Button href="#capabilities" variant="ghost">Open the cockpit</Button></div></div>
+    <div class="gib-hero-panel"><Image src={heroes[p.slug]} alt={`${p.name} dashboard inside SAP`} widths={[640,960,1280]} sizes="(min-width:900px) 45vw, 100vw" loading="eager" fetchpriority="high" /></div>
+  </div></Section>
+  <Section tone="light"><Quote {...p.heroQuote} featured /></Section>
+  {p.outcomes && <Section tone="white"><h2 class="reveal">Manufacturers use GIB Production to</h2><div class="gib-grid gib-grid-four">{p.outcomes.map((o,i)=><article class:list={['gib-card','reveal',`reveal-delay-${i+1}`]}><h3>{o.title}</h3><p>{o.text}</p></article>)}</div></Section>}
+  <Section tone="light" id="capabilities"><h2 class="reveal">{p.capabilitiesHeading}</h2><p class="gib-lead">{p.capabilitiesSub}</p><Cockpit label={p.name} id="view" views={views} /><p class="gib-screen-note gib-muted">Screens shown are from GIB running inside SAP. Select a view on the left.</p></Section>
+  <Section tone="dark"><Eyebrow text={`Why customers choose ${p.name}`} /><Stats items={p.stats} /></Section>
+  <Section tone="light"><div class="gib-grid gib-product-quotes">{p.quotes.map(q=><Quote {...q} />)}</div></Section>
+  {p.spotlight && <Section tone="white"><CaseStudy {...p.spotlight} image={caseFFF} /></Section>}
+  <Section tone="dark"><h2 class="reveal">{p.closingHeading}</h2><ul class="gib-checks">{p.closing.map(text=><li>{text}</li>)}</ul><div class="gib-actions"><Button href={links.demo} external>Request a demo</Button>{p.slug==='operations' && <Button href={links.operationsVideo} variant="ghost" external>Watch the video</Button>}</div></Section>
+  <Section tone="light"><Eyebrow text="Part of the GIB platform" /><h2 class="reveal">Works with the rest of GIB</h2><ModuleCards exclude={p.slug} /><Button href={`${base}/platform`} variant="link">Platform overview</Button></Section>
+</Layout>
+<style>
+.gib-screen-note {text-align:center;margin:1.5rem auto 0;font-size:.85rem;}
+.gib-product-quotes {gap:2rem 4rem;} .gib-product-quotes :global(.gib-quote) {border-top:1px solid var(--gib-line);}
+</style>

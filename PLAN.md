@@ -94,7 +94,7 @@ Each step is small enough for one subagent, and says how to check it. Do them in
   - Change: Replace the temporary page with the ten sections in DESIGN.md section 6 ("index.astro"), in that order, using the exact copy given there. Section 3 uses `Scattered`. Section 4 uses `Cockpit` with `moduleViews`.
   - Check: `npm run build` passes. The built page has exactly one `<h1>`. It contains the text `It's just not in one place`, `Nature` and `MD04`. The cockpit opens on Operations. `grep -c "—" src/pages/demo/gib-supply-chain/index.astro` prints `0`.
 
-- [ ] **6. Product pages**
+- [x] **6. Product pages**
   - Files: `src/pages/demo/gib-supply-chain/[product].astro`
   - Change: One dynamic route with `getStaticPaths` over the four products, with the nine sections in DESIGN.md section 6 ("[product].astro"). Section 4 is a `Cockpit` with one view per capability. Screenshots come from `shot(name)` in `images.js`. Hero images: import the four `hero-*.png` files and pick by slug.
   - Check: `npm run build` creates `dist/demo/gib-supply-chain/forecast/index.html`, `inventory/index.html`, `operations/index.html` and `production/index.html`. The Outcomes section appears only on production. The case study card and "Watch the video" button appear only on operations. Each page shows its four real stat values, not `0`, with ring gauges on the percent values. Each page has one cockpit whose rail lists every capability (forecast 5, inventory 6, operations 6, production 5).
@@ -156,3 +156,5 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 4. Cockpit/Scattered: signature windows and eight exact chips built; read tabs and search-hidden-content guides. Chromium 130 checks pass for clicks/counter, desktop/mobile arrows, hash, initial/no-JS state, 390px overflow and native text-fragment beforematch reveal. window.find finds hidden text; browser Find toolbar itself remains a manual review item. Fixed Astro stripping dynamic hidden values by using literal hidden="until-found" on inactive panels. Temporary test route removed; build passes.
 
 5. Home: all ten sections built in order with exact rewritten copy, supplied quotes/benefits/case study and Operations selected. Build passes; one h1, required phrases present, no em dashes. All small components now compile in the complete home or their earlier fixture. A parallel build initially cleared dist during checks; builds are now serialized and checks rerun.
+
+6. Products: shared static route generates four pages with 5/6/6/5 cockpit views, exact source hero/quote/closing content and real values/gauges. Build and conditional Outcomes/FFF/video checks pass. Explicit page section tones take precedence over the generic alternation checklist (hero quote and capability bands are both light on three products).
