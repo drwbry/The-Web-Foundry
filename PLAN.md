@@ -12,7 +12,7 @@ A ten-page proof-of-concept rebuild of https://www.gibsupplychain.com lives at `
 
 ## Context
 
-- Repo: `db-design-website` (Astro 5 static site, deployed by Coolify when `main` is pushed). Work on the branch `demo/gib-supply-chain`, which already exists and holds this plan.
+- Repo: `db-design-website` (Astro 5 static site, deployed by Coolify when `main` is pushed). Work on whatever branch is checked out in this folder (it already holds this plan). Do not switch or create branches.
 - **Read these first, in this order:**
   1. `docs/demo/gib-supply-chain/DESIGN.md`. The full design and content spec. It decides every visual and copy question. Follow it exactly. Its main idea is the "cockpit": each module is shown as one application window with a rail of views, the way GIB's own product pulls scattered SAP data into one screen.
   2. `src/components/demo/morning-and-night/Layout.astro` and `src/pages/demo/morning-and-night/index.astro`. The existing prospect demo. Copy its structure and code style.
@@ -42,7 +42,7 @@ A ten-page proof-of-concept rebuild of https://www.gibsupplychain.com lives at `
 
 ## Ask before doing
 
-- Pushing or merging to `main`. That deploys to the live site. Commit on `demo/gib-supply-chain` only. The owner merges after review.
+- Pushing or merging to `main`. That deploys to the live site. Commit on the current branch only. The owner merges after review.
 - Editing any file outside the three demo folders listed above.
 - Adding a dependency.
 - Using any GIB image that is not already in `src/assets/demo/gib-supply-chain/`. The quote badges, staff headshots and GIFs were left out on purpose.
@@ -66,7 +66,7 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 
 - [ ] **0. Set up**
   - Files: none
-  - Change: `git checkout demo/gib-supply-chain`. Run `npm install`.
+  - Change: Stay on the current branch. Run `git status` to confirm it is clean and that `PLAN.md` is at the repo root. Run `npm install`.
   - Check: `npm run build` passes before you change anything. `ls src/assets/demo/gib-supply-chain/shots | wc -l` prints `22`.
 
 - [ ] **1. Data files**
@@ -76,7 +76,7 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 
 - [ ] **2. Layout**
   - Files: `src/components/demo/gib-supply-chain/Layout.astro`
-  - Change: Build it per DESIGN.md sections 3 and 4 ("Layout.astro"): `BaseLayout` wrapper, `noindex` meta, font link, the global `:root` tokens and base type styles, preview bar, sticky nav with the Platform dropdown and the mobile menu (both are a button with `aria-expanded` plus one small script), footer with the credit line. No `DBCredit`. Retrieve the `navbar` guide first.
+  - Change: Build it per DESIGN.md sections 3 and 4 ("Layout.astro"): `BaseLayout` wrapper, `noindex` meta, font link, the global `:root` tokens and base type styles, preview bar, sticky nav with the Platform dropdown and the mobile menu (both are a button with `aria-expanded` plus one small script), footer, then `DBCredit`, then the floating "Back to The Web Foundry" link. Retrieve the `navbar` guide first.
   - Check: create a temporary `src/pages/demo/gib-supply-chain/index.astro` that renders the layout with one `<h1>`. `npm run build` passes. `grep -c 'noindex, nofollow' dist/demo/gib-supply-chain/index.html` prints `1` or more.
 
 - [ ] **3. Small components**
@@ -141,7 +141,7 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 - [ ] All ten pages exist under `dist/demo/gib-supply-chain/`: home, platform, forecast, inventory, operations, production, why-gib, solutions, gib-for-sap, ai
 - [ ] Every check in step 11 passes
 - [ ] The Build log below lists anything left out, anything that differed from DESIGN.md, which Modern Web Guidance guides were read (or that the CLI could not run), which browsers were actually checked, and whether screenshots were captured
-- [ ] Committed on `demo/gib-supply-chain` (not pushed to `main`, not merged)
+- [ ] Committed on the current branch (not pushed to `main`, not merged)
 
 ## Build log
 

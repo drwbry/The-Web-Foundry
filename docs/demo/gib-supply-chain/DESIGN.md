@@ -91,9 +91,10 @@ All live in `src/components/demo/gib-supply-chain/`. Each is a small `.astro` fi
 
 **`Layout.astro`** (props: `title`, `description`, `current`)
 Wraps `BaseLayout` the same way `src/components/demo/morning-and-night/Layout.astro` does. Read that file first and copy its structure. Differences:
-- Do not use `DBCredit`. The footer has its own credit line (below).
+- Use `DBCredit` after the footer, the same as the bakery layout. It now reads "Concept preview by The Web Foundry".
+- Add the floating "Back to The Web Foundry" link exactly as the bakery layout does (the `.mn-foundry` block: markup, Foundry rust `#b45a3c` colors, the mobile rule, the reduced-motion rule and the extra bottom padding on `.db-credit`). Rename the classes to `gib-foundry`, use `var(--gib-ff)` for the font and `var(--gib-ink)` for the focus outline. Keep the rust color; do not restyle it in GIB orange. This is a repo rule for every prospect demo (see `AGENTS.md`, "Prospect demos").
 - OG image: `hero-home.png` through `getImage`, 1200x630, `fit: 'contain'`, background `#F5F7F9`, format `jpg`.
-- Contains, in order: preview bar, sticky nav, `<main id="main-content"><slot /></main>`, footer.
+- Contains, in order: preview bar, sticky nav, `<main id="main-content"><slot /></main>`, footer, `DBCredit`, floating Foundry link.
 
 Preview bar: one thin line at the very top, `--gib-orange` background, ink text, centered, `.8rem`: `Concept preview by The Web Foundry for GIB Supply Chain` with "The Web Foundry" linked to `/`.
 
@@ -112,7 +113,7 @@ Footer: `--gib-ink` background. Four columns on desktop, stacked on mobile.
 2. "Platform": the six Platform links.
 3. "Company": Solutions, Why GIB, GIB for SAP.
 4. "Resources" (all external): Case studies, Webinars, Blog, Customer portal, Community forum.
-Bottom row: `© 2026 GIB USA, an ifm company` and a link "Privacy Policy" to `links.privacy`. Then the credit line in `--gib-on-dark-muted`, `.8rem`: `This page is a concept preview built by The Web Foundry. It is not the official GIB website. Visit gibsupplychain.com for the live site.` Link "The Web Foundry" to `/` and "gibsupplychain.com" to `links.site`.
+Bottom row: `© 2026 GIB USA, an ifm company` and a link "Privacy Policy" to `links.privacy`. Then one disclaimer line in `--gib-on-dark-muted`, `.8rem`: `This is a concept preview, not the official GIB website. Visit gibsupplychain.com for the live site.` Link "gibsupplychain.com" to `links.site`. The Foundry credit itself comes from `DBCredit` below the footer.
 
 **`Eyebrow.astro`** (props: `text`, `lights` default `true`)
 Mono uppercase label. When `lights` is true, show three 7px dots before the text: red, amber, green, 4px apart. On dark bands the text is `--gib-on-dark-muted`; on light bands `--gib-muted`. Use `color: inherit` and let the section set it.
