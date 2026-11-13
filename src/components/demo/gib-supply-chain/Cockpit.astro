@@ -75,7 +75,7 @@ const number = (n) => String(n+1).padStart(2,'0');
 .gib-cockpit-screen :global(.gib-button-link) {color:var(--gib-orange);margin-bottom:.75rem;}
 .gib-cockpit-image {display:block;border:1px solid var(--gib-ink-3);border-radius:8px;overflow:hidden;margin-top:1rem;}
 .gib-cockpit-image img {display:block;width:100%;}
-.gib-cockpit-status {min-height:32px;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.4rem 1rem;background:var(--gib-ink-2);color:var(--gib-on-dark-muted);font:.65rem var(--gib-ff-mono);}
+.gib-cockpit-status {min-height:32px;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.4rem 1rem;background:var(--gib-ink-2);color:var(--gib-on-dark-muted);font:.75rem var(--gib-ff-mono);}
 .gib-cockpit-status i {display:inline-block;width:6px;height:6px;background:var(--gib-green);border-radius:50%;margin-right:.5rem;}
 @keyframes gib-screen-in {from {opacity:0;} to {opacity:1;}}
 @media(max-width:899px) {.gib-cockpit-body {grid-template-columns:minmax(0,1fr);} .gib-cockpit-rail {display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--gib-ink-3);padding:.5rem;gap:.5rem;scroll-snap-type:inline proximity;} .gib-cockpit-rail button {flex:none;width:auto;max-width:300px;border-radius:6px;scroll-snap-align:start;padding:.75rem 1rem;} .gib-cockpit-status>span:last-child {display:none;} .gib-cockpit-screen {padding:1rem;} .gib-cockpit-screen :global(.gib-checks) {grid-template-columns:1fr;}}

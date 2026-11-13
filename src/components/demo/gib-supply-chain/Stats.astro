@@ -2,10 +2,16 @@
 const {items} = Astro.props;
 ---
 <div class="gib-stats">{items.map(item => <div class="gib-stat"><div class="gib-stat-value">{!item.text && item.suffix==='%' && <span class="gib-gauge" style={`--gib-percent:${Math.min(item.value,100)}%`} aria-hidden="true"></span>}<span>{item.text || <><span>{item.prefix}</span><span data-count={item.value}>{item.value}</span><span>{item.suffix}</span></>}</span></div><p>{item.label}</p>{item.source && <small>{item.source}</small>}</div>)}</div>
+<script is:inline>
+  // Keep the real HTML values when reduced motion is requested, before shared.js starts counters.
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.currentScript.previousElementSibling.querySelectorAll('[data-count]').forEach(el => el.removeAttribute('data-count'));
+  }
+</script>
 <style>
 .gib-stats {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--gib-ink);color:var(--gib-on-dark);}
 .gib-stat {padding:1.5rem;border-left:1px solid var(--gib-ink-3);min-width:0;}
-.gib-stat-value {font:500 clamp(2.6rem,4vw,4rem) var(--gib-ff-mono);display:flex;gap:.75rem;align-items:center;letter-spacing:-.06em;flex-wrap:wrap;line-height:1.2;margin-bottom:1rem;}
+.gib-stat-value {font:500 clamp(2.6rem,5vw,4rem) var(--gib-ff-mono);display:flex;gap:.75rem;align-items:center;letter-spacing:-.06em;flex-wrap:wrap;line-height:1.2;margin-bottom:1rem;}
 .gib-gauge {width:56px;height:56px;flex:none;background:conic-gradient(var(--gib-orange) var(--gib-percent),var(--gib-ink-3) 0);border-radius:50%;mask:radial-gradient(transparent 55%,#000 57%);}
 small {font:.75rem var(--gib-ff-mono);color:var(--gib-on-dark-muted);}
 @media(max-width:899px) {.gib-stats {grid-template-columns:repeat(2,minmax(0,1fr));} .gib-stat {padding:1.25rem .75rem;border-bottom:1px solid var(--gib-ink-3);} .gib-stat-value {font-size:clamp(1.6rem,5.5vw,3rem);} .gib-gauge {width:42px;height:42px;}}

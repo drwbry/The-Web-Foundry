@@ -1,9 +1,9 @@
 # Plan: GIB Supply Chain prospect demo at /demo/gib-supply-chain
 
-Status: ready to build
+Status: built, ready for owner review
 Planned by: Claude Code, 2026-11-13
 Builder: any (Codex Luna high, Sonnet, Haiku, or OMP with DeepSeek subagents)
-Built by: <filled in by the builder>
+Built by: Codex (GPT-6), 2026-11-13
 Stakes: normal
 
 ## Goal
@@ -130,18 +130,18 @@ Each step is small enough for one subagent, and says how to check it. Do them in
     - Every internal `href` in the demo points at one of the ten pages or an `#id` that exists on that page. List the built pages with `find dist/demo/gib-supply-chain -name index.html` and compare.
     - `git status --short` shows changes only inside `src/components/demo/gib-supply-chain/`, `src/pages/demo/gib-supply-chain/` and `PLAN.md`.
 
-- [ ] **12. Visual check** (needs judgment)
+- [x] **12. Visual check** (needs judgment)
   - Files: any file in the two demo code folders
   - Change: Run `npm run preview`. Open every page at 1440px, 768px and 390px wide. Go through the checklist in DESIGN.md section 7 and fix what fails. If Playwright's Chromium is installed (`npx playwright --version` works and a browser launches), save full-page screenshots of all ten pages at 1440px and 390px to `/tmp/gib-demo-shots/` for the owner. If it is not installed, skip the screenshots and say so in the Build log. Do not install it.
   - Check: no horizontal scroll at 390px on any page. The mobile menu opens and closes, and Escape closes it. Tabbing shows a focus ring on every link and button. No image is broken.
 
 ## Done when
 
-- [ ] `npm run build` passes with no errors or warnings about missing images
-- [ ] All ten pages exist under `dist/demo/gib-supply-chain/`: home, platform, forecast, inventory, operations, production, why-gib, solutions, gib-for-sap, ai
-- [ ] Every check in step 11 passes
-- [ ] The Build log below lists anything left out, anything that differed from DESIGN.md, which Modern Web Guidance guides were read (or that the CLI could not run), which browsers were actually checked, and whether screenshots were captured
-- [ ] Committed on the current branch (not pushed to `main`, not merged)
+- [x] `npm run build` passes with no errors or warnings about missing images
+- [x] All ten pages exist under `dist/demo/gib-supply-chain/`: home, platform, forecast, inventory, operations, production, why-gib, solutions, gib-for-sap, ai
+- [x] Every check in step 11 passes
+- [x] The Build log below lists anything left out, anything that differed from DESIGN.md, which Modern Web Guidance guides were read (or that the CLI could not run), which browsers were actually checked, and whether screenshots were captured
+- [x] Committed on the current branch (not pushed to `main`, not merged)
 
 ## Build log
 
@@ -168,3 +168,7 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 10. AI: seven sections, four feature blocks and required release disclaimer built; build passes and all four ranges are text without counters. Kept the explicit dark Stats then dark CTA order despite the general band-alternation checklist; narrative feature introductions omitted in favor of the prescribed heading/item grids.
 
 11. Link/rule sweep: ten routes checked with HTML parsing, including all local anchors, unique IDs, image zoom targets, one h1 and robots tag per page. Required Foundry return and inherited DBCredit privacy links point to existing hub routes, exceptions to the ten-page-only wording. No forms/em dashes/sitemap entries; status restricted to allowed paths. Cleaned punctuation spacing and fixed menu focus retention/outside clicks. Build passes. Validation scripts account for Astro minifying empty alt attributes and inlining shared counter code.
+
+12. Visual: production preview opened all ten pages at 1440, 768 and 390px in installed Chromium 130.0.6723.31 via Playwright 1.61.1. No horizontal overflow, broken images or page script errors; menu toggle/Tab/Escape/outside click, focus rings across every page, cockpit arrows/hash/native reveal and no-JS initial view pass. Reduced-motion counters retain their real values; smooth scrolling, reveals and transitions respect the preference. Specified type sizes restored. Saved 30 fully loaded full-page screenshots plus checks.json and first-screen review sheets in /tmp/gib-demo-shots/. A long Chromium capture run exited during its final focus loop after all captures; those checks passed in a fresh browser. Firefox, Safari and Edge were not available/tested. Browser Find toolbar remains manual; native text searchability and text-fragment beforematch reveal were verified.
+
+Final review: all prescribed content is included except narrative AI feature introductions, as noted above. Explicit section order/tones and full supplied hero copy were retained over general visual heuristics; long mobile heroes place their images below the first fold. No source assets, shared infrastructure, hub, sitemap configuration or dependencies changed. All Done when checks pass; committed on the original branch without push or merge.
