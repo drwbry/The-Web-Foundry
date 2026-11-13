@@ -1,0 +1,90 @@
+---
+import {Image} from 'astro:assets';
+import logo from '../../../assets/demo/gib-supply-chain/logo-supply-chain-essentials.png';
+// A responsive redraw of the five processes in GIB's existing homepage animation.
+// The indicator values are copied from that illustration, not customer result claims.
+const processes = [
+  {key:'demand',code:'DPLX',name:'Demand Planning',value:'91.76',tone:'green',icon:'M4 19V5M4 19h17M9 15v-4M14 15V8M19 15V3'},
+  {key:'sales',code:'SLSX',name:'Sales & Distribution',value:'79.35',tone:'amber',icon:'M3 7h12v11H3zM15 11h4l3 4v3h-7M7 7V4h5M6 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4M18 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4'},
+  {key:'inventory',code:'INVX',name:'Inventory Management',value:'68.82',tone:'red',icon:'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10M7.5 5l9 4'},
+  {key:'procurement',code:'PROX',name:'Procurement',value:'86.69',tone:'amber',icon:'M6 3h12v18H6zM9 7h6M9 11h6M9 15h3M3 6h3M18 18h3'},
+  {key:'manufacturing',code:'MFGX',name:'Manufacturing',value:'97.54',tone:'green',icon:'M3 21V10l6 4V8l6 4V3h4l2 18zM7 17v1M12 17v1M17 17v1'},
+];
+---
+<figure class="gib-process-figure" data-process-map aria-labelledby="gib-process-caption">
+  <div class="gib-map-label"><span aria-hidden="true"></span> End-to-end supply chain</div>
+  <div class="gib-process-map">
+    <svg class="gib-map-connections" viewBox="0 0 620 620" fill="none" aria-hidden="true">
+      <defs><linearGradient id="gib-orbit-gradient" x1="100" y1="80" x2="520" y2="550" gradientUnits="userSpaceOnUse"><stop stop-color="#F37021"/><stop offset=".5" stop-color="#BCCCDD"/><stop offset="1" stop-color="#6E8BA0"/></linearGradient></defs>
+      <circle cx="310" cy="300" r="212" stroke="#E1E6EB" stroke-width="1.5" />
+      <circle cx="310" cy="300" r="170" stroke="#E1E6EB" stroke-dasharray="3 7" />
+      <circle cx="310" cy="300" r="212" stroke="url(#gib-orbit-gradient)" stroke-width="2" />
+      <circle class="gib-map-signal" cx="310" cy="300" r="212" stroke="#F37021" stroke-width="4" stroke-linecap="round" stroke-dasharray="9 1323" />
+      <path d="M310 214V100M222 265L114 195M398 300h110M250 374L132 490M357 380l64 136" stroke="#BCCCDD" stroke-width="1.5" />
+      <g fill="#F37021" stroke="white" stroke-width="5"><circle cx="310" cy="88" r="7"/><circle cx="117" cy="212" r="7"/><circle cx="520" cy="300" r="7"/><circle cx="167" cy="456" r="7"/><circle cx="413" cy="485" r="7"/></g>
+    </svg>
+    <div class="gib-map-core"><Image class="gib-map-core-logo" src={logo} alt="GIB supply chain essentials" width={240} loading="eager" /><strong>Inside SAP</strong><span class="gib-map-sap">S/4HANA · ECC</span></div>
+    {processes.map(p => <div class:list={['gib-map-node',`gib-map-${p.key}`,`gib-map-${p.tone}`]}>
+      <div class="gib-map-node-top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={p.icon}/></svg><span>{p.code}</span></div>
+      <strong class="gib-map-process-name">{p.name}</strong>
+      <div class="gib-map-indicator"><i aria-hidden="true"></i><span>{p.value}<small>%</small></span></div>
+    </div>)}
+  </div>
+  <figcaption id="gib-process-caption"><span>Connected inside SAP <small>Illustrative process indicators.</small></span><button type="button" class="gib-map-motion" hidden>Pause motion</button></figcaption>
+</figure>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-process-map]').forEach(root => {
+    const button = root.querySelector<HTMLButtonElement>('.gib-map-motion')!;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const update = (running: boolean) => {
+      root.classList.toggle('gib-map-running', running);
+      button.textContent = running ? 'Pause motion' : 'Play motion';
+    };
+    const preference = () => { button.hidden = reduced.matches; update(!reduced.matches); };
+    button.addEventListener('click', () => update(!root.classList.contains('gib-map-running')));
+    reduced.addEventListener('change', preference);
+    preference();
+  });
+</script>
+<style>
+.gib-process-figure {margin:0;position:relative;min-width:0;}
+.gib-map-label {display:flex;align-items:center;gap:.55rem;font:500 .7rem var(--gib-ff-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gib-muted);margin:0 0 1.25rem 1rem;}
+.gib-map-label>span {width:6px;height:6px;border-radius:50%;background:var(--gib-orange);}
+.gib-process-map {position:relative;aspect-ratio:1;isolation:isolate;background:radial-gradient(ellipse at 52% 48%,#fff0e6 0,transparent 43%);}
+.gib-map-connections {position:absolute;inset:0;width:100%;height:100%;z-index:-1;}
+.gib-map-core {position:absolute;left:50%;top:48.4%;transform:translate(-50%,-50%);width:29%;aspect-ratio:1;border:1px solid #e9dfd8;border-radius:50%;background:linear-gradient(145deg,#fff,#fffaf7);box-shadow:0 12px 40px -20px #a96d4455,inset 0 0 0 8px white;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.gib-map-core-logo {width:76%;height:auto;margin-bottom:.7rem;}
+.gib-map-core strong {font-size:.85rem;font-weight:500;}
+.gib-map-sap {font:.58rem var(--gib-ff-mono);color:var(--gib-muted);margin-top:.4rem;letter-spacing:.03em;}
+.gib-map-node {position:absolute;width:30%;padding:1rem;background:rgba(255,255,255,.97);border:1px solid var(--gib-line);border-radius:12px;box-shadow:0 3px 5px -3px #1b222c12,0 15px 28px -16px #56616f30;}
+.gib-map-node-top {display:flex;align-items:center;justify-content:space-between;color:var(--gib-muted);margin-bottom:.55rem;}
+.gib-map-node-top>svg {width:22px;height:22px;color:var(--gib-steel);}
+.gib-map-node-top>span {font:.6rem var(--gib-ff-mono);letter-spacing:.1em;}
+.gib-map-process-name {display:block;font-size:.85rem;line-height:1.3;min-height:2.6em;font-weight:600;color:var(--gib-text);}
+.gib-map-indicator {display:flex;align-items:center;gap:.55rem;margin-top:.5rem;}
+.gib-map-indicator>i {width:6px;height:6px;flex:none;border-radius:50%;background:var(--gib-orange);}
+.gib-map-green .gib-map-indicator>i {background:var(--gib-green);} .gib-map-red .gib-map-indicator>i {background:var(--gib-red);} .gib-map-amber .gib-map-indicator>i {background:var(--gib-amber);}
+.gib-map-indicator>span {font:500 clamp(1.2rem,2vw,1.55rem) var(--gib-ff-mono);letter-spacing:-.05em;color:var(--gib-text);} .gib-map-indicator small {font-size:.65em;margin-left:.1rem;color:var(--gib-muted);}
+.gib-map-demand {left:0;top:18%;} .gib-map-sales {left:44%;top:0;} .gib-map-inventory {right:0;top:36%;} .gib-map-procurement {left:4%;bottom:5%;} .gib-map-manufacturing {right:12%;bottom:0;}
+figcaption {display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:1.5rem;padding:1rem 0 0 1rem;border-top:1px solid var(--gib-line);color:var(--gib-muted);font-size:.72rem;}
+figcaption small {display:block;margin-top:.2rem;font-size:.65rem;}
+.gib-map-motion {font:500 .66rem var(--gib-ff-mono);white-space:nowrap;min-height:44px;padding:.5rem 0 .5rem .5rem;color:var(--gib-muted);text-decoration:underline;text-underline-offset:4px;}
+.gib-map-running .gib-map-signal {animation:gib-map-circulate 22s linear infinite;}
+@keyframes gib-map-circulate {to {stroke-dashoffset:-1332;}}
+@media(min-width:900px) and (max-width:1100px) {.gib-map-node {padding:.7rem;} .gib-map-process-name {font-size:.78rem;} .gib-map-core strong {font-size:.75rem;}}
+@media(max-width:559px) {
+  .gib-map-label {margin-left:0;}
+  .gib-process-map {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;aspect-ratio:auto;background:none;}
+  .gib-map-connections {display:none;}
+  .gib-map-core {position:static;transform:none;width:auto;aspect-ratio:auto;grid-column:1/-1;flex-direction:row;flex-wrap:wrap;gap:.6rem 1rem;border-radius:12px;padding:1.3rem;box-shadow:none;margin-bottom:.25rem;}
+  .gib-map-core-logo {width:94px;height:auto;margin:0;} .gib-map-core strong {font-size:.95rem;} .gib-map-sap {font-size:.65rem;margin:0;}
+  .gib-map-node {position:static;width:auto;padding:1rem;box-shadow:0 2px 8px #1b222c06;}
+  .gib-map-process-name {font-size:.85rem;} .gib-map-indicator>span {font-size:1.4rem;}
+  .gib-map-manufacturing {grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;column-gap:1rem;}
+  .gib-map-manufacturing .gib-map-node-top {grid-column:1/-1;}
+  .gib-map-manufacturing .gib-map-process-name {min-height:0;align-self:center;}
+  .gib-map-manufacturing .gib-map-indicator {margin:0;justify-self:end;}
+  figcaption {padding-left:0;} .gib-map-motion {display:none;}
+}
+@media(prefers-reduced-motion:reduce) {.gib-map-running .gib-map-signal {animation:none;}}
+</style>

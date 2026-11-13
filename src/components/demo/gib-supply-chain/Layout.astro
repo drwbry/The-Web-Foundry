@@ -3,7 +3,7 @@ import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import DBCredit from '../../DBCredit.astro';
 import logo from '../../../assets/demo/gib-supply-chain/logo-supply-chain-essentials.png';
-import ogPhoto from '../../../assets/demo/gib-supply-chain/hero-home.png';
+import ogPhoto from '../../../assets/demo/gib-supply-chain/hero-supply-chain-platform.png';
 import { base, links, products } from './data.js';
 const { title, description, current } = Astro.props;
 const og = await getImage({ src: ogPhoto, width: 1200, height: 630, fit: 'contain', background: '#F5F7F9', format: 'jpg' });
@@ -12,7 +12,7 @@ const company = [{label:'Solutions', href:`${base}/solutions`, key:'solutions'},
 const resources = [{label:'Case studies', href:links.caseStudies}, {label:'Webinars', href:links.webinars}, {label:'Blog', href:links.resources}, {label:'Customer portal', href:links.portal}, {label:'Community forum', href:links.community}];
 const isCurrent = (href) => Astro.url.pathname.replace(/\/$/, '') === href;
 ---
-<BaseLayout title={title} description={description} ogImage={og.src} ogImageAlt="GIB supply chain dashboard inside SAP">
+<BaseLayout title={title} description={description} ogImage={og.src} ogImageAlt="GIB connects demand planning, sales, inventory, procurement and manufacturing inside SAP">
   <Fragment slot="head">
     <meta name="robots" content="noindex, nofollow" />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -20,7 +20,7 @@ const isCurrent = (href) => Astro.url.pathname.replace(/\/$/, '') === href;
   <div class="gib-preview" role="note">Concept preview by <a href="/">The Web Foundry</a> for GIB Supply Chain</div>
   <header class="gib-nav">
     <div class="gib-wrap gib-nav-inner">
-      <a href={base} class="gib-brand" aria-label="GIB Supply Chain home"><Image src={logo} alt="GIB supply chain essentials" height={44} loading="eager" /></a>
+      <a href={base} class="gib-brand" aria-label="GIB Supply Chain home"><Image src={logo} alt="GIB supply chain essentials" height={50} loading="eager" /></a>
       <nav aria-label="Main" class="gib-desktop">
         <ul class="gib-nav-links">
           <li class="gib-dropdown"><button type="button" aria-expanded="false" aria-controls="gib-platform-menu" class:list={['gib-nav-trigger', {'gib-active':current==='platform'}]}>Platform <span aria-hidden="true">⌄</span></button><ul id="gib-platform-menu" hidden>{platform.map(n => <li><a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}<small>{n.category}</small></a></li>)}</ul></li>
@@ -122,31 +122,31 @@ body { background:var(--gib-paper); color:var(--gib-text); font-family:var(--gib
 :where([id]) {scroll-margin-top:90px;}
 .gib-preview {background:var(--gib-orange);color:var(--gib-ink);text-align:center;font-size:.8rem;padding:.4rem 1rem;}
 .gib-preview a {text-decoration:underline;}
-.gib-nav {position:sticky;top:0;z-index:50;background:var(--gib-ink);color:var(--gib-on-dark);border-bottom:1px solid var(--gib-ink-3);}
-.gib-nav-inner {display:flex;gap:1.5rem;align-items:center;height:68px;}
-.gib-brand {margin-right:auto;flex:none;display:inline-flex;padding:6px 10px;background:var(--gib-white);border-radius:6px;} .gib-brand img {height:44px;width:auto;}
+.gib-nav {position:sticky;top:0;z-index:50;background:var(--gib-white);color:var(--gib-text);border-bottom:1px solid var(--gib-line);}
+.gib-nav-inner {display:flex;gap:1.5rem;align-items:center;height:80px;}
+.gib-brand {margin-right:auto;flex:none;display:inline-flex;} .gib-brand img {height:50px;width:auto;}
 .gib-nav-links {display:flex;align-items:center;gap:1.3rem;list-style:none;margin:0;padding:0;font-size:.9rem;}
 .gib-nav-links>li>a,.gib-nav-trigger {display:flex;align-items:center;min-height:44px;border-bottom:2px solid transparent;}
 .gib-nav button {font:inherit;color:inherit;cursor:pointer;}
 .gib-nav-trigger {background:none;border:0;gap:.5rem;}
 .gib-nav a[aria-current],.gib-nav .gib-active {border-bottom:2px solid var(--gib-orange);}
 .gib-dropdown {position:relative;}
-#gib-platform-menu {position:absolute;top:100%;left:0;background:var(--gib-ink-2);border:1px solid var(--gib-ink-3);width:320px;padding:.6rem;border-radius:8px;list-style:none;box-shadow:var(--gib-shadow);}
+#gib-platform-menu {position:absolute;top:100%;left:0;background:var(--gib-white);border:1px solid var(--gib-line);width:320px;padding:.6rem;border-radius:8px;list-style:none;box-shadow:var(--gib-shadow);}
 #gib-platform-menu a {display:block;padding:.6rem .8rem;border-radius:4px;}
-#gib-platform-menu a:hover {background:var(--gib-ink-3);} #gib-platform-menu small {display:block;color:var(--gib-on-dark-muted);font-size:.75rem;}
+#gib-platform-menu a:hover {background:var(--gib-paper);} #gib-platform-menu small {display:block;color:var(--gib-muted);font-size:.75rem;}
 .gib-nav-cta {background:var(--gib-orange);color:var(--gib-ink);padding:.6rem 1rem;border-radius:8px;font-size:.9rem;font-weight:600;}
-.gib-mobile-trigger {display:none;background:none;border:1px solid var(--gib-ink-3);padding:.5rem .8rem;border-radius:8px;min-height:44px;}
-#gib-mobile-menu {max-height:calc(100dvh - 68px);overflow:auto;border-top:1px solid var(--gib-ink-3);}
+.gib-mobile-trigger {display:none;background:none;border:1px solid var(--gib-line);padding:.5rem .8rem;border-radius:8px;min-height:44px;}
+#gib-mobile-menu {max-height:calc(100dvh - 80px);overflow:auto;border-top:1px solid var(--gib-line);}
 #gib-mobile-menu ul {padding:1rem 1.5rem;list-style:none;} #gib-mobile-menu a {display:block;padding:.65rem 0;min-height:44px;}
-.gib-footer {background:var(--gib-ink);color:var(--gib-on-dark-muted);padding:4rem 0 1.5rem;font-size:.9rem;}
+.gib-footer {background:var(--gib-paper);color:var(--gib-muted);padding:4rem 0 1.5rem;font-size:.9rem;}
 .gib-footer-grid {display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:3rem;}
-.gib-footer-logo {width:180px;height:auto;padding:8px 12px;background:var(--gib-white);border-radius:6px;}
-.gib-footer-grid p {margin-top:1.5rem;} .gib-footer h2 {font-size:1rem;color:var(--gib-on-dark);margin-bottom:1rem;}
+.gib-footer-logo {width:180px;height:auto;}
+.gib-footer-grid p {margin-top:1.5rem;} .gib-footer h2 {font-size:1rem;color:var(--gib-text);margin-bottom:1rem;}
 .gib-footer ul {list-style:none;padding:0;} .gib-footer li a {display:inline-flex;align-items:center;min-height:44px;}
-.gib-footer a:hover {color:var(--gib-orange);} .gib-footer-bottom {display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-top:1px solid var(--gib-ink-3);padding-top:1.5rem;margin-top:3rem;}
+.gib-footer a:hover {color:var(--gib-orange-ink);} .gib-footer-bottom {display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-top:1px solid var(--gib-line);padding-top:1.5rem;margin-top:3rem;}
 .gib-disclaimer {font-size:.8rem;margin-top:1rem;} .gib-disclaimer a {text-decoration:underline;}
-.db-credit {background:var(--gib-ink);color:var(--gib-on-dark-muted);text-align:center;padding:1rem 1.5rem 5.5rem;border-top:1px solid var(--gib-ink-3);font-size:.8rem;}
-.db-credit a {color:var(--gib-orange);}
+.db-credit {background:var(--gib-paper);color:var(--gib-muted);text-align:center;padding:1rem 1.5rem 5.5rem;border-top:1px solid var(--gib-line);font-size:.8rem;}
+.db-credit a {color:var(--gib-orange-ink);}
     .gib-foundry {
       position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 60;
       display: inline-flex; align-items: center; gap: .7rem;
