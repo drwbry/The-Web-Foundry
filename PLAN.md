@@ -50,11 +50,19 @@ A ten-page proof-of-concept rebuild of https://www.gibsupplychain.com lives at `
 - If a source file and DESIGN.md disagree, or a piece of content named in DESIGN.md cannot be found in the source file: stop guessing, leave that item out, and write it in the Build log.
 - Data rule (who may see this repo's code): any, including DeepSeek. This is a public marketing site with no secrets.
 
+## Rules for the build
+
+- **Build the whole plan in one run.** Work through steps 0 to 12 in order without stopping to report or to ask whether to continue. Finishing a step is not a reason to end your turn. Go straight on to the next one. You are done only when every box in "Steps" and "Done when" is ticked, or when you hit one of the stop cases below.
+- For each step: build it, run its check, tick the box only when the check passes, add one or two lines to the Build log with the evidence, and commit. One commit per step. Do not push.
+- A failing check is a diagnosis task, not a stop sign. This is the owner's instruction for this build, and it replaces the "if a check fails twice, stop" rule in `~/.codex/AGENTS.md`. Read the error, work out whether the code or the check is wrong, fix that, and run it again. Common causes here: a screenshot file name in `data.js` that does not match a file in `shots/`, a wrong relative import path (pages are three folders deep, components three), an Astro `<Image>` given a string instead of an imported image, and a `grep` check run before `npm run build`.
+- Stop and ask only for: an item in "Ask before doing", a design question that DESIGN.md does not settle and that you cannot settle by picking the simpler option, or a failure you still cannot explain after real investigation. If you do stop, say exactly which step you are on and what you tried.
+- A small gap is not a stop case. If one piece of content cannot be found in a source file, leave that one item out, note it in the Build log, and keep going.
+- If you run low on context, commit what you have, make sure the ticked boxes and Build log are current, and say which step is next. The next run picks up from the first unticked box.
+- Run `npm run build` before each commit.
+
 ## Steps
 
-Each step is small enough for one subagent, and says how to check it. Do them in order. Steps 5 to 10 only depend on steps 1 to 4, so they can run in parallel after step 4.
-
-After every step, `npm run build` must finish with no errors.
+Each step is small enough for one subagent, and says how to check it. Do them in order. Steps 5 to 10 only depend on steps 1 to 4, so an orchestrator may hand them to parallel subagents after step 4; a single agent just does them in order.
 
 - [ ] **0. Set up**
   - Files: none
