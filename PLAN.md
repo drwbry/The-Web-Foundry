@@ -69,7 +69,7 @@ Each step is small enough for one subagent, and says how to check it. Do them in
   - Change: Stay on the current branch. Run `git status` to confirm it is clean and that `PLAN.md` is at the repo root. Run `npm install`.
   - Check: `npm run build` passes before you change anything. `ls src/assets/demo/gib-supply-chain/shots | wc -l` prints `22`.
 
-- [ ] **1. Data files**
+- [x] **1. Data files**
   - Files: `src/components/demo/gib-supply-chain/data.js`, `src/components/demo/gib-supply-chain/images.js`
   - Change: Create both exactly as DESIGN.md section 5 describes. Export `base`, `links`, `products` (four products, every field filled from `source/gib-forecast.md`, `gib-inventory.md`, `gib-operations.md`, `gib-production.md`), and `faq` (five items from the end of `source/home.md`). Use the fixed tables in section 5 for category, verb, tabShot, stats and closing headings. Apply the typo fixes listed there. Replace every em dash.
   - Check: `grep -c "—" src/components/demo/gib-supply-chain/data.js` prints `0`. Every `shot:` and `tabShot:` value is a file name that exists in `src/assets/demo/gib-supply-chain/shots/`. Each product has 4 stats. Capability counts: forecast 5, inventory 6, operations 6, production 5.
@@ -146,3 +146,5 @@ Each step is small enough for one subagent, and says how to check it. Do them in
 ## Build log
 
 0. Setup: clean current branch `drwbry/GIB-demo-website-build`; npm install completed, 22 screenshots confirmed, baseline build passed. This worktree lacks Sanity environment values, so builds export the existing main checkout .env without copying it. No STATUS.md exists; the plan restricts edits to demo code and this log, so none was created.
+
+1. Data: four complete products and five FAQs transcribed with specified typo fixes, real statistics and no em dashes. All screenshot filenames exist, capability counts are 5/6/6/5, each product has four stats; build passes.
