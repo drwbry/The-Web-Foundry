@@ -17,7 +17,8 @@ A ten-page proof-of-concept rebuild of https://www.gibsupplychain.com lives at `
   1. `docs/demo/gib-supply-chain/DESIGN.md`. The full design and content spec. It decides every visual and copy question. Follow it exactly. Its main idea is the "cockpit": each module is shown as one application window with a rail of views, the way GIB's own product pulls scattered SAP data into one screen.
   2. `src/components/demo/morning-and-night/Layout.astro` and `src/pages/demo/morning-and-night/index.astro`. The existing prospect demo. Copy its structure and code style.
   3. `docs/shared-utilities.md`. Explains the `.reveal` and `data-count` helpers that `shared.js` already provides.
-- Everything you need is already in the repo. Do not fetch anything from the internet.
+  4. `docs/demo/gib-supply-chain/DESIGN.md` section 8, "Web platform guidance". The Web Foundry uses Google Chrome's Modern Web Guidance as its reference for HTML, CSS and JavaScript patterns. Before you build the nav (step 2), the FAQ (step 3) and the cockpit (step 4), retrieve the matching guide with the commands in that section and follow it for the mechanics. If you are running with the `web-foundry-onboarding` skill and it has `references/design-and-platform.md`, that file says the same thing; read it, but do not start the onboarding phases. This is a demo page, not a client onboarding.
+- All content and images you need are already in the repo. Do not fetch content or images from the internet. Looking up Modern Web Guidance and MDN is allowed and encouraged.
   - GIB's page text: `docs/demo/gib-supply-chain/source/*.md` (one file per page of their site).
   - GIB's images: `src/assets/demo/gib-supply-chain/` (logo, symbols, hero images, `logos/`, and 22 product screenshots in `shots/`). In the source files, `[IMAGE: shots/x.png]` names the local file to use at that spot. `[image not kept: ...]` means skip it.
 - New files only. The demo is self-contained in three folders:
@@ -45,6 +46,7 @@ A ten-page proof-of-concept rebuild of https://www.gibsupplychain.com lives at `
 - Editing any file outside the three demo folders listed above.
 - Adding a dependency.
 - Using any GIB image that is not already in `src/assets/demo/gib-supply-chain/`. The quote badges, staff headshots and GIFs were left out on purpose.
+- Adding a polyfill, or switching the nav to the Popover API, because a Modern Web Guidance guide suggests it. DESIGN.md section 8 explains why this demo does not.
 - If a source file and DESIGN.md disagree, or a piece of content named in DESIGN.md cannot be found in the source file: stop guessing, leave that item out, and write it in the Build log.
 - Data rule (who may see this repo's code): any, including DeepSeek. This is a public marketing site with no secrets.
 
@@ -66,7 +68,7 @@ After every step, `npm run build` must finish with no errors.
 
 - [ ] **2. Layout**
   - Files: `src/components/demo/gib-supply-chain/Layout.astro`
-  - Change: Build it per DESIGN.md sections 3 and 4 ("Layout.astro"): `BaseLayout` wrapper, `noindex` meta, font link, the global `:root` tokens and base type styles, preview bar, sticky nav with the CSS-only Platform dropdown and the `<details>` mobile menu, footer with the credit line. No `DBCredit`.
+  - Change: Build it per DESIGN.md sections 3 and 4 ("Layout.astro"): `BaseLayout` wrapper, `noindex` meta, font link, the global `:root` tokens and base type styles, preview bar, sticky nav with the Platform dropdown and the mobile menu (both are a button with `aria-expanded` plus one small script), footer with the credit line. No `DBCredit`. Retrieve the `navbar` guide first.
   - Check: create a temporary `src/pages/demo/gib-supply-chain/index.astro` that renders the layout with one `<h1>`. `npm run build` passes. `grep -c 'noindex, nofollow' dist/demo/gib-supply-chain/index.html` prints `1` or more.
 
 - [ ] **3. Small components**
@@ -76,8 +78,8 @@ After every step, `npm run build` must finish with no errors.
 
 - [ ] **4. Cockpit and Scattered** (the signature components; give this step to the strongest model you have)
   - Files: `src/components/demo/gib-supply-chain/Cockpit.astro`, `src/components/demo/gib-supply-chain/Scattered.astro`. Also add the `moduleViews` export to `data.js`.
-  - Change: Build both per DESIGN.md section 4. `Cockpit` is one application window: title bar, left rail of views, screen, status bar. Vertical ARIA tabs, arrow keys, hash deep links, all screens visible when JavaScript is off, rail turns into scrolling pills below 900px, script under 60 lines. `Scattered` is the before and after picture with the eight exact chips.
-  - Check: in `npm run dev`, on a test page with four views: clicking a rail button swaps the screen and the `03 / 04` counter. Up and down arrows move between views. Loading the page with `#modules-inventory` in the URL opens the Inventory view. With JavaScript disabled, all screens show stacked. At 390px wide the rail is a scrolling row of pills and nothing overflows the page.
+  - Change: Build both per DESIGN.md section 4. `Cockpit` is one application window: title bar, left rail of views, screen, status bar. Retrieve the `tabs` and `search-hidden-content` guides first. Vertical ARIA tabs, starting state rendered in the HTML, `hidden="until-found"` with a `beforematch` listener, arrow keys, hash deep links, rail turns into scrolling pills below 900px, script under 60 lines. `Scattered` is the before and after picture with the eight exact chips.
+  - Check: in `npm run dev`, on a test page with four views: clicking a rail button swaps the screen and the `03 / 04` counter. Up and down arrows move between views. Loading the page with `#modules-inventory` in the URL opens the Inventory view. Only the selected screen is visible on first paint (no flash of all screens). In Chrome, find-in-page for a word that is only on a hidden view switches the cockpit to that view. With JavaScript disabled, the starting view shows. At 390px wide the rail is a scrolling row of pills and nothing overflows the page.
 
 - [ ] **5. Home page**
   - Files: `src/pages/demo/gib-supply-chain/index.astro`
@@ -123,14 +125,14 @@ After every step, `npm run build` must finish with no errors.
 - [ ] **12. Visual check** (needs judgment)
   - Files: any file in the two demo code folders
   - Change: Run `npm run preview`. Open every page at 1440px, 768px and 390px wide. Go through the checklist in DESIGN.md section 7 and fix what fails. If Playwright's Chromium is installed (`npx playwright --version` works and a browser launches), save full-page screenshots of all ten pages at 1440px and 390px to `/tmp/gib-demo-shots/` for the owner. If it is not installed, skip the screenshots and say so in the Build log. Do not install it.
-  - Check: no horizontal scroll at 390px on any page. The mobile menu opens. Tabbing shows a focus ring on every link and button. No image is broken.
+  - Check: no horizontal scroll at 390px on any page. The mobile menu opens and closes, and Escape closes it. Tabbing shows a focus ring on every link and button. No image is broken.
 
 ## Done when
 
 - [ ] `npm run build` passes with no errors or warnings about missing images
 - [ ] All ten pages exist under `dist/demo/gib-supply-chain/`: home, platform, forecast, inventory, operations, production, why-gib, solutions, gib-for-sap, ai
 - [ ] Every check in step 11 passes
-- [ ] The Build log below lists anything left out, anything that differed from DESIGN.md, and whether screenshots were captured
+- [ ] The Build log below lists anything left out, anything that differed from DESIGN.md, which Modern Web Guidance guides were read (or that the CLI could not run), which browsers were actually checked, and whether screenshots were captured
 - [ ] Committed on `demo/gib-supply-chain` (not pushed to `main`, not merged)
 
 ## Build log

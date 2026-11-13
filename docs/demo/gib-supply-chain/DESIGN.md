@@ -100,9 +100,11 @@ Preview bar: one thin line at the very top, `--gib-orange` background, ink text,
 Nav: sticky, `--gib-ink` background, 68px tall, bottom border `--gib-ink-3`.
 - Left: `logo-white.png`, 44px tall, links to `base`.
 - Middle links: Platform (has dropdown), Solutions, Why GIB, GIB for SAP, Resources (external, opens new tab, shows a small `↗`).
-- Platform dropdown lists: Platform overview, GIB Forecast, GIB Inventory, GIB Operations, GIB Production, AI in GIB. Each row shows the name and a one-line category (from `products` data). Build it with CSS only: a `<li>` holding a `<button aria-haspopup="true">` and a panel that shows on `:hover` and `:focus-within`.
+- Platform dropdown lists: Platform overview, GIB Forecast, GIB Inventory, GIB Operations, GIB Production, AI in GIB. Each row shows the name and a one-line category (from `products` data). Markup: a `<li>` holding a `<button type="button" aria-expanded="false" aria-controls="gib-platform-menu">Platform</button>` followed straight away by `<ul id="gib-platform-menu" hidden>`. Clicking the button toggles `hidden` and `aria-expanded`. Escape closes it and returns focus to the button. A click outside closes it. This is site navigation, not an application menu: do not use `role="menu"`, `role="menuitem"`, `aria-haspopup` or arrow-key handling, and do not use `<details>` here.
 - Right: orange "Get a demo" button.
-- Below 960px: hide the middle links and show a `<details class="gib-menu">` with a "Menu" summary. Inside it, list every link flat (all six Platform links first). No JavaScript.
+- Below 960px: hide the middle links and show a `<button type="button" aria-expanded="false" aria-controls="gib-mobile-menu">Menu</button>`. It toggles a panel under the nav bar that lists every link flat (all six Platform links first), each row at least 44px tall. The panel has `max-height: calc(100dvh - 68px)` and `overflow: auto`. Same rules as the dropdown: toggle `hidden` and `aria-expanded`, Escape closes.
+- One small `<script>` in the layout (under 40 lines) drives both the dropdown and the mobile menu. Use the same single list of links in the HTML for both sizes if you can; if that gets complicated, two lists are acceptable, with the hidden one truly `hidden`.
+- We use a plain button disclosure here, not the Popover API, on purpose: navigation is essential, and the browser policy in section 8 keeps essential behavior on widely available features.
 - Current page link gets `aria-current="page"` and an orange 2px underline.
 
 Footer: `--gib-ink` background. Four columns on desktop, stacked on mobile.
@@ -154,12 +156,15 @@ Structure, top to bottom:
 The whole window has radius 14px, a 1px `--gib-ink-3` border and a deep shadow (`0 30px 80px rgba(0,0,0,.35)`). It always uses the dark colors above, whatever band it sits on. Put it on a dark or a light band as the page spec says.
 
 Behavior:
-- Real ARIA tabs with vertical orientation: the rail is `role="tablist" aria-orientation="vertical"`, each button is `role="tab"` with `aria-selected` and `aria-controls`, each screen is `role="tabpanel"`. Up and down arrow keys move between views. Home and End jump to first and last.
-- All screens are in the HTML. JavaScript only toggles the `hidden` attribute and updates the counter. The swap is a 200ms fade.
-- No JavaScript: show every screen stacked, one after another, and turn the rail into a plain list of anchor links. Do this by having the script add a `gib-js` class to the component, and only apply the hiding and the side-by-side tab layout under `.gib-js`.
+- Real ARIA tabs with vertical orientation: the rail is `role="tablist" aria-orientation="vertical"` with an `aria-label`, each button is `role="tab"` with `aria-selected`, each screen is `role="tabpanel"` with `aria-labelledby` pointing at its tab. Do not add `aria-controls` to the tabs. Only the selected tab is in the Tab order (`tabindex="0"`; the others get `tabindex="-1"`). Up and down arrow keys move between views and select them. Home and End jump to first and last. Style the selected tab from `[aria-selected="true"]`, not from a separate class.
+- All screens are in the HTML. The starting state is rendered in the HTML at build time: `aria-selected="true"` on the `initial` tab, and `hidden="until-found"` on every screen except the `initial` one. This stops all screens flashing before the script runs.
+- `hidden="until-found"` keeps hidden screens findable with the browser's find-in-page. Listen for the `beforematch` event on the cockpit root and, when it fires, select the tab that owns the matched screen. When the script hides a screen, set `panel.hidden = 'until-found'`; browsers without support treat that as plain `hidden`, so no feature detection is needed.
+- Because `hidden="until-found"` only hides a screen's contents, put no padding, border, margin or background on the `role="tabpanel"` element itself. Put them on a wrapper inside it. Place all screens in the same grid cell (`grid-area: 1 / 1`) so hidden ones add no space.
+- The swap is a 200ms fade on the inner wrapper.
+- No JavaScript: the `initial` screen shows and the rail does nothing. That is acceptable for this demo because every module also has its own page. Do not build a separate no-script layout.
 - Each screen has `id={`${id}-${key}`}` so other parts of the page can link straight to a view. On load, if the URL hash matches a screen id, select that view.
 - The first image (the `initial` view) is `loading="eager"` when the cockpit is near the top of a page; all others are lazy.
-- Below 900px: the rail becomes a horizontally scrolling row of pill buttons above the screen (`overflow-x: auto`, no wrapping, each pill at least 44px tall). The status bar keeps only its left text.
+- Below 900px: the rail becomes a horizontally scrolling row of pill buttons above the screen: `display: flex; overflow-x: auto`, `flex: none` on each pill so none shrink, each pill at least 44px tall, optional `scroll-snap-type: inline proximity`. When a pill is selected, call `scrollIntoView({ inline: 'nearest', block: 'nearest' })` on it. The arrow keys become left and right, and `aria-orientation` switches to `horizontal`. The status bar keeps only its left text.
 - Several cockpits can be on one site but only one per page. Write the script as a plain `<script>` in the component, under 60 lines, and scope every query to the component root.
 
 **`Scattered.astro`** (no props; home page only)
@@ -170,7 +175,7 @@ A before and after picture that explains the cockpit idea in one glance. Three c
 - The chips are decoration: give the cluster `aria-hidden="true"` and add a visually hidden sentence for screen readers: `Today the same information is spread across separate SAP transactions, spreadsheets and email.`
 
 **`Faq.astro`** (props: `items` = array of `{ q, a }`)
-Native `<details>` elements, one per question, separated by `--gib-line` rules. Summary is h3-sized with a `+` that turns to `−` when open. No JavaScript.
+Native `<details>` elements (find-in-page opens them without any script), one per question, separated by `--gib-line` rules. Summary is h3-sized with a `+` that turns to `−` when open. No JavaScript.
 
 **`CtaBand.astro`** (props: `heading`, `text`, `primaryLabel` default `Get a demo`)
 Dark band, centered, with a faint orange radial glow behind the heading (`radial-gradient` at 12% opacity). One primary button to `links.demo` and one ghost button "Explore the platform" to `${base}/platform`.
@@ -299,7 +304,7 @@ This page has the only rewritten copy in the demo. Use it exactly.
    - Lead: `GIB connects your supply chain processes end to end, so alert, analysis, and action happen in one place: inside SAP.`
    - Buttons: primary `Get a demo` → `links.demo` (external). Ghost `Explore the platform` → `${base}/platform`.
    - Under the buttons: `CertBadges`.
-   - Right: `hero-home.png` on a `--gib-paper` panel with radius 20px and 1.5rem padding (the image has a light background, so it must not sit directly on the dark band). `loading="eager"`. Alt: "GIB dashboard inside SAP with process indicators for demand planning, procurement, inventory and manufacturing".
+   - Right: `hero-home.png` on a `--gib-paper` panel with radius 20px and 1.5rem padding (the image has a light background, so it must not sit directly on the dark band). `loading="eager"` and `fetchpriority="high"` (it is the largest image on first paint; do the same for the hero image on every other page, and for no other image). Alt: "GIB dashboard inside SAP with process indicators for demand planning, procurement, inventory and manufacturing".
 2. **LogoWall** (light).
    - Eyebrow: `Trusted in complex manufacturing and distribution`
    - Line: `25+ years of SAP supply chain expertise, serving customers worldwide.`
@@ -406,3 +411,42 @@ Before calling a page done, check it against this list.
 - A visitor can see every capability of a module without scrolling the page, by clicking through the rail.
 - At 390px wide nothing scrolls sideways, tap targets are at least 44px tall, and the mobile menu opens and closes.
 - Tab through the page with the keyboard: every link and button shows the orange focus ring, the Platform dropdown opens on focus, and the arrow keys move through the cockpit rail.
+
+## 8. Web platform guidance
+
+The Web Foundry uses Google Chrome's Modern Web Guidance (https://github.com/GoogleChrome/modern-web-guidance) as its reference for HTML, CSS and client-side JavaScript patterns. This spec was checked against it on 2026-11-13 (CLI version 1.0.0). The tab, navigation, hidden-content and image rules above already follow it.
+
+Use it yourself when you implement a pattern and the spec does not spell out the mechanics:
+
+```bash
+export npm_config_cache=/tmp/npm-cache-mwg
+npx -y modern-web-guidance@latest search "tabs"
+npx -y modern-web-guidance@latest retrieve "tabs"
+```
+
+`retrieve` saves long guides to a file under `/tmp` and prints the path. Read that file.
+
+Guides that match this build:
+
+| Guide id | Use it for |
+|---|---|
+| `tabs` | `Cockpit.astro` |
+| `search-hidden-content` | `Cockpit.astro`, `Faq.astro` |
+| `navbar` | the nav in `Layout.astro` (read the "Nested Site Navigation" and "Indicating the Current Page" parts; skip the popover parts, see below) |
+| `accordion` | `Faq.astro` |
+| `optimize-image-priority` | hero images |
+| `motion` | reveals, the tab fade, reduced motion |
+| `accessibility` | focus, landmarks, alt text, contrast |
+| `responsive-design`, `css-layout` | grids, fluid type, `dvh` units |
+| `scrollability-affordance-hints` | optional fade on the cockpit's mobile pill row |
+
+How to weigh it:
+
+- This spec decides what the site looks like and says. The guidance decides how a pattern is built in HTML, CSS and JavaScript. If the two disagree on mechanics, follow the guidance and write one line about it in the PLAN.md Build log.
+- **Browser policy.** Support current Chrome, Edge, Firefox and Safari, on desktop and mobile. Anything a visitor needs in order to read or navigate (menus, the cockpit, links) uses Baseline Widely Available features only. Newer features are fine as extras when the page still works without them. `hidden="until-found"` is one such extra.
+- Known, deliberate differences from the guides. Do not "fix" these:
+  - The nav uses a button with `aria-expanded` and a small script, not the Popover API or anchor positioning. Popover is only Baseline Newly Available, and the `navbar` guide's version needs a polyfill and layout-measuring script that this demo does not need.
+  - The cockpit uses its own arrow-key script, not the `focusgroup` attribute, which has limited support.
+- Do not add a polyfill or any npm dependency because a guide suggests one. Ask first.
+- Do not install the Modern Web Guidance plugin, its hooks, or run its legacy scan. It is a reference only.
+- If the CLI cannot run (no network, no `npx`), carry on with this spec and MDN, and say so once in the Build log. Do not let it block the build.
