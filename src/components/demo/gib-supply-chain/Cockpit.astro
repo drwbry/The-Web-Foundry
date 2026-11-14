@@ -8,15 +8,15 @@ const number = (n) => String(n+1).padStart(2,'0');
   <div class="gib-cockpit-title"><span class="gib-cockpit-lights" aria-hidden="true"><i></i><i></i><i></i></span><span>{label}</span><span class="gib-cockpit-counter" data-counter>{number(initial)} / {String(views.length).padStart(2,'0')}</span></div>
   <div class="gib-cockpit-body">
     <div class="gib-cockpit-rail" role="tablist" aria-label={`${label} views`} aria-orientation="vertical">{views.map((view,i) => <button type="button" role="tab" id={`${id}-tab-${view.key}`} aria-selected={i===initial ? 'true':'false'} tabindex={i===initial?0:-1}><span class="gib-cockpit-number">{number(i)}</span><span>{view.title}{view.tag && <small>{view.tag}</small>}</span></button>)}</div>
-    <div class="gib-cockpit-screens">{views.map((view,i) => i===initial ? <div role="tabpanel" id={`${id}-${view.key}`} aria-labelledby={`${id}-tab-${view.key}`} tabindex={!view.shot && !view.href && i===initial ? 0 : undefined}><div class="gib-cockpit-screen">
+    <div class="gib-cockpit-screens">{views.map((view,i) => i===initial ? <div role="tabpanel" id={`${id}-${view.key}`} aria-labelledby={`${id}-tab-${view.key}`} tabindex={!view.shot && !view.href && i===initial ? 0 : undefined}><div class="gib-cockpit-screen"><div class="gib-cockpit-copy">
       {view.kicker && <p class="gib-cockpit-kicker">{view.kicker}</p>}<h3>{view.title}</h3>{view.text && view.text.split('\n\n').map(text => <p>{text}</p>)}
       {view.bullets && <ul class="gib-checks">{view.bullets.map(text => <li>{text}</li>)}</ul>}
-      {view.href && <Button href={view.href} variant="link">{view.hrefLabel}</Button>}
+      {view.href && <Button href={view.href} variant="link">{view.hrefLabel}</Button>}</div>
       {view.shot && <a class="gib-cockpit-image" href={view.shot.src} target="_blank" rel="noopener" aria-label={`${view.alt || view.title}, open full-size image`}><Image src={view.shot} alt={view.alt || `${view.title} supply chain cockpit inside SAP`} widths={[640,960,1280,1920]} sizes="(min-width:900px) 65vw, 100vw" loading={i===initial ? 'eager':'lazy'} /></a>}
-    </div></div> : <div role="tabpanel" id={`${id}-${view.key}`} aria-labelledby={`${id}-tab-${view.key}`} hidden="until-found" tabindex={!view.shot && !view.href && i===initial ? 0 : undefined}><div class="gib-cockpit-screen">
+    </div></div> : <div role="tabpanel" id={`${id}-${view.key}`} aria-labelledby={`${id}-tab-${view.key}`} hidden="until-found" tabindex={!view.shot && !view.href && i===initial ? 0 : undefined}><div class="gib-cockpit-screen"><div class="gib-cockpit-copy">
       {view.kicker && <p class="gib-cockpit-kicker">{view.kicker}</p>}<h3>{view.title}</h3>{view.text && view.text.split('\n\n').map(text => <p>{text}</p>)}
       {view.bullets && <ul class="gib-checks">{view.bullets.map(text => <li>{text}</li>)}</ul>}
-      {view.href && <Button href={view.href} variant="link">{view.hrefLabel}</Button>}
+      {view.href && <Button href={view.href} variant="link">{view.hrefLabel}</Button>}</div>
       {view.shot && <a class="gib-cockpit-image" href={view.shot.src} target="_blank" rel="noopener" aria-label={`${view.alt || view.title}, open full-size image`}><Image src={view.shot} alt={view.alt || `${view.title} supply chain cockpit inside SAP`} widths={[640,960,1280,1920]} sizes="(min-width:900px) 65vw, 100vw" loading={i===initial ? 'eager':'lazy'} /></a>}
     </div></div>)}</div>
   </div>
@@ -56,30 +56,34 @@ const number = (n) => String(n+1).padStart(2,'0');
   });
 </script>
 <style>
-.gib-cockpit {border:1px solid var(--gib-ink-3);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.35);background:var(--gib-ink);color:var(--gib-on-dark);margin-top:2rem;min-width:0;}
-.gib-cockpit-title {height:40px;background:var(--gib-ink-2);display:flex;align-items:center;gap:1rem;padding:0 1rem;font:.8rem var(--gib-ff-mono);}
-.gib-cockpit-lights {display:flex;gap:5px;} .gib-cockpit-lights i {height:9px;width:9px;border-radius:50%;background:var(--gib-red);} .gib-cockpit-lights i:nth-child(2) {background:var(--gib-amber);} .gib-cockpit-lights i:nth-child(3) {background:var(--gib-green);}
+.gib-cockpit {border:1px solid var(--gib-ink-3);border-radius:12px;overflow:hidden;box-shadow:0 50px 110px -30px rgba(0,0,0,.6);background:var(--gib-ink);color:var(--gib-on-dark);margin-top:2.5rem;min-width:0;}
+.gib-cockpit-title {height:44px;background:var(--gib-ink-2);display:flex;align-items:center;gap:1rem;padding:0 1rem;font:.76rem var(--gib-ff-mono);border-bottom:1px solid var(--gib-ink-3);}
+.gib-cockpit-lights {display:flex;gap:6px;} .gib-cockpit-lights i {height:10px;width:10px;border-radius:50%;background:var(--gib-red);} .gib-cockpit-lights i:nth-child(2) {background:var(--gib-amber);} .gib-cockpit-lights i:nth-child(3) {background:var(--gib-green);}
 .gib-cockpit-counter {margin-left:auto;white-space:nowrap;color:var(--gib-on-dark-muted);}
-.gib-cockpit-body {display:grid;grid-template-columns:280px minmax(0,1fr);}
-.gib-cockpit-rail {background:var(--gib-ink-2);border-right:1px solid var(--gib-ink-3);padding-block:.5rem;}
-.gib-cockpit-rail button {position:relative;width:100%;display:flex;text-align:left;align-items:flex-start;gap:.8rem;padding:1rem;border:0;background:transparent;color:var(--gib-on-dark-muted);font:500 .95rem/1.4 var(--gib-ff);cursor:pointer;min-height:44px;}
-.gib-cockpit-rail button[aria-selected="true"] {background:var(--gib-ink-3);color:var(--gib-white);}
-.gib-cockpit-rail button[aria-selected="true"]::after {content:'';position:absolute;inset:0 auto 0 0;border-left:3px solid var(--gib-orange);}
-.gib-cockpit-rail button:focus-visible {outline-offset:-5px;}
-.gib-cockpit-number {font:.75rem/1.8 var(--gib-ff-mono);color:var(--gib-on-dark-muted);}
-.gib-cockpit-rail small {display:block;width:max-content;font:.65rem var(--gib-ff-mono);color:var(--gib-orange);border:1px solid var(--gib-orange);border-radius:20px;padding:.25rem .5rem;margin-top:.5rem;}
-.gib-cockpit-screens {display:grid;min-width:0;align-items:start;}
+.gib-cockpit-body {display:grid;grid-template-columns:270px minmax(0,1fr);}
+.gib-cockpit-rail {background:var(--gib-ink-2);border-right:1px solid var(--gib-ink-3);padding:.6rem;display:flex;flex-direction:column;gap:.25rem;}
+.gib-cockpit-rail button {position:relative;width:100%;display:flex;text-align:left;align-items:flex-start;gap:.8rem;padding:.85rem .9rem;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--gib-on-dark-muted);font:500 .92rem/1.35 var(--gib-ff);cursor:pointer;min-height:44px;transition:color .2s,background .2s;}
+.gib-cockpit-rail button:hover {color:var(--gib-on-dark);background:rgba(255,255,255,.03);}
+.gib-cockpit-rail button[aria-selected="true"] {background:var(--gib-ink);border-color:var(--gib-ink-3);color:var(--gib-white);}
+.gib-cockpit-rail button[aria-selected="true"]::after {content:'';position:absolute;left:-1px;top:22%;bottom:22%;width:3px;border-radius:2px;background:var(--gib-orange);}
+.gib-cockpit-rail button:focus-visible {outline-offset:-3px;}
+.gib-cockpit-number {font:.7rem/1.9 var(--gib-ff-mono);opacity:.7;}
+.gib-cockpit-rail small {display:block;width:max-content;font:500 .6rem var(--gib-ff-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--gib-ink);background:var(--gib-orange);border-radius:3px;padding:.2rem .45rem;margin-top:.45rem;}
+.gib-cockpit-screens {display:grid;min-width:0;align-items:stretch;}
 [role="tabpanel"] {grid-area:1 / 1;min-width:0;}
-.gib-cockpit-screen {padding:1.5rem;animation:gib-screen-in .2s var(--gib-ease);}
-.gib-cockpit-kicker {font:.75rem var(--gib-ff-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--gib-orange);}
-.gib-cockpit-screen p {color:var(--gib-on-dark-muted);font-size:.95rem;}
-.gib-cockpit-screen :global(.gib-checks) {font-size:.85rem;gap:.5rem 1rem;}
-.gib-cockpit-screen :global(.gib-button-link) {color:var(--gib-orange);margin-bottom:.75rem;}
-.gib-cockpit-image {display:block;border:1px solid var(--gib-ink-3);border-radius:8px;overflow:hidden;margin-top:1rem;}
+.gib-cockpit-screen {padding:1.5rem;display:grid;grid-template-columns:minmax(220px,.34fr) minmax(0,1fr);gap:1.75rem;align-items:start;animation:gib-screen-in .35s var(--gib-ease);}
+.gib-cockpit-copy h3 {font-family:var(--gib-ff-display);font-size:1.5rem!important;font-weight:750!important;letter-spacing:-.022em!important;line-height:1.12!important;margin:.3rem 0 .9rem!important;text-wrap:balance;}
+.gib-cockpit-kicker {font:.68rem var(--gib-ff-mono);text-transform:uppercase;letter-spacing:.12em;color:var(--gib-orange)!important;margin:0!important;}
+.gib-cockpit-screen p {color:var(--gib-on-dark-muted);font-size:.93rem;line-height:1.55;}
+.gib-cockpit-screen :global(.gib-checks) {font-size:.88rem;gap:.55rem;grid-template-columns:1fr;margin-block:1.1rem .75rem;}
+.gib-cockpit-screen :global(.gib-button-link) {color:var(--gib-orange);}
+.gib-cockpit-image {display:block;border:1px solid var(--gib-ink-3);border-radius:6px;overflow:hidden;background:#fff;transition:transform .4s var(--gib-ease),box-shadow .4s;}
+.gib-cockpit-image:hover {transform:scale(1.012);box-shadow:0 20px 50px -20px rgba(0,0,0,.8);}
 .gib-cockpit-image img {display:block;width:100%;}
-.gib-cockpit-status {min-height:32px;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.4rem 1rem;background:var(--gib-ink-2);color:var(--gib-on-dark-muted);font:.75rem var(--gib-ff-mono);}
-.gib-cockpit-status i {display:inline-block;width:6px;height:6px;background:var(--gib-green);border-radius:50%;margin-right:.5rem;}
-@keyframes gib-screen-in {from {opacity:0;} to {opacity:1;}}
-@media(max-width:899px) {.gib-cockpit-body {grid-template-columns:minmax(0,1fr);} .gib-cockpit-rail {display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--gib-ink-3);padding:.5rem;gap:.5rem;scroll-snap-type:inline proximity;} .gib-cockpit-rail button {flex:none;width:auto;max-width:300px;border-radius:6px;scroll-snap-align:start;padding:.75rem 1rem;} .gib-cockpit-status>span:last-child {display:none;} .gib-cockpit-screen {padding:1rem;} .gib-cockpit-screen :global(.gib-checks) {grid-template-columns:1fr;}}
-@media(prefers-reduced-motion:reduce) {.gib-cockpit-screen {animation:none;}}
+.gib-cockpit-status {min-height:34px;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.45rem 1rem;background:var(--gib-ink-2);border-top:1px solid var(--gib-ink-3);color:var(--gib-on-dark-muted);font:.7rem var(--gib-ff-mono);}
+.gib-cockpit-status i {display:inline-block;width:7px;height:7px;background:var(--gib-green);border-radius:50%;margin-right:.55rem;box-shadow:0 0 0 3px rgba(46,158,91,.25);}
+@keyframes gib-screen-in {from {opacity:0;transform:translateY(6px);} to {opacity:1;transform:none;}}
+@media(max-width:1099px) {.gib-cockpit-screen {grid-template-columns:1fr;gap:1.25rem;} .gib-cockpit-body {grid-template-columns:240px minmax(0,1fr);}}
+@media(max-width:899px) {.gib-cockpit-body {grid-template-columns:minmax(0,1fr);} .gib-cockpit-rail {flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--gib-ink-3);padding:.5rem;gap:.4rem;scroll-snap-type:inline proximity;} .gib-cockpit-rail button {flex:none;width:auto;max-width:280px;scroll-snap-align:start;padding:.7rem .9rem;} .gib-cockpit-rail button[aria-selected="true"]::after {left:22%;right:22%;top:auto;bottom:-1px;width:auto;height:3px;} .gib-cockpit-status>span:last-child {display:none;} .gib-cockpit-screen {padding:1.1rem;}}
+@media(prefers-reduced-motion:reduce) {.gib-cockpit-screen,.gib-cockpit-image {animation:none;transition:none;}}
 </style>

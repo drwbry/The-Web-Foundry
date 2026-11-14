@@ -3,6 +3,6 @@ const {text, lights=true} = Astro.props;
 ---
 <p class="gib-eyebrow">{lights && <span class="gib-lights" aria-hidden="true"><i></i><i></i><i></i></span>}{text}</p>
 <style>
-.gib-eyebrow {font:500 .78rem var(--gib-ff-mono);text-transform:uppercase;letter-spacing:.14em;display:flex;align-items:center;gap:.7rem;color:inherit;}
+.gib-eyebrow {font:500 .74rem var(--gib-ff-mono);text-transform:uppercase;letter-spacing:.16em;display:flex;align-items:center;gap:.75rem;color:inherit;margin:0;}
 .gib-lights {display:inline-flex;gap:4px;flex:none;} i {width:7px;height:7px;border-radius:50%;background:var(--gib-red);} i:nth-child(2) {background:var(--gib-amber);} i:nth-child(3) {background:var(--gib-green);}
 </style>

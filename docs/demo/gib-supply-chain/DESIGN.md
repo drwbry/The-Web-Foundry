@@ -1,5 +1,8 @@
 # GIB Supply Chain demo: design and content spec
 
+> **Revised 2026-11-14.** The first build followed this spec and read as a generic template, so the visual layer was redesigned by hand. Where this file and the code disagree on looks, the code wins. What changed: warm paper and graphite palette, Archivo display type, sharper corners; the home hero is now `HeroCockpit.astro`, an animated illustration of alert, analysis, action built from GIB's demo data; `Scattered.astro` is a pile of SAP transaction windows; `Embedded.astro` is a bolted-on versus built-in diagram; stats lost their ring gauges; the cockpit shows copy beside the screenshot. The content rules, the cockpit behavior and section 8 still apply.
+
+
 This is the build spec for `/demo/gib-supply-chain`. `PLAN.md` at the repo root lists the steps. This file says what each thing looks like and what it says.
 
 The prospect's current site is https://www.gibsupplychain.com (HubSpot). Their text is saved in `source/*.md` in this folder. Their images are in `src/assets/demo/gib-supply-chain/`. You do not need network access to build this.
