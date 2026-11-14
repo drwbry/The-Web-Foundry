@@ -1,0 +1,137 @@
+---
+// Home hero: a small working model of GIB's "alert, analysis, action" idea.
+// It is an illustration, not a screenshot. The materials, vendor, plant and
+// quantities are copied from GIB's own demo screenshot
+// (shots/gib-operations-dashboard-with-menu-options.png). The traffic-light
+// states and the "PO created" outcome are illustrative, and the caption says so.
+const rows = [
+  { id: 'GB-RM-S100-01', name: 'Carbon frame', vendor: 'DESU_V9001', stock: '0', receipts: '118', issues: '32', backlog: '32', light: 'red' },
+  { id: 'GB-RM-S999-04', name: 'Wheel front 27,5"', vendor: 'DESU_V9001', stock: '431', receipts: '0', issues: '738', backlog: '738', light: 'red' },
+  { id: 'GB-RM-S999-06', name: 'Adhesive', vendor: 'DESU_V9001', stock: '929', receipts: '2.400', issues: '1.260', backlog: '1.464', light: 'amber' },
+  { id: 'GB-RM-S999-07', name: 'Brake', vendor: 'DESU_V9001', stock: '238', receipts: '540', issues: '444', backlog: '495', light: 'green' },
+];
+// Available quantity by date for the first material, as shown in the screenshot.
+const coverage = [['30.06', 5], ['01.07', 5], ['02.07', 18], ['05.07', 118], ['06.07', 118], ['07.07', -132]];
+const steps = [
+  { key: 'alert', title: 'Alert', text: 'Catch shortages and exceptions early.' },
+  { key: 'analysis', title: 'Analysis', text: 'See the full material position across plants in one view.' },
+  { key: 'action', title: 'Action', text: 'Trigger the purchase or reschedule without leaving SAP.' },
+];
+---
+<div class="hc" data-hc data-phase="alert">
+  <div class="hc-bar">
+    <span class="hc-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="hc-title">GIB Operations<em>Material overview</em></span>
+    <span class="hc-meta">Plant 1010</span>
+    <button type="button" class="hc-pause" aria-pressed="false">Pause</button>
+  </div>
+  <div class="hc-body">
+    <ol class="hc-steps">
+      {steps.map((s, i) => <li><button type="button" data-step={s.key} aria-current={i === 0 ? 'step' : undefined}><span class="hc-step-n">0{i + 1}</span><span class="hc-step-light" aria-hidden="true"></span><strong>{s.title}</strong><span class="hc-step-text">{s.text}</span></button></li>)}
+    </ol>
+    <div class="hc-main" aria-hidden="true">
+      <table class="hc-table">
+        <thead><tr><th>Light</th><th>Material</th><th>Description</th><th class="hc-wide">Vendor</th><th class="hc-num">Unrestricted</th><th class="hc-num hc-wide">Fixed recpts</th><th class="hc-num hc-wide">Fixed issues</th><th class="hc-num">Backlog</th></tr></thead>
+        <tbody>{rows.map((r, i) => <tr class:list={{ 'hc-focus': i === 0 }}><td><span class:list={['hc-light', `hc-light-${r.light}`]}><i></i><i></i><i></i></span></td><td class="hc-mono">{r.id}</td><td>{r.name}</td><td class="hc-mono hc-wide">{r.vendor}</td><td class="hc-num">{r.stock}</td><td class="hc-num hc-wide">{r.receipts}</td><td class="hc-num hc-wide">{r.issues}</td><td class="hc-num">{r.backlog}</td></tr>)}</tbody>
+      </table>
+      <div class="hc-detail">
+        <div class="hc-detail-head"><span>Material details <b>GB-RM-S100-01</b> Carbon frame</span><span class="hc-detail-tag">Available quantity by date</span></div>
+        <div class="hc-detail-body">
+          <div class="hc-chart">{coverage.map(([date, qty]) => <div class:list={['hc-col', { 'hc-col-short': qty < 0 }]}><span class="hc-col-val">{qty < 0 ? `${Math.abs(qty)}-` : qty}</span><span class="hc-col-bar" style={`--h:${Math.max(6, Math.round(Math.abs(qty) / 132 * 100))}%`}></span><span class="hc-col-date">{date}</span></div>)}</div>
+          <div class="hc-actions">
+            <span class="hc-toast"><i></i>Purchase order created in SAP</span>
+            <span class="hc-btn hc-btn-main">Convert to PO</span>
+            <span class="hc-btn">Reschedule</span>
+            <span class="hc-btn">Simulate</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="hc-note">Illustration built from GIB's own demo data. Status changes are simulated. Real product screens are further down.</p>
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-hc]').forEach(root => {
+    const order = ['alert', 'analysis', 'action'];
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-step]')];
+    const pause = root.querySelector<HTMLButtonElement>('.hc-pause')!;
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
+    let timer: number | undefined, paused = still.matches, visible = false;
+    const set = (phase: string) => {
+      root.dataset.phase = phase;
+      buttons.forEach(b => b.dataset.step === phase ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current'));
+    };
+    const tick = () => set(order[(order.indexOf(root.dataset.phase!) + 1) % order.length]);
+    const sync = () => {
+      clearInterval(timer);
+      if (!paused && visible) timer = window.setInterval(tick, 3400);
+      pause.setAttribute('aria-pressed', String(paused));
+      pause.textContent = paused ? 'Play' : 'Pause';
+    };
+    buttons.forEach(b => b.addEventListener('click', () => { paused = true; set(b.dataset.step!); sync(); }));
+    pause.addEventListener('click', () => { paused = !paused; sync(); });
+    new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync(); }, { threshold: 0.25 }).observe(root);
+    // With reduced motion, rest on the middle state: the table and the detail panel both show.
+    if (still.matches) set('analysis');
+    sync();
+  });
+</script>
+<style>
+.hc {--hc-line:#DDE2E8;--hc-head:#EEF2F6;--hc-blue:#0B5CAB;position:relative;}
+.hc-bar {display:flex;align-items:center;gap:1rem;height:44px;padding:0 1rem;background:var(--gib-ink-2);border:1px solid var(--gib-ink-3);border-bottom:0;border-radius:12px 12px 0 0;font:.76rem var(--gib-ff-mono);color:var(--gib-on-dark);}
+.hc-dots {display:flex;gap:6px;} .hc-dots i {width:10px;height:10px;border-radius:50%;background:var(--gib-red);} .hc-dots i:nth-child(2) {background:var(--gib-amber);} .hc-dots i:nth-child(3) {background:var(--gib-green);}
+.hc-title em {font-style:normal;color:var(--gib-on-dark-muted);margin-left:.9rem;} .hc-meta {margin-left:auto;color:var(--gib-on-dark-muted);}
+.hc-pause {font:inherit;color:var(--gib-on-dark-muted);background:none;border:1px solid var(--gib-ink-3);border-radius:4px;padding:.3rem .65rem;min-width:62px;cursor:pointer;} .hc-pause:hover {color:var(--gib-on-dark);border-color:var(--gib-on-dark-muted);}
+.hc-body {display:grid;grid-template-columns:270px minmax(0,1fr);border:1px solid var(--gib-ink-3);border-radius:0 0 12px 12px;overflow:hidden;background:#fff;box-shadow:0 50px 110px -30px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.04);}
+.hc-steps {list-style:none;margin:0;padding:.75rem;background:var(--gib-ink-2);display:flex;flex-direction:column;gap:.5rem;}
+.hc-steps li {flex:1;display:flex;}
+.hc-steps button {position:relative;width:100%;text-align:left;display:grid;grid-template-columns:auto 1fr;gap:.2rem .7rem;align-content:center;padding:1.1rem 1rem 1.1rem 1.15rem;border:1px solid transparent;border-radius:8px;background:none;color:var(--gib-on-dark-muted);font:inherit;cursor:pointer;transition:background .35s,border-color .35s,color .35s;overflow:hidden;}
+.hc-steps button:hover {color:var(--gib-on-dark);}
+.hc-step-n {grid-column:1 / -1;font:.68rem var(--gib-ff-mono);letter-spacing:.14em;opacity:.7;}
+.hc-step-light {width:10px;height:10px;border-radius:50%;align-self:center;background:var(--c);opacity:.35;transition:opacity .35s,box-shadow .35s;}
+.hc-steps li:nth-child(1) button {--c:var(--gib-red);} .hc-steps li:nth-child(2) button {--c:var(--gib-amber);} .hc-steps li:nth-child(3) button {--c:var(--gib-green);}
+.hc-steps strong {font-family:var(--gib-ff-display);font-size:1.5rem;font-weight:750;letter-spacing:-.02em;line-height:1.1;}
+.hc-step-text {grid-column:1 / -1;font-size:.86rem;line-height:1.4;}
+.hc-steps button[aria-current] {background:var(--gib-ink);border-color:var(--gib-ink-3);color:var(--gib-on-dark);}
+.hc-steps button[aria-current] .hc-step-light {opacity:1;box-shadow:0 0 0 5px color-mix(in srgb,var(--c) 25%,transparent);}
+.hc-steps button::after {content:'';position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--c);transform:scaleX(0);transform-origin:left;}
+.hc:not(:has(.hc-pause[aria-pressed="true"])) .hc-steps button[aria-current]::after {animation:hc-progress 3.4s linear forwards;}
+.hc-main {color:#1D2733;font-size:.84rem;min-width:0;display:flex;flex-direction:column;}
+.hc-table {width:100%;border-collapse:collapse;}
+.hc-table th {font:500 .66rem var(--gib-ff-mono);letter-spacing:.06em;text-transform:uppercase;text-align:left;color:#5B6776;background:var(--hc-head);padding:.6rem .9rem;border-bottom:1px solid var(--hc-line);white-space:nowrap;}
+.hc-table td {padding:.72rem .9rem;border-bottom:1px solid var(--hc-line);white-space:nowrap;transition:background .4s;}
+.hc-num {text-align:right!important;font-variant-numeric:tabular-nums;} .hc-mono {font-family:var(--gib-ff-mono);font-size:.78rem;color:var(--hc-blue);}
+.hc-light {display:inline-flex;gap:3px;padding:3px 5px;border-radius:10px;background:#EEF1F4;} .hc-light i {width:8px;height:8px;border-radius:50%;background:#C9D0D8;transition:background .4s;}
+.hc-light-red i:nth-child(1) {background:var(--gib-red);} .hc-light-amber i:nth-child(2) {background:var(--gib-amber);} .hc-light-green i:nth-child(3) {background:var(--gib-green);}
+/* Phase: alert. The first row flags red. */
+.hc[data-phase="alert"] .hc-focus td {background:#FDECEA;}
+.hc[data-phase="alert"] .hc-focus .hc-light i:nth-child(1) {animation:hc-blink 1s ease-in-out infinite;}
+/* Phase: analysis. The row is selected and its detail opens. */
+.hc[data-phase="analysis"] .hc-focus td {background:#FFF4E5;box-shadow:inset 0 1px 0 var(--gib-amber),inset 0 -1px 0 var(--gib-amber);}
+/* Phase: action. The order is placed and the light turns green. */
+.hc[data-phase="action"] .hc-focus td {background:#EAF6EF;}
+.hc[data-phase="action"] .hc-focus .hc-light i:nth-child(1) {background:#C9D0D8;} .hc[data-phase="action"] .hc-focus .hc-light i:nth-child(3) {background:var(--gib-green);}
+.hc-detail {flex:1;display:flex;flex-direction:column;background:#F7F9FB;transition:opacity .5s,filter .5s;}
+.hc[data-phase="alert"] .hc-detail {opacity:.35;filter:saturate(.2);}
+.hc-detail-head {display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:.6rem .9rem;border-bottom:1px solid var(--hc-line);font-size:.8rem;} .hc-detail-head b {font-family:var(--gib-ff-mono);font-weight:500;color:var(--hc-blue);margin:0 .3rem;}
+.hc-detail-tag {font:.66rem var(--gib-ff-mono);letter-spacing:.06em;text-transform:uppercase;color:#5B6776;}
+.hc-detail-body {flex:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1.5rem;padding:1rem .9rem 1rem;align-items:end;}
+.hc-chart {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.6rem;height:150px;align-items:end;}
+.hc-col {display:grid;grid-template-rows:auto 1fr auto;height:100%;gap:.3rem;text-align:center;font:.7rem var(--gib-ff-mono);color:#5B6776;}
+.hc-col-bar {align-self:end;height:var(--h);min-height:5px;background:#9DB7CF;border-radius:3px 3px 0 0;transform-origin:bottom;transition:background .5s;}
+.hc-col-val {align-self:end;color:#1D2733;} .hc-col-short .hc-col-bar {background:var(--gib-red);} .hc-col-short .hc-col-val {color:var(--gib-red);font-weight:500;}
+.hc[data-phase="analysis"] .hc-col-bar {animation:hc-grow .7s var(--gib-ease) backwards;} .hc[data-phase="analysis"] .hc-col:nth-child(2) .hc-col-bar {animation-delay:.06s;} .hc[data-phase="analysis"] .hc-col:nth-child(3) .hc-col-bar {animation-delay:.12s;} .hc[data-phase="analysis"] .hc-col:nth-child(4) .hc-col-bar {animation-delay:.18s;} .hc[data-phase="analysis"] .hc-col:nth-child(5) .hc-col-bar {animation-delay:.24s;} .hc[data-phase="analysis"] .hc-col:nth-child(6) .hc-col-bar {animation-delay:.3s;}
+.hc[data-phase="action"] .hc-col-short .hc-col-bar {background:var(--gib-green);} .hc[data-phase="action"] .hc-col-short .hc-col-val {color:var(--gib-green);}
+.hc-actions {display:flex;flex-direction:column;gap:.45rem;min-width:200px;position:relative;}
+.hc-btn {display:block;text-align:center;padding:.5rem .9rem;border:1px solid #C3CCD6;border-radius:4px;background:#fff;font-size:.8rem;font-weight:500;}
+.hc-btn-main {background:var(--hc-blue);border-color:var(--hc-blue);color:#fff;transition:transform .2s,box-shadow .3s;}
+.hc[data-phase="action"] .hc-btn-main {animation:hc-press .6s var(--gib-ease);box-shadow:0 0 0 4px rgba(11,92,171,.22);}
+.hc-toast {display:flex;align-items:center;gap:.5rem;font-size:.76rem;font-weight:500;color:#1B6B3F;background:#E3F3EA;border:1px solid #B5DDC5;border-radius:4px;padding:.5rem .7rem;opacity:0;transform:translateY(6px);transition:opacity .4s .35s,transform .4s .35s var(--gib-ease);}
+.hc-toast i {width:8px;height:8px;border-radius:50%;background:var(--gib-green);flex:none;} .hc[data-phase="action"] .hc-toast {opacity:1;transform:none;}
+.hc-note {font:.7rem var(--gib-ff-mono);color:var(--gib-on-dark-muted);margin:.9rem 0 0!important;max-width:none!important;opacity:.8;}
+@keyframes hc-blink {50% {opacity:.25;}} @keyframes hc-grow {from {transform:scaleY(0);}} @keyframes hc-press {30% {transform:scale(.95);}} @keyframes hc-progress {to {transform:scaleX(1);}}
+@media(max-width:1099px) {.hc-wide {display:none;}}
+@media(max-width:899px) {.hc-body {grid-template-columns:1fr;} .hc-steps {flex-direction:row;padding:.5rem;gap:.35rem;} .hc-steps button {padding:.7rem .6rem;grid-template-columns:auto 1fr;} .hc-step-n,.hc-step-text {display:none;} .hc-steps strong {font-size:1.05rem;} .hc-meta {display:none;} .hc-pause {margin-left:auto;} .hc-detail-body {grid-template-columns:1fr;} .hc-actions {flex-direction:row;flex-wrap:wrap;min-width:0;} .hc-btn {flex:1;} .hc-toast {flex-basis:100%;} .hc-chart {height:110px;}}
+@media(max-width:559px) {.hc-table th:nth-child(3),.hc-table td:nth-child(3) {display:none;} .hc-table th,.hc-table td {padding:.6rem .55rem;} .hc-title em {display:none;}}
+@media(prefers-reduced-motion:reduce) {.hc *, .hc *::after {animation:none!important;transition:none!important;} .hc-pause {display:none;}}
+</style>

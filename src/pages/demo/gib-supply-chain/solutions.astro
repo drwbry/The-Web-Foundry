@@ -1,0 +1,86 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../../../components/demo/gib-supply-chain/Layout.astro';
+import Section from '../../../components/demo/gib-supply-chain/Section.astro';
+import Eyebrow from '../../../components/demo/gib-supply-chain/Eyebrow.astro';
+import Button from '../../../components/demo/gib-supply-chain/Button.astro';
+import CaseStudy from '../../../components/demo/gib-supply-chain/CaseStudy.astro';
+import CtaBand from '../../../components/demo/gib-supply-chain/CtaBand.astro';
+import { base, links } from '../../../components/demo/gib-supply-chain/data.js';
+import hero from '../../../assets/demo/gib-supply-chain/hero-solutions.png';
+import steel from '../../../assets/demo/gib-supply-chain/symbol-6e8ba0.png';
+import pale from '../../../assets/demo/gib-supply-chain/symbol-bcccdd.png';
+import orange from '../../../assets/demo/gib-supply-chain/symbol-orange.png';
+import black from '../../../assets/demo/gib-supply-chain/symbol-black.png';
+
+const steps = [
+  { title: 'See What Matters', text: 'Cut through noise and focus on the signals that require action first.', image: steel },
+  { title: 'Set Clear Priorities', text: 'Know what to act on now, what can wait, and what carries the most risk.', image: pale },
+  { title: 'Align Decisions', text: 'Keep planning, procurement, inventory, and production working from the same plan.', image: orange },
+  { title: 'Execute Faster', text: 'Move from decision to action with the right information at your fingertips.', image: black },
+];
+const modules = [
+  { slug: 'forecast', name: 'GIB Forecast', role: 'Signal Quality', text: 'Ensure demand signals are accurate, structured, and ready to drive execution inside SAP.' },
+  { slug: 'inventory', name: 'GIB Inventory', role: 'Policy Alignment', text: 'Keep stock levels, policies, and service targets aligned so inventory supports execution without excess or shortage.' },
+  { slug: 'operations', name: 'GIB Operations', role: 'Decision Coordination', text: 'Bring MRP, purchasing, and material planning into one place so teams act on the same priorities.' },
+  { slug: 'production', name: 'GIB Production', role: 'Execution Alignment', text: 'Ensure schedules reflect real capacity, material availability, and priorities so production executes as planned.' },
+];
+---
+<Layout title="Integrated Supply Chain Execution for SAP | Connect Your Planning System to SAP" description="Connect advanced planning platforms - whether that’s SAP IBP, Kinaxis, or something else - to SAP ERP and keep supply chain processes connected system-wide." current="solutions">
+  <Section tone="dark">
+    <div class="gib-hero">
+      <div>
+        <Eyebrow text="SAP S/4HANA | SAP ECC" />
+        <h1>Integrated Supply Chain Execution for SAP</h1>
+        <p class="gib-lead">Connect advanced planning platforms to SAP ERP.</p>
+        <div class="gib-actions"><Button href={links.demo} external>Get a demo</Button></div>
+      </div>
+      <div class="gib-hero-panel"><Image src={hero} alt="GIB integrated supply chain execution connecting planning signals and operational actions inside SAP" widths={[640, 960, 1280]} sizes="(min-width: 900px) 45vw, 100vw" loading="eager" fetchpriority="high" /></div>
+    </div>
+  </Section>
+
+  <Section tone="white">
+    <h2 class="reveal">Bring execution under control in SAP</h2>
+    <p>Planning systems generate signals. SAP executes them. Integrated Supply Chain Execution (ISCE) connects the two. It organizes planning signals - no matter what advanced planning system they come from - into priorities, connects related decisions, and brings planning and execution into one coordinated view within your live SAP system.</p>
+    <p>ISCE makes it clear what to do next and keeps decisions aligned across the supply chain.</p>
+  </Section>
+
+  <Section tone="light">
+    <div class="gib-steps">{steps.map((step, i) => (
+      <article class:list={['gib-card', 'reveal', `reveal-delay-${i+1}`]}>
+        <Image src={step.image} alt="" width={44} height={44} />
+        <h3>{step.title}</h3>
+        <p>{step.text}</p>
+      </article>
+    ))}</div>
+  </Section>
+
+  <Section tone="dark">
+    <h2 class="reveal">Delivered through the GIB platform</h2>
+    <p>ISCE works with your existing planning environment - whether that’s GIB Forecast, SAP IBP, Kinaxis, o9, or a combination. Each GIB solution contributes to a unified execution environment that replaces fragmented workflows and keeps planning, procurement, inventory, and production connected for coordinated, system-wide execution across SAP.</p>
+    <div class="gib-grid gib-grid-four gib-delivery">{modules.map((module, i) => (
+      <article class:list={['gib-card', 'reveal', `reveal-delay-${i+1}`]}>
+        <Eyebrow text={module.role} lights={false} />
+        <h3>{module.name}</h3>
+        <p>{module.text}</p>
+        <Button href={`${base}/${module.slug}`} variant="link">Explore {module.name}</Button>
+      </article>
+    ))}</div>
+  </Section>
+
+  <Section tone="light">
+    <CaseStudy eyebrow="Proven in hybrid SAP environments" title="How Molex Restored Execution Visibility After Moving Planning to Kinaxis" text="When Molex implemented Kinaxis for supply planning, planning signals improved but executing in SAP became more complex. Teams had to interpret signals, reconcile data, and decide what to do manually. GIB brought those external signals, namely rescheduling recommendations, back into SAP and made them actionable." href={links.caseMolex} />
+  </Section>
+  <CtaBand heading="Connect your planning system to SAP." text="" />
+</Layout>
+
+<style>
+  .gib-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem; }
+  .gib-steps article { position: relative; }
+  .gib-steps article:not(:last-child)::after { content: '→'; position: absolute; left: calc(100% + .25rem); top: 2rem; width: 1rem; color: var(--gib-steel); font-size: 1.1rem; }
+  .gib-steps img { margin-bottom: 1.5rem; }
+  .gib-delivery { margin-top: 2rem; }
+  .gib-delivery article { display: flex; align-items: flex-start; flex-direction: column; }
+  .gib-delivery article :global(.gib-button) { margin-top: auto; }
+  @media (max-width: 899px) { .gib-steps { grid-template-columns: 1fr; } .gib-steps article::after { display: none; } }
+</style>

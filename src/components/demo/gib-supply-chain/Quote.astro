@@ -1,0 +1,17 @@
+---
+const {text,name,role,featured=false} = Astro.props;
+---
+<figure class:list={['gib-quote','reveal',{'gib-quote-featured':featured}]}><span class="gib-quote-mark" aria-hidden="true">“</span><blockquote><p>{text}</p></blockquote><figcaption><strong>{name}</strong>{role && <span>{role}</span>}</figcaption></figure>
+<style>
+.gib-quote {margin:0;padding:1.75rem;background:var(--gib-white);border:1px solid var(--gib-line);border-radius:var(--gib-radius);display:flex;flex-direction:column;}
+.gib-quote-mark {display:block;font-family:var(--gib-ff-display);color:var(--gib-orange);font-size:3.5rem;line-height:.7;font-weight:800;height:1.6rem;}
+blockquote {margin:0;} blockquote p {font-size:1rem;line-height:1.6;margin:0;}
+figcaption {margin-top:auto;padding-top:1.5rem;font-size:.9rem;line-height:1.4;} figcaption strong {display:block;} figcaption span {display:block;color:var(--gib-muted);font:400 .74rem/1.5 var(--gib-ff-mono);margin-top:.25rem;}
+.gib-quote-featured {background:none;border:0;border-radius:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:1.5rem 4rem;align-items:end;}
+.gib-quote-featured .gib-quote-mark {grid-column:1 / -1;font-size:8rem;height:3.4rem;}
+.gib-quote-featured blockquote p {font-family:var(--gib-ff-display);font-variation-settings:'wdth' 100;font-weight:600;font-size:clamp(1.5rem,2.7vw,2.4rem);line-height:1.18;letter-spacing:-.022em;max-width:none;text-wrap:pretty;}
+.gib-quote-featured figcaption {margin:0;padding:1rem 0 .4rem;border-top:3px solid var(--gib-orange);font-size:1rem;}
+:global(.gib-section-dark) .gib-quote:not(.gib-quote-featured) {background:var(--gib-ink-2);border-color:var(--gib-ink-3);}
+:global(.gib-section-dark) figcaption span {color:var(--gib-on-dark-muted);}
+@media(max-width:899px) {.gib-quote-featured {grid-template-columns:1fr;} .gib-quote-featured figcaption {max-width:320px;}}
+</style>

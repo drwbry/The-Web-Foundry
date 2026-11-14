@@ -1,0 +1,28 @@
+---
+// "Before" picture: the same shortage spread over separate SAP transactions,
+// a spreadsheet and an inbox. The four transaction codes are the ones GIB's own
+// customers name in their quotes; the titles are SAP's standard names for them.
+const windows = [
+  { code: 'MD04', title: 'Stock/Requirements List' },
+  { code: 'MD07', title: 'Collective Access' },
+  { code: 'ME58', title: 'Assigned Requisitions' },
+  { code: 'CO24', title: 'Missing Parts Info System' },
+  { code: 'XLSX', title: 'Excel export + VLOOKUP', kind: 'sheet' },
+  { code: 'MAIL', title: 'Email thread', kind: 'mail' },
+];
+---
+<div class="gib-pile" aria-hidden="true">
+  {windows.map((w, i) => <div class:list={['gib-pile-win', `gib-pile-${i + 1}`, w.kind && `gib-pile-${w.kind}`, 'reveal', `reveal-delay-${i + 1}`]}><div class="gib-pile-bar"><b>{w.code}</b><span>{w.title}</span></div><div class="gib-pile-lines"><i></i><i></i><i></i><i></i></div></div>)}
+</div>
+<p class="gib-sr">Today the same information is spread across separate SAP transactions, spreadsheets and email.</p>
+<style>
+.gib-pile {position:relative;height:440px;max-width:560px;margin-inline:auto;width:100%;}
+.gib-pile-win {position:absolute;width:62%;background:var(--gib-white);border:1px solid var(--gib-line);border-radius:6px;box-shadow:0 14px 34px -14px rgba(15,18,22,.35);overflow:hidden;}
+.gib-pile-bar {display:flex;gap:.6rem;align-items:center;padding:.5rem .7rem;background:#EEF2F6;border-bottom:1px solid #DDE2E8;font-size:.74rem;color:#3B4654;white-space:nowrap;} .gib-pile-bar b {font:500 .7rem var(--gib-ff-mono);background:#0B5CAB;color:#fff;border-radius:3px;padding:.12rem .4rem;} .gib-pile-bar span {overflow:hidden;text-overflow:ellipsis;}
+.gib-pile-lines {padding:.8rem .7rem 1rem;display:grid;gap:.5rem;} .gib-pile-lines i {height:7px;border-radius:2px;background:#E4E8ED;} .gib-pile-lines i:nth-child(2) {width:82%;} .gib-pile-lines i:nth-child(3) {width:64%;background:#F6C7C2;} .gib-pile-lines i:nth-child(4) {width:74%;}
+.gib-pile-sheet .gib-pile-bar b {background:#1D7A46;} .gib-pile-sheet .gib-pile-lines {grid-template-columns:repeat(4,1fr);gap:3px;} .gib-pile-sheet .gib-pile-lines i {width:auto!important;height:14px;background:#EAF3EC!important;border-radius:0;}
+.gib-pile-mail .gib-pile-bar b {background:#6B7280;}
+.gib-pile-1 {left:0;top:4%;rotate:-5deg;} .gib-pile-2 {right:0;top:0;rotate:4deg;} .gib-pile-3 {left:8%;top:30%;rotate:2deg;} .gib-pile-4 {right:3%;top:38%;rotate:-3deg;} .gib-pile-5 {left:2%;top:60%;rotate:-2deg;} .gib-pile-6 {right:6%;top:68%;rotate:5deg;}
+.gib-sr {position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;}
+@media(max-width:559px) {.gib-pile {height:360px;} .gib-pile-win {width:74%;}}
+</style>

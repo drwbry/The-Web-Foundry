@@ -1,0 +1,31 @@
+---
+// Diagram for "No separate database or system. No middleware."
+// Left: the bolt-on pattern GIB says it avoids. Right: GIB inside SAP.
+import {products} from './data.js';
+---
+<div class="gib-emb reveal">
+  <figure class="gib-emb-side gib-emb-no">
+    <figcaption>Bolted on</figcaption>
+    <div class="gib-emb-row"><span class="gib-emb-box">SAP</span><span class="gib-emb-link" aria-hidden="true"></span><span class="gib-emb-box gib-emb-dash">Middleware</span><span class="gib-emb-link" aria-hidden="true"></span><span class="gib-emb-box gib-emb-dash">Separate system<small>and a copy of your data</small></span></div>
+  </figure>
+  <figure class="gib-emb-side gib-emb-yes">
+    <figcaption>Built in</figcaption>
+    <div class="gib-emb-sap"><span class="gib-emb-sap-label">Your SAP system<small>S/4HANA or ECC, live data</small></span><div class="gib-emb-mods">{Object.values(products).map(p => <span>{p.name}</span>)}</div></div>
+  </figure>
+</div>
+<style>
+.gib-emb {display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-block:3rem 1.25rem;}
+.gib-emb-side {margin:0;padding:1.75rem;border-radius:var(--gib-radius);border:1px solid var(--gib-line);background:var(--gib-white);display:flex;flex-direction:column;gap:1.75rem;min-width:0;}
+figcaption {font:500 .72rem var(--gib-ff-mono);letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;gap:.6rem;} figcaption::before {content:'';width:9px;height:9px;border-radius:50%;background:var(--gib-red);}
+.gib-emb-no {color:var(--gib-muted);background:transparent;border-style:dashed;}
+.gib-emb-row {display:flex;align-items:stretch;gap:0;flex:1;}
+.gib-emb-box {flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:1.1rem .6rem;border:1px solid var(--gib-line);border-radius:4px;background:var(--gib-white);font-weight:600;font-size:.95rem;min-height:104px;min-width:0;}
+.gib-emb-dash {border-style:dashed;background:transparent;text-decoration:line-through;text-decoration-color:var(--gib-red);text-decoration-thickness:2px;} .gib-emb-box small {font:400 .7rem/1.3 var(--gib-ff-mono);margin-top:.4rem;text-decoration:none;display:inline-block;}
+.gib-emb-link {flex:0 0 clamp(14px,3vw,34px);align-self:center;border-top:2px dashed var(--gib-line);}
+.gib-emb-yes {background:var(--gib-ink);color:var(--gib-on-dark);border-color:var(--gib-ink);box-shadow:var(--gib-shadow);} .gib-emb-yes figcaption::before {background:var(--gib-green);box-shadow:0 0 0 4px rgba(46,158,91,.25);}
+.gib-emb-sap {flex:1;border:1px solid var(--gib-ink-3);border-radius:6px;padding:1rem;display:flex;flex-direction:column;gap:1rem;background:var(--gib-ink-2);}
+.gib-emb-sap-label {font-weight:600;font-size:.95rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:baseline;} .gib-emb-sap-label small {font:400 .7rem var(--gib-ff-mono);color:var(--gib-on-dark-muted);}
+.gib-emb-mods {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem;flex:1;} .gib-emb-mods span {display:flex;align-items:center;justify-content:center;text-align:center;border:1px solid var(--gib-orange);color:var(--gib-orange);border-radius:4px;padding:.8rem .4rem;font-weight:600;font-size:.86rem;background:rgba(243,112,33,.08);}
+@media(max-width:899px) {.gib-emb {grid-template-columns:1fr;} .gib-emb-mods {grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:480px) {.gib-emb-row {flex-direction:column;} .gib-emb-link {flex-basis:14px;border-top:0;border-left:2px dashed var(--gib-line);height:14px;}}
+</style>

@@ -1,0 +1,9 @@
+---
+import {Image} from 'astro:assets';
+const {src,alt,eager=false} = Astro.props;
+---
+<a class="gib-frame" href={src.src} target="_blank" rel="noopener" aria-label={`${alt}, open full-size image`}><div class="gib-frame-bar" aria-hidden="true"><i></i><i></i><i></i></div><Image src={src} alt={alt} widths={[640,960,1280,1920]} sizes="(min-width: 900px) 55vw, 100vw" loading={eager?'eager':'lazy'} /></a>
+<style>
+.gib-frame {display:block;border:1px solid var(--gib-line);border-radius:14px;overflow:hidden;box-shadow:var(--gib-shadow);background:white;}
+.gib-frame-bar {height:34px;background:#E9EEF3;display:flex;align-items:center;gap:5px;padding-inline:12px;} i {width:9px;height:9px;border-radius:50%;background:var(--gib-red);} i:nth-child(2) {background:var(--gib-amber);} i:nth-child(3) {background:var(--gib-green);} img {display:block;width:100%;}
+</style>

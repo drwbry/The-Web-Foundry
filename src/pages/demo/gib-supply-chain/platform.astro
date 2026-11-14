@@ -1,0 +1,115 @@
+---
+import {Image} from 'astro:assets';
+import Layout from '../../../components/demo/gib-supply-chain/Layout.astro';
+import Section from '../../../components/demo/gib-supply-chain/Section.astro';
+import Eyebrow from '../../../components/demo/gib-supply-chain/Eyebrow.astro';
+import Button from '../../../components/demo/gib-supply-chain/Button.astro';
+import Quote from '../../../components/demo/gib-supply-chain/Quote.astro';
+import CertBadges from '../../../components/demo/gib-supply-chain/CertBadges.astro';
+import CtaBand from '../../../components/demo/gib-supply-chain/CtaBand.astro';
+import hero from '../../../assets/demo/gib-supply-chain/hero-operations.png';
+import Cockpit from '../../../components/demo/gib-supply-chain/Cockpit.astro';
+import {moduleViews,links} from '../../../components/demo/gib-supply-chain/data.js';
+import {shot} from '../../../components/demo/gib-supply-chain/images.js';
+const groups = [
+  {
+    "eyebrow": "Where coordinated work happens in SAP",
+    "title": "Cross-Functional Workspaces",
+    "bullets": [
+      "Role-based operational cockpits",
+      "Cross-plant planning and scheduling boards",
+      "Integrated procurement and production views",
+      "Bulk processing and collective conversion workflows"
+    ]
+  },
+  {
+    "eyebrow": "How teams coordinate without leaving SAP",
+    "title": "Built-In Collaboration",
+    "bullets": [
+      "Integrated alert monitoring and exception workflows",
+      "Shared material and cross-plant visibility",
+      "Complete signal visibility across roles",
+      "Role-based escalation and task structures"
+    ]
+  },
+  {
+    "eyebrow": "Focus attention on business impact",
+    "title": "Decision Prioritization",
+    "bullets": [
+      "Exception grouping and severity ranking",
+      "Coverage and risk-based urgency thresholds",
+      "Missing parts impact prioritization",
+      "Controlled rescheduling thresholds and alert filtering"
+    ]
+  },
+  {
+    "eyebrow": "Intelligent control inside SAP",
+    "title": "Embedded Optimization Logic",
+    "bullets": [
+      "Target stock and replenishment lead time calculation",
+      "Rule-based procurement and inventory control",
+      "Cost, volume, and transport optimization",
+      "Finite capacity and set-up sensitive sequencing"
+    ]
+  }
+];
+const heroQuote = {
+  "text": "GIB has provided my team with the ability to standardize process, improve efficiency, and impact our bottom-line. We process purchase orders faster and more accurately, which translated to an 8% reduction in stock outs in a very sporadic consumption model. GIB responds quickly to daily sales and keeps my team as close to the pulse of our sales channel as possible.",
+  "name": "Director of Purchasing",
+  "role": "Construction Materials, Wholesale Distribution"
+};
+const quotes = [
+  {
+    "text": "GIB directs focus to the areas needing the most attention. It enables us to quickly pull out the data needed for decision making. GIB also provides visibility to multiple, relevant areas of the business in a single view. It's easy to use - it allows us to \"jump\" into SAP, take action, and return to GIB views/reports seamlessly. We could not operate without its capabilities.",
+    "name": "Manager, Global Aftermarket Operations",
+    "role": "Manufacturer | $500M+ Annual Revenue"
+  },
+  {
+    "text": "Excellent. All interactions have been wonderful and they treat their customers very well. They make sure we understand all aspects of the product.",
+    "name": "Materials Manager",
+    "role": "Manufacturer | $500M+ Annual Revenue"
+  },
+  {
+    "text": "All of our requirements have been fulfilled. We are delighted with GIB and how they have dealt with the implementation, which included an initial workshop and some technical training. The fact that GIB was very flexible in all steps of project planning and implementation was especially pleasing.",
+    "name": "Industrial Machinery Manufacturer",
+    "role": "$400M Annual Revenue | +2,000 Headcount"
+  }
+];
+const views = moduleViews.map(view => ({...view,shot:shot(view.shot)}));
+---
+<Layout title="GIB Platform | An Easier Way to Manage SAP Supply Chain Operations" description="GIB strengthens SAP S/4HANA and ECC with operational control across forecasting, inventory, planning, and production, directly inside SAP." current="platform">
+  <Section tone="dark">
+    <div class="gib-hero">
+      <div>
+        <Eyebrow text="Embedded in SAP ECC and SAP S/4HANA" />
+        <h1>Run your supply chain more effectively in SAP</h1>
+        <p class="gib-lead">Faster decisions. Fewer corrections. Stronger coordination across planning, procurement, inventory, and production.</p>
+        <div class="gib-actions"><Button href={links.demo} external>Get a demo</Button><Button href="#modules" variant="ghost">Explore the platform</Button></div>
+      </div>
+      <div class="gib-hero-panel"><Image src={hero} alt="GIB Operations dashboard inside SAP with material positions and procurement indicators" widths={[640,960,1280]} sizes="(min-width:900px) 45vw, 100vw" loading="eager" fetchpriority="high" /></div>
+    </div>
+  </Section>
+  <Section tone="light"><Quote {...heroQuote} featured /></Section>
+  <Section tone="white">
+    <h2 class="reveal">Improve System Performance, Drive Better Supply Chain Outcomes</h2>
+    <p class="gib-lead">With built-in cross-functional intelligence, GIB increases decision speed, reduces rework, and strengthens coordination between supply chain functions.</p>
+    <div class="gib-grid gib-platform-groups">{groups.map((group,i) => <article class:list={['gib-card','reveal',`reveal-delay-${i+1}`]}><Eyebrow text={group.eyebrow} lights={false} /><h3>{group.title}</h3><ul class="gib-checks gib-platform-bullets">{group.bullets.map(bullet => <li>{bullet}</li>)}</ul></article>)}</div>
+  </Section>
+  <Section tone="dark">
+    <div class="gib-center gib-platform-statement"><h2 class="reveal">GIB turns SAP from a system that records outcomes into one that shapes how work is managed, prioritized, and executed.</h2><CertBadges /></div>
+  </Section>
+  <Section tone="light" id="modules">
+    <Eyebrow text="Role-based operational cockpits" />
+    <h2 class="reveal">Four modules. One SAP system.</h2>
+    <p class="gib-lead">Planners, buyers, schedulers, and production teams each get a workspace built for their job, on the same live SAP data.</p>
+    <Cockpit label="GIB Platform" id="modules" initial={2} views={views} />
+  </Section>
+  <Section tone="white"><div class="gib-grid gib-grid-three">{quotes.map(quote => <Quote {...quote} />)}</div></Section>
+  <CtaBand heading="See the platform on your own SAP data." text="" />
+</Layout>
+<style>
+.gib-platform-groups {margin-top:2rem;}
+.gib-platform-bullets {grid-template-columns:1fr;}
+.gib-platform-statement {max-width:950px;margin-inline:auto;}
+.gib-platform-statement :global(.gib-badges) {justify-content:center;}
+</style>

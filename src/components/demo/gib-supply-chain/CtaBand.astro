@@ -1,0 +1,11 @@
+---
+import Button from './Button.astro';
+import {base,links} from './data.js';
+const {heading,text,primaryLabel='Get a demo'} = Astro.props;
+---
+<section class="gib-cta"><div class="gib-wrap gib-cta-inner"><p class="gib-cta-kicker"><i aria-hidden="true"></i>Inside SAP S/4HANA and SAP ECC</p><h2 class="reveal">{heading}</h2>{text && <p class="gib-lead">{text}</p>}<div class="gib-actions"><Button href={links.demo} external>{primaryLabel}</Button><Button href={`${base}/platform`} variant="ghost">Explore the platform</Button></div></div></section>
+<style>
+.gib-cta {background:var(--gib-grid),radial-gradient(ellipse 70% 90% at 50% 120%,rgba(243,112,33,.38),transparent 70%),var(--gib-ink);color:var(--gib-on-dark);padding-block:clamp(5rem,11vw,9.5rem);text-align:center;}
+.gib-cta-kicker {font:.74rem var(--gib-ff-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--gib-on-dark-muted);margin-inline:auto;} .gib-cta-kicker i {display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gib-green);margin-right:.7rem;box-shadow:0 0 0 4px rgba(46,158,91,.22);}
+.gib-cta h2 {font-size:clamp(2.4rem,6vw,5rem)!important;max-width:16ch!important;margin-inline:auto!important;} .gib-lead {color:var(--gib-on-dark-muted);margin-inline:auto;} .gib-actions {justify-content:center;margin-top:2.25rem;}
+</style>

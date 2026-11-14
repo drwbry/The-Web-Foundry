@@ -1,0 +1,105 @@
+---
+import Layout from "../../../components/demo/gib-supply-chain/Layout.astro";
+import Section from "../../../components/demo/gib-supply-chain/Section.astro";
+import Eyebrow from "../../../components/demo/gib-supply-chain/Eyebrow.astro";
+import Button from "../../../components/demo/gib-supply-chain/Button.astro";
+import CertBadges from "../../../components/demo/gib-supply-chain/CertBadges.astro";
+import LogoWall from "../../../components/demo/gib-supply-chain/LogoWall.astro";
+import Scattered from "../../../components/demo/gib-supply-chain/Scattered.astro";
+import Cockpit from "../../../components/demo/gib-supply-chain/Cockpit.astro";
+import Stats from "../../../components/demo/gib-supply-chain/Stats.astro";
+import Quote from "../../../components/demo/gib-supply-chain/Quote.astro";
+import CaseStudy from "../../../components/demo/gib-supply-chain/CaseStudy.astro";
+import Faq from "../../../components/demo/gib-supply-chain/Faq.astro";
+import CtaBand from "../../../components/demo/gib-supply-chain/CtaBand.astro";
+import HeroCockpit from '../../../components/demo/gib-supply-chain/HeroCockpit.astro';
+import Embedded from '../../../components/demo/gib-supply-chain/Embedded.astro';
+import {base,links,moduleViews,faq} from '../../../components/demo/gib-supply-chain/data.js';
+import {shot} from '../../../components/demo/gib-supply-chain/images.js';
+const heroQuote = {"text": "Our partnership with GIB has enabled Nature’s Way to double the size of our operations without costly increases to our staff, hardware or other resources. The benefits of these supply chain tools have been felt throughout the company, from our production lines to our warehouses to our purchasing team.", "name": "Jean Treml", "role": "Materials Director at Nature's Way"};
+const quotes = [{"text": "What we like most is that the solution runs directly inside SAP, so we don’t have to deal with the complexity of moving and synchronizing data between systems. It’s highly flexible to configure around our business needs, which allowed us to move through blueprinting and deployment very quickly, and the functionality and results are easy for our teams to understand.", "name": "Systems Manager, Sourcing", "role": "Manufacturer | +2B Annual Revenue"}, {"text": "In the short term, GIB helped us reduce operational processing times. In the midterm, we achieved higher productivity and better utilization of key production resources. Over the long term, we expect further improvements through optimized inventory levels and stronger delivery reliability. To give you an example, planning processing times for standard purchasing materials were reduced by up to 67%.", "name": "Peter Nickel", "role": "Baier & Schneider (BRUNNEN)"}, {"text": "Particular aspects such as functional scope, flexibility, cost of the solution, and the provider’s expertise were crucial factors in our decision-making process. GIB came out on top when compared with solutions presented by the other providers.", "name": "Udo Wessbecher", "role": "Head of IT, Supply Chain Management | ZF"}];
+const benefits = [{"title": "Built Exclusively for SAP", "text": "Operational control embedded directly within SAP preserves system integrity while giving you a distinct advantage in how work is structured, prioritized, and executed."}, {"title": "Built-in, Not Bolted On", "text": "There is no data replication layer, no detached planning engine, and no separation between optimization and execution with GIB."}, {"title": "End-to-End Operational Scope", "text": "Grow your business on a fully coordinated supply chain, where demand, inventory, MRP, procurement, and production operate in sync."}];
+const caseStudy = {"eyebrow": "Featured case study", "title": "Preparing for SAP S/4HANA: How TE Connectivity Standardized Supply Chain Operations", "text": "For many companies, the hardest part of S/4HANA isn’t the system upgrade. It’s the operational complexity that has accumulated inside SAP over time. With a global supply chain organization as large as TE Connectivity’s, that complexity had to be addressed before the migration began."};
+const stats = [{"value": 42, "suffix": " hr", "label": "reduction in manual effort per buyer per month", "source": "GIB Operations"}, {"value": 40, "suffix": "%", "label": "inventory reduction in 11 months", "source": "GIB Inventory"}, {"value": 45, "suffix": "%", "label": "reduction in planning time, effort, and expense", "source": "GIB Forecast"}, {"value": 50, "suffix": "%", "label": "reduction in backorders", "source": "GIB Production"}];
+const title = "GIB Platform | SAP Supply Chain Management Software";
+const description = "Modernize SAP supply chain management with built-in cross-functional intelligence across planning, MRP, procurement, inventory, and production.";
+---
+<Layout title={title} description={description} current="home">
+  <section class="hh">
+    <div class="gib-wrap">
+      <div class="hh-top">
+        <div class="hh-head">
+          <Eyebrow text="For SAP S/4HANA and SAP ECC" />
+          <h1>Everything you need is already in SAP. <span>It's just not in one place.</span></h1>
+        </div>
+        <div class="hh-side">
+          <p class="gib-lead">GIB connects your supply chain processes end to end, so alert, analysis, and action happen in one place: inside SAP.</p>
+          <div class="gib-actions"><Button href={links.demo} external>Get a demo</Button><Button href={`${base}/platform`} variant="ghost">Explore the platform</Button></div>
+        </div>
+      </div>
+      <p class="hh-instead" aria-hidden="true"><span>One screen instead of</span>{['MD04','MD07','ME58','CO24','Excel','Email'].map(t => <s>{t}</s>)}</p>
+      <HeroCockpit />
+      <div class="hh-proof"><span class="hh-proof-label">SAP certified</span><CertBadges /></div>
+    </div>
+  </section>
+  <LogoWall />
+  <Section tone="light">
+    <div class="hp">
+      <div class="hp-copy">
+        <Eyebrow text="From scattered to one screen" />
+        <h2 class="reveal">SAP holds every signal. It doesn't connect them.</h2>
+        <p class="gib-lead">The shortage, the material position, and the purchase order sit in separate screens. Coordinating a response across planners, buyers, and schedulers still happens in Excel and email.</p>
+        <p class="hp-caption">Today: spread across SAP</p>
+      </div>
+      <Scattered />
+    </div>
+  </Section>
+  <Section tone="dark">
+    <div class="hm-head">
+      <div><Eyebrow text="The GIB platform" /><h2 class="reveal">One cockpit for each part of your supply chain</h2></div>
+      <p class="gib-lead gib-muted">GIB is deployed directly inside your SAP system as an SAP certified clean core extension. It reads your existing SAP data and executes through standard SAP processes. If a field exists in your SAP tables, GIB can use it.</p>
+    </div>
+    <Cockpit label="GIB Platform" id="modules" initial={2} views={moduleViews.map(v=>({...v,shot:shot(v.shot)}))} />
+  </Section>
+  <Section tone="light">
+    <div class="hm-head">
+      <div><Eyebrow text="Built in, not bolted on" /><h2 class="reveal">No separate database or system. No middleware.</h2></div>
+      <p class="gib-lead gib-muted">Planners and buyers work in the SAP screens they already use, and every decision runs on current data, not a copy.</p>
+    </div>
+    <Embedded />
+    <div class="gib-grid gib-grid-three">{benefits.map((b,i)=><article class:list={['gib-card','reveal',`reveal-delay-${i+1}`]}><span class="gib-number">0{i+1}</span><h3>{b.title}</h3><p class="gib-muted">{b.text}</p></article>)}</div>
+    <div class="hb-more"><Button href={`${base}/why-gib`} variant="link">See why customers choose GIB</Button></div>
+  </Section>
+  <Section tone="white"><Eyebrow text="Customer results" /><h2 class="reveal">Results customers report</h2><Stats items={stats} /></Section>
+  <Section tone="light"><Quote {...heroQuote} featured /><div class="gib-grid gib-grid-three hq-more">{quotes.map(q=><Quote {...q} />)}</div></Section>
+  <Section tone="light"><CaseStudy {...caseStudy} href={links.caseTE} /></Section>
+  <Section tone="white"><div class="hf"><div class="hf-head"><Eyebrow text="FAQ" /><h2 class="reveal">Common questions</h2><p class="gib-muted">Short answers for SAP and supply chain leads.</p></div><Faq items={faq} /></div></Section>
+  <CtaBand heading="See GIB working inside SAP." text="Bring your own questions. The GIB team will walk through your planning, procurement, and production scenarios." />
+</Layout>
+<style>
+.hh {position:relative;overflow:hidden;color:var(--gib-on-dark);padding:clamp(2.5rem,4.5vw,4rem) 0 clamp(2.5rem,5vw,4rem);
+  background:var(--gib-grid),radial-gradient(ellipse 60% 55% at 88% 0%,rgba(243,112,33,.30),transparent 65%),radial-gradient(ellipse 50% 40% at 0% 100%,rgba(110,139,160,.22),transparent 70%),var(--gib-ink);}
+.hh-top {display:grid;grid-template-columns:minmax(0,1.75fr) minmax(280px,.75fr);gap:2rem clamp(2rem,5vw,5rem);align-items:end;}
+.hh :global(.gib-eyebrow) {color:var(--gib-on-dark-muted);}
+:global(#main-content) .hh h1 {font-size:clamp(2.5rem,5.1vw,4.5rem);margin:1.1rem 0 0;max-width:19ch;}
+.hh h1 span {color:var(--gib-orange);}
+.hh-side .gib-lead {color:var(--gib-on-dark-muted);margin:0;}
+.hh-side .gib-actions {margin:1.75rem 0 .4rem;}
+.hh-instead {display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin:clamp(2rem,3.5vw,2.75rem) 0 1rem!important;max-width:none!important;font:.72rem var(--gib-ff-mono);letter-spacing:.06em;color:var(--gib-on-dark-muted);}
+.hh-instead span {text-transform:uppercase;letter-spacing:.16em;margin-right:.5rem;}
+.hh-instead s {border:1px solid var(--gib-ink-3);border-radius:4px;padding:.3rem .6rem;text-decoration-color:var(--gib-red);text-decoration-thickness:2px;background:rgba(255,255,255,.02);}
+.hh-proof {display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.5rem;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--gib-ink-3);}
+.hh-proof-label {font:.72rem var(--gib-ff-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--gib-on-dark-muted);}
+.hh-proof :global(.gib-badges) {margin-top:0;}
+.hh h1, .hh-side, .hh-instead, .hh :global(.hc) {animation:hh-in .9s var(--gib-ease) backwards;}
+.hh-side {animation-delay:.12s;} .hh-instead {animation-delay:.22s;} .hh :global(.hc) {animation-delay:.3s;animation-duration:1.1s;}
+@keyframes hh-in {from {opacity:0;transform:translateY(22px);}}
+.hp {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:3rem clamp(2rem,6vw,6rem);align-items:center;}
+.hp-caption {font:.72rem var(--gib-ff-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--gib-muted);margin-top:2.5rem!important;display:flex;align-items:center;gap:.8rem;} .hp-caption::after {content:'';flex:0 0 64px;height:1px;background:currentColor;}
+.hm-head {display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:1.5rem clamp(2rem,5vw,5rem);align-items:end;} .hm-head h2 {margin-bottom:0!important;} .hm-head p {margin:0!important;}
+.hb-more {margin-top:1.5rem;}
+.hq-more {margin-top:clamp(3rem,6vw,5rem);}
+.hf {display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.6fr);gap:2rem clamp(2rem,6vw,6rem);align-items:start;} .hf-head {position:sticky;top:110px;}
+@media(max-width:899px) {.hh-top,.hp,.hm-head,.hf {grid-template-columns:1fr;} .hf-head {position:static;} .hp-caption {display:none;}}
+@media(prefers-reduced-motion:reduce) {.hh h1, .hh-side, .hh-instead, .hh :global(.hc) {animation:none;}}
+</style>

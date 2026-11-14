@@ -1,0 +1,16 @@
+---
+const {href, variant='primary', external=false} = Astro.props;
+---
+<a class:list={['gib-button', `gib-button-${variant}`]} href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}><slot /><span aria-hidden="true" class="gib-button-arrow">→</span></a>
+<style>
+.gib-button {display:inline-flex;align-items:center;justify-content:center;gap:.65rem;min-height:48px;padding:.85rem 1.35rem;border-radius:4px;font-weight:600;line-height:1.2;text-decoration:none;transition:transform .2s var(--gib-ease),background .2s,border-color .2s,color .2s;}
+.gib-button-arrow {transition:transform .25s var(--gib-ease);} .gib-button:hover .gib-button-arrow {transform:translateX(4px);}
+.gib-button-primary {background:var(--gib-orange);color:var(--gib-ink);box-shadow:0 10px 30px -10px rgba(243,112,33,.7);}
+.gib-button-primary:hover {background:#ff8a45;transform:translateY(-1px);}
+.gib-button-ghost {color:inherit;border:1px solid color-mix(in srgb,currentColor 35%,transparent);background:transparent;}
+.gib-button-ghost .gib-button-arrow {display:none;}
+.gib-button-ghost:hover {border-color:currentColor;}
+.gib-button-link {padding:.65rem 0;min-height:44px;color:var(--gib-orange-ink);border-bottom:0;} :global(.gib-section-dark) .gib-button-link {color:var(--gib-orange);}
+.gib-button:focus-visible {outline:2px solid var(--gib-orange);outline-offset:3px;}
+@media(prefers-reduced-motion:reduce) {.gib-button,.gib-button-arrow {transition:none;}}
+</style>
